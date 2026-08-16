@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  ros_sim:
+    # Reconstrói a imagem se houver alterações no Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meu_robo_sim:latest
+    container_name: meu_container_ros
+    
+    # Mantém o container aberto com terminal interativo (equivalente ao -it)
+    stdin_open: true
+    tty: true
+    
+    # Compartilhamento essencial para o ROS2 funcionar corretamente
+    network_mode: host
+    ipc: host
+    
+    # Configurações de exibição de tela para o Windows com VcXsrv
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - QT_X11_NO_MITSHM=1  # Evita falhas de renderização compartilhada no Qt/RViz
+    
+    # Espelhamento de volumes
+    volumes:
+      # Mapeia a pasta atual no Windows para a pasta /workspace dentro do container
+      - .:/workspace
+      # Permite a comunicação do socket gráfico X11
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw

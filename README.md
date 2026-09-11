@@ -1195,3 +1195,28 @@ ROS 2 Humble Container
 ```
 
 O objetivo final é utilizar este ambiente como base para desenvolver, testar e validar o software do AGV em simulação antes da implementação no robô físico.
+
+## Para rodar o ROS2
+
+1. **Garanta que está na raiz do seu workspace:**
+
+```
+cd /workspace
+
+```
+
+2. **Compile o workspace:**
+
+```
+colcon build --symlink-install
+
+```
+
+3. **Carregue o ambiente local:**
+
+```
+source install/setup.bash
+
+```
+
+Agora o ROS 2 reconhecerá todos os seus pacotes locais

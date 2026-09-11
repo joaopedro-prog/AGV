@@ -3,7 +3,7 @@ FROM osrf/ros:humble-desktop-full
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# 2. Instalar ferramentas úteis combinando comandos para otimizar o cache do Docker
+# 2. Instalar ferramentas úteis e TODAS as dependências do robô de uma só vez
 RUN apt-get update && apt-get install -y \
     build-essential \
     sudo \
@@ -12,6 +12,16 @@ RUN apt-get update && apt-get install -y \
     gedit \
     nano \
     wget \
+    # Integração básica do Gazebo com ROS 2 (Resolve o erro 'gazebo_ros' not found)
+    ros-humble-gazebo-ros-pkgs \
+    # Multiplexador de comandos de velocidade (Resolve o erro 'twist_mux' not found)
+    ros-humble-twist-mux \
+    # Framework de controle e gerenciadores (Resolve o erro 'controller_manager' not found)
+    ros-humble-controller-manager \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    # Plugin que conecta o ros2_control ao Gazebo (Essencial para criar o frame odom)
+    ros-humble-gazebo-ros2-control \
     # Colcon é a ferramenta oficial para compilar workspaces ROS 2
     python3-colcon-common-extensions \ 
     && rm -rf /var/lib/apt/lists/*

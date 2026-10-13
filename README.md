@@ -19,6 +19,35 @@ A arquitetura foi projetada para que os mesmos conceitos e interfaces ROS 2 poss
 
 ---
 
+
+# - Inicialização:
+ Abrir o Ubuntu
+wsl -d Ubuntu-24.04
+
+
+ Entrar na pasta do AGV
+cd /caminho/da/pasta/AGV
+
+
+ Iniciar o Docker
+docker compose up -d
+
+
+ Entrar no container
+docker exec -it meu_container_ros bash
+
+
+ Ir para o workspace
+cd /workspace
+
+
+ Compilar, se necessário
+colcon build --symlink-install
+
+
+ Carregar o ambiente ROS 2
+source install/setup.bash
+
 # 1. Arquitetura
 
 ```text

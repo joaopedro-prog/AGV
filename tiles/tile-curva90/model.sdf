@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="tile_curva90">
+    <static>true</static>
+
+    <link name="tile_curva90">
+
+      <visual name="visual_tile_curva90">
+        <pose>0 0 0 1.5708 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>meshes/tile_curva90.dae</uri>
+            <scale>0.01 0.01 0.01</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="colisao_tile_curva90">
+        <geometry>
+          <box>
+            <size>0.30 0.30 0.003</size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

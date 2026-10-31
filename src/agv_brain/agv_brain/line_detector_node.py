@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-Nó de Visão Computacional para Detecção de Linha (OpenCV + ROS 2).
+Nó de Visão Computacional para Detecção de Linha do AGV (OpenCV + ROS 2).
 
-Funciona de forma idêntica na Simulação (Gazebo) e no Robô Real (Raspberry Pi),
-pois ambos publicam a imagem bruta em /camera/image_raw.
-
-Publica:
-  - /agv/line_error (geometry_msgs/Vector3):
-      x: erro lateral normalizado [-1.0 = extrema esquerda, 0.0 = centro, +1.0 = extrema direita]
-      y: erro lateral bruto em pixels
-      z: 1.0 se a linha está visível, 0.0 se a linha foi perdida
-  - /agv/line_debug_image (sensor_msgs/Image):
-      Imagem com HUD visual mostrando o contorno da linha, centróide e erro atual.
+Responsabilidades:
+1. Recebe frames da câmera (/camera/image_raw).
+2. Isola a Região de Interesse (ROI) no chão à frente do robô.
+3. Verifica contraste dinâmico para não confundir sombras ou chão homogêneo com linha.
+4. Normaliza o contraste e segmenta a linha preta (dark_line) ou fita colorida (hsv).
+5. Filtra ruídos pequenos e descarta áreas gigantes (evita que a tela inteira seja detectada como erro zero).
+6. Calcula o centróide e publica o erro lateral normalizado [-1.0..+1.0] em /agv/line_error.
+7. Publica o stream com HUD gráfico completo em /agv/line_debug_image.
 """
 
 import cv2
@@ -27,28 +25,29 @@ class LineDetectorNode(Node):
     def __init__(self):
         super().__init__('line_detector')
 
-        # Parâmetros configuráveis via brain_params.yaml
+        # Parâmetros configuráveis
         self.declare_parameter('image_topic', '/camera/image_raw')
         self.declare_parameter('publish_debug_image', True)
         self.declare_parameter('detection_mode', 'dark_line')
-        self.declare_parameter('dark_threshold', 90)
+        self.declare_parameter('dark_threshold', 85)
+        self.declare_parameter('min_contrast', 25.0)
         self.declare_parameter('hsv_lower', [20, 100, 100])
         self.declare_parameter('hsv_upper', [35, 255, 255])
-        self.declare_parameter('roi_top_ratio', 0.50)
-        self.declare_parameter('roi_bottom_ratio', 0.98)
-        self.declare_parameter('min_contour_area', 150.0)
+        self.declare_parameter('roi_top_ratio', 0.40)
+        self.declare_parameter('roi_bottom_ratio', 0.95)
+        self.declare_parameter('min_contour_area', 100.0)
+        self.declare_parameter('max_contour_area_ratio', 0.45)
 
         image_topic = self.get_parameter('image_topic').value
         self.publish_debug = self.get_parameter('publish_debug_image').value
-
         self.bridge = CvBridge()
 
-        # Subscriber da câmera (simulada ou real)
+        # Inscrição na câmera
         self.image_sub = self.create_subscription(
             Image, image_topic, self.image_callback, 10
         )
 
-        # Publishers
+        # Publicações
         self.error_pub = self.create_publisher(Vector3, '/agv/line_error', 10)
         self.debug_pub = self.create_publisher(Image, '/agv/line_debug_image', 10)
 
@@ -66,36 +65,54 @@ class LineDetectorNode(Node):
 
         height, width, _ = frame.shape
 
-        # Lê parâmetros em tempo real (permite ajuste dinâmico com ros2 param set)
+        # Parâmetros dinâmicos
         mode = self.get_parameter('detection_mode').value
         dark_thresh = int(self.get_parameter('dark_threshold').value)
+        min_contrast = float(self.get_parameter('min_contrast').value)
         hsv_lower = np.array(self.get_parameter('hsv_lower').value, dtype=np.uint8)
         hsv_upper = np.array(self.get_parameter('hsv_upper').value, dtype=np.uint8)
         roi_top = float(self.get_parameter('roi_top_ratio').value)
         roi_bottom = float(self.get_parameter('roi_bottom_ratio').value)
         min_area = float(self.get_parameter('min_contour_area').value)
+        max_area_ratio = float(self.get_parameter('max_contour_area_ratio').value)
 
+        # 1. Recorte da Região de Interesse (ROI) no chão
         y_start = max(0, min(height - 2, int(height * roi_top)))
         y_end = max(y_start + 1, min(height, int(height * roi_bottom)))
-
         roi = frame[y_start:y_end, :]
+        roi_h, roi_w, _ = roi.shape
+        roi_total_area = float(roi_h * roi_w)
+
         blurred = cv2.GaussianBlur(roi, (5, 5), 0)
 
-        # Segmentação da linha no chão
+        # 2. Segmentação da linha
         if mode == 'hsv':
             hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
+            has_contrast = True
         else:
-            # 'dark_line': fita escura/preta em chão mais claro
+            # Modo dark_line (fita escura em chão claro)
             gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
-            _, mask = cv2.threshold(gray, dark_thresh, 255, cv2.THRESH_BINARY_INV)
+            min_val, max_val, _, _ = cv2.minMaxLoc(gray)
+            contrast = max_val - min_val
 
-        # Limpeza morfológica para remover ruídos do piso
+            # Se o contraste for insuficiente, o chão é homogêneo (não há linha na visão)
+            if contrast < min_contrast:
+                mask = np.zeros((roi_h, roi_w), dtype=np.uint8)
+                has_contrast = False
+            else:
+                has_contrast = True
+                # Normaliza contraste no range [0..255] para imunidade a sombras
+                gray_norm = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
+                thresh = dark_thresh if dark_thresh > 0 else 85
+                _, mask = cv2.threshold(gray_norm, thresh, 255, cv2.THRESH_BINARY_INV)
+
+        # 3. Operações morfológicas para eliminar ruídos
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
-        # Busca contornos da fita
+        # 4. Busca e filtragem de contornos
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         line_found = False
@@ -104,12 +121,20 @@ class LineDetectorNode(Node):
         cx_global = width // 2
         cy_global = (y_start + y_end) // 2
         best_contour = None
+        max_allowed_area = roi_total_area * max_area_ratio
 
-        if contours:
-            largest = max(contours, key=cv2.contourArea)
-            area = cv2.contourArea(largest)
-            if area >= min_area:
-                moments = cv2.moments(largest)
+        if has_contrast and contours:
+            # Filtra apenas contornos com área condizente com uma fita
+            valid_contours = []
+            for c in contours:
+                a = cv2.contourArea(c)
+                if min_area <= a <= max_allowed_area:
+                    valid_contours.append((c, a))
+
+            if valid_contours:
+                # Escolhe o contorno mais expressivo dentro dos limites aceitáveis
+                largest_c, _ = max(valid_contours, key=lambda item: item[1])
+                moments = cv2.moments(largest_c)
                 if moments['m00'] > 0:
                     cx_roi = int(moments['m10'] / moments['m00'])
                     cy_roi = int(moments['m01'] / moments['m00'])
@@ -120,36 +145,47 @@ class LineDetectorNode(Node):
                     error_px = float(cx_global - center_x)
                     error_norm = float(error_px / center_x)
                     line_found = True
-                    best_contour = largest
+                    best_contour = largest_c
 
-        # Publica o vetor de erro para o controlador PID
+        # 5. Publicação do erro
         err_msg = Vector3()
-        err_msg.x = float(error_norm)
-        err_msg.y = float(error_px)
+        err_msg.x = float(error_norm) if line_found else 0.0
+        err_msg.y = float(error_px) if line_found else 0.0
         err_msg.z = 1.0 if line_found else 0.0
         self.error_pub.publish(err_msg)
 
-        # Publica imagem de debug se habilitado
+        # 6. Construção da imagem anotada de Depuração (HUD)
         if self.publish_debug:
             debug_frame = frame.copy()
-            # Desenha caixa da ROI e linha central de referência
-            cv2.rectangle(debug_frame, (0, y_start), (width - 1, y_end - 1), (255, 200, 0), 2)
-            cv2.line(debug_frame, (width // 2, y_start), (width // 2, y_end), (255, 0, 0), 2)
+
+            # Caixa da ROI (retângulo ciano) e linha central de referência (linha azul vertical)
+            box_color = (0, 255, 0) if line_found else (0, 0, 255)
+            cv2.rectangle(debug_frame, (0, y_start), (width - 1, y_end - 1), box_color, 2)
+            cv2.line(debug_frame, (width // 2, y_start), (width // 2, y_end), (255, 200, 0), 2)
 
             if line_found and best_contour is not None:
+                # Desenha o contorno da linha detectada em verde
                 shifted_contour = best_contour + np.array([[[0, y_start]]])
                 cv2.drawContours(debug_frame, [shifted_contour], -1, (0, 255, 0), 2)
-                cv2.circle(debug_frame, (cx_global, cy_global), 8, (0, 0, 255), -1)
-                cv2.line(debug_frame, (width // 2, cy_global), (cx_global, cy_global), (0, 255, 255), 2)
-                status_text = f'LINHA OK | Erro: {error_norm:+.2f} ({int(error_px)} px)'
-                color = (0, 255, 0)
-            else:
-                status_text = 'LINHA PERDIDA'
-                color = (0, 0, 255)
 
+                # Ponto central da linha (círculo vermelho)
+                cv2.circle(debug_frame, (cx_global, cy_global), 8, (0, 0, 255), -1)
+
+                # Vetor de desvio do centro até o alvo (linha amarela horizontal)
+                cv2.line(debug_frame, (width // 2, cy_global), (cx_global, cy_global), (0, 255, 255), 3)
+
+                direction_str = "DIREITA" if error_norm > 0.05 else ("ESQUERDA" if error_norm < -0.05 else "CENTRO")
+                status_text = f"LINHA OK | Erro: {error_norm:+.2f} ({int(error_px)}px) -> {direction_str}"
+                text_color = (0, 255, 0)
+            else:
+                status_text = "LINHA PERDIDA | Procurando pista..."
+                text_color = (0, 0, 255)
+
+            # Barra superior de status (fundo escuro semi-transparente para fácil leitura)
+            cv2.rectangle(debug_frame, (0, 0), (width, 42), (0, 0, 0), -1)
             cv2.putText(
-                debug_frame, status_text, (15, 35),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2
+                debug_frame, status_text, (15, 28),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.75, text_color, 2
             )
 
             debug_msg = self.bridge.cv2_to_imgmsg(debug_frame, encoding='bgr8')

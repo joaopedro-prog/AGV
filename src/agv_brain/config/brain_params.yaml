@@ -1,62 +1,59 @@
 # ==============================================================================
 # CONFIGURAÇÕES DE VISÃO COMPUTACIONAL E CONTROLE DO SEGUIDOR DE LINHA (AGV)
 # ==============================================================================
-# Funciona tanto na SIMULAÇÃO (Gazebo) quanto no ROBÔ REAL (Raspberry Pi)
-# ==============================================================================
 
 line_detector:
   ros__parameters:
-    # Tópico de imagem vindo da câmera (igual no Gazebo e na v4l2_camera real!)
     image_topic: "/camera/image_raw"
-    publish_debug_image: true            # Publica imagem anotada em /agv/line_debug_image
+    publish_debug_image: true            # Publica HUD com erro e centróide em /agv/line_debug_image
 
-    # Modo de detecção da fita/linha no chão:
-    #   "dark_line": detecta fita preta/escura sobre piso claro (padrão da pista circuit1.world e fita isolante preta)
-    #   "hsv"      : detecta fita colorida (ex: amarela, vermelha, azul) usando faixa HSV
-    detection_mode: "dark_line"          # [ALTERAR SE USAR FITA COLORIDA] ("dark_line" ou "hsv")
+    # Modo de detecção: "dark_line" (linha preta no piso claro) ou "hsv" (fita colorida)
+    detection_mode: "dark_line"
 
-    # Limiar de brilho para "dark_line" (0 a 255: pixels abaixo deste valor são considerados linha preta)
-    dark_threshold: 90                   # [ALTERAR SE NECESSÁRIO] Ajuste conforme iluminação do ambiente
+    # Na detecção dark_line:
+    # A imagem é normalizada no contraste. Valores abaixo de dark_threshold (0-255) são considerados linha.
+    dark_threshold: 85
 
-    # Faixa HSV caso detection_mode seja "hsv" (Exemplo abaixo para fita AMARELA):
-    hsv_lower: [20, 100, 100]            # [H_min, S_min, V_min]
-    hsv_upper: [35, 255, 255]            # [H_max, S_max, V_max]
+    # Contraste mínimo (max_val - min_val no cinza) para validar que existe uma linha na cena.
+    # Evita falsos positivos de tela inteira escura ou piso sem linha.
+    min_contrast: 25.0
 
-    # Região de Interesse (ROI) na parte inferior da imagem (onde o chão aparece):
-    roi_top_ratio: 0.50                  # Começa em 50% da altura da imagem
-    roi_bottom_ratio: 0.98               # Termina em 98% da altura da imagem
-    min_contour_area: 150.0              # Área mínima (em pixels) para considerar que achou a linha
+    # Faixa HSV caso detection_mode seja "hsv" (Exemplo para fita amarela):
+    hsv_lower: [20, 100, 100]
+    hsv_upper: [35, 255, 255]
+
+    # Região de Interesse (ROI): parte inferior da imagem onde o chão à frente do robô aparece
+    roi_top_ratio: 0.40                  # Inicia em 40% da altura da imagem
+    roi_bottom_ratio: 0.95               # Termina em 95% da altura da imagem
+
+    # Filtros de área para descartar ruídos pequenos ou telas inteiras escuras
+    min_contour_area: 100.0              # Área mínima da linha (em pixels)
+    max_contour_area_ratio: 0.45         # Descarta contornos maiores que 45% da ROI (evita detectar o chão inteiro)
 
 
 line_follower:
   ros__parameters:
-    # --------------------------------------------------------------------------
-    # ORQUESTRAÇÃO E MODO DE INICIALIZAÇÃO
-    # --------------------------------------------------------------------------
-    # Se false (recomendado), o robô inicia PARADO (IDLE) e só segue linha
-    # quando você mandar o comando START!
-    auto_start: false
-
-    # Tópico de saída de velocidade (conectado ao twist_mux ou direto ao controlador)
-    cmd_vel_topic: "/cmd_vel_line"
+    auto_start: false                    # Se false, inicia em IDLE e aguarda comando START
+    cmd_vel_topic: "/cmd_vel_line"       # Conectado à entrada prioritária do twist_mux
 
     # --------------------------------------------------------------------------
     # VELOCIDADES E GANHOS DO CONTROLADOR PID
     # --------------------------------------------------------------------------
-    base_linear_speed: 0.22              # [ALTERAR] Velocidade para frente em reta (m/s)
-    min_linear_speed: 0.08               # Velocidade mínima ao fazer curvas fechadas (m/s)
-    max_angular_speed: 1.50              # [ALTERAR] Velocidade máxima de giro (rad/s)
-    curve_slowdown_factor: 0.65          # Reduz velocidade linear proporcionalmente ao erro na curva
+    base_linear_speed: 0.20              # Velocidade em linha reta (m/s)
+    min_linear_speed: 0.08               # Velocidade mínima ao contornar curvas (m/s)
+    max_angular_speed: 1.50              # Velocidade máxima de giro nas curvas (rad/s)
+    curve_slowdown_factor: 0.70          # Reduz velocidade linear proporcionalmente ao erro
 
-    # Ganhos do PID (atuam sobre o erro normalizado entre -1.0 e +1.0):
-    kp: 1.25                             # [ALTERAR] Ganho Proporcional (força de correção imediata)
-    ki: 0.00                             # [ALTERAR] Ganho Integral (corrige erro acumulado)
-    kd: 0.25                             # [ALTERAR] Ganho Derivativo (amortece oscilações/zigue-zague)
+    # Ganhos do PID:
+    kp: 1.40                             # Força de correção proporcional ao erro
+    ki: 0.00                             # Ganho integral
+    kd: 0.30                             # Ganho derivativo para amortecer oscilações
 
     # --------------------------------------------------------------------------
-    # COMPORTAMENTO QUANDO PERDE A LINHA OU VÊ OBSTÁCULO
+    # BUSCA ATIVA DA LINHA EM CURVAS FECHADAS (QUANDO A LINHA SAI DA CÂMERA)
     # --------------------------------------------------------------------------
-    search_on_lost_line: true            # Se perder a linha na curva, gira devagar procurando pelo último lado visto
-    search_angular_speed: 0.45           # Velocidade de giro na busca (rad/s)
-    max_lost_line_time_sec: 3.0          # Se não achar a linha após 3.0s, para totalmente por segurança
-    stop_on_obstacle: true               # Pausa imediatamente se /agv/obstacle_detected for true
+    search_on_lost_line: true            # Ativa busca inteligente se perder a linha na curva
+    search_linear_speed: 0.04            # Avanço suave durante a busca (m/s)
+    search_angular_speed: 0.55           # Rotação suave em direção ao último lado onde a linha foi vista
+    max_lost_line_time_sec: 4.0          # Tempo limite de busca antes de parar por segurança (segundos)
+    stop_on_obstacle: true               # Pausa imediatamente se houver obstáculo frontal

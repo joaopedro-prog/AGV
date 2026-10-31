@@ -1,5 +1,8 @@
 services:
   ros_sim:
+    build:
+      context: .
+      dockerfile: dockerfile
     image: meu-agv:latest
     container_name: meu_container_ros
 

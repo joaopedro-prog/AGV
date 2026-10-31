@@ -3,10 +3,27 @@ build/
 install/
 log/
 
-# Python caches
+# Python caches and virtualenvs
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
 
-# VS Code settings
+# VS Code / IDE settings
 .vscode/
+.idea/
+
+# OS specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Arduino / PlatformIO / MCU temporary build files
+*.hex
+*.bin
+*.elf
+firmware/**/build/
+firmware/**/.pio/

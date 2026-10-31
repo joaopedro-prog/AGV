@@ -22,8 +22,15 @@ RUN apt-get update && apt-get install -y \
     ros-humble-ros2-controllers \
     # Plugin que conecta o ros2_control ao Gazebo (Essencial para criar o frame odom)
     ros-humble-gazebo-ros2-control \
+    # Visão computacional (OpenCV + cv_bridge), Câmera USB Real (v4l2_camera) e Serial USB (pyserial)
+    ros-humble-cv-bridge \
+    ros-humble-v4l2-camera \
+    ros-humble-rqt-image-view \
+    ros-humble-joint-state-publisher-gui \
+    python3-opencv \
+    python3-serial \
     # Colcon é a ferramenta oficial para compilar workspaces ROS 2
-    python3-colcon-common-extensions \ 
+    python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 
 # 3. Criar usuário não-root com UID/GID 1000 para evitar conflito de permissões no Windows/WSL
@@ -36,8 +43,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
     # Adicionar privilégios de sudo sem necessidade de senha
     && echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
-    # Adicionar ao grupo dialout para permitir comunicação serial futura (ex: LiDAR, Arduino)
-    && usermod -aG dialout $USERNAME
+    # Adicionar aos grupos dialout e video para permitir comunicação serial USB e câmera USB
+    && usermod -aG dialout,video $USERNAME
 
 # 4. Mudar para o usuário não-root criado
 USER $USERNAME

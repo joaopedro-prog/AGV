@@ -1,0 +1,68 @@
+# ==============================================================================
+# CONFIGURAÇÕES FÍSICAS E DE PORTAS DO AGV (ROBÔ REAL - RASPBERRY PI)
+# ==============================================================================
+# Quando o robô físico chegar, altere APENAS os valores marcados com [ALTERAR]
+# ==============================================================================
+
+serial_bridge:
+  ros__parameters:
+    # --------------------------------------------------------------------------
+    # 1. PORTA SERIAL DO MICROCONTROLADOR (Arduino / ESP32 / STM32 / Pico)
+    # --------------------------------------------------------------------------
+    # Dica: rode 'ls /dev/ttyUSB* /dev/ttyACM*' na Raspberry para descobrir a porta
+    serial_port: "/dev/ttyUSB0"          # [ALTERAR] Porta USB Serial do microcontrolador
+    baud_rate: 115200                    # [ALTERAR] Taxa de comunicação (deve ser igual ao código do MCU)
+    serial_timeout: 0.05                 # Timeout de leitura em segundos
+    auto_reconnect: true                 # Tenta reconectar automaticamente se o cabo USB oscilar
+    mock_serial_if_disconnected: true    # Se true, não trava o nó caso teste sem o Arduino plugado
+
+    # --------------------------------------------------------------------------
+    # 2. CONSTANTES FÍSICAS DO ROBÔ (MEDIDAS EM METROS E PULSOS)
+    # --------------------------------------------------------------------------
+    wheel_radius: 0.033                  # [ALTERAR] Raio da roda em metros (ex: 0.033 = 3.3 cm)
+    wheel_separation: 0.297              # [ALTERAR] Distância entre o centro da roda esq e dir (metros)
+    encoder_ticks_per_rev: 3436          # [ALTERAR] Pulsos de encoder por 1 volta completa da roda
+    max_wheel_speed_rad_s: 15.0          # [ALTERAR] Velocidade máxima da roda (rad/s)
+
+    # Inversão de sentido caso algum motor/encoder gire para trás ao mandar ir pra frente
+    invert_left_motor: false             # [ALTERAR] Mude para true se o motor esquerdo girar invertido
+    invert_right_motor: false            # [ALTERAR] Mude para true se o motor direito girar invertido
+    invert_left_encoder: false           # [ALTERAR] Mude para true se o encoder esquerdo contar negativo pra frente
+    invert_right_encoder: false          # [ALTERAR] Mude para true se o encoder direito contar negativo pra frente
+
+    # --------------------------------------------------------------------------
+    # 3. PROTOCOLO SERIAL E SEGURANÇA
+    # --------------------------------------------------------------------------
+    # Formato enviado pela Raspberry -> Microcontrolador:
+    #   "wheel_rad_s": envia "CMD,<vel_esq_rad_s>,<vel_dir_rad_s>\n"
+    #   "wheel_m_s"  : envia "CMD,<vel_esq_m_s>,<vel_dir_m_s>\n"
+    #   "twist"      : envia "V:<linear_x>,W:<angular_z>\n"
+    command_format: "wheel_rad_s"
+    cmd_vel_timeout_sec: 0.5             # Para os motores se não receber comando em 0.5s (Watchdog)
+    publish_odom_tf: true                # Publica a transformada TF (odom -> base_link)
+    odom_frame_id: "odom"
+    base_frame_id: "base_link"
+    obstacle_stop_distance_m: 0.25       # [ALTERAR] Distância mínima de segurança do sensor ultrassônico/IR (metros)
+
+
+rpi_sensors:
+  ros__parameters:
+    # --------------------------------------------------------------------------
+    # 4. SENSORES CONECTADOS DIRETO NA GPIO DA RASPBERRY PI (OPCIONAL)
+    # --------------------------------------------------------------------------
+    enable_gpio: false                   # [ALTERAR] Mude para true na Raspberry Pi se usar sensores nos pinos GPIO
+    poll_rate_hz: 20.0
+    emergency_button_pin: 17             # [ALTERAR] Pino BCM do botão físico de emergência (se houver)
+    start_button_pin: 27                 # [ALTERAR] Pino BCM de um botão físico para dar START na linha
+    obstacle_sensor_pin: 22              # [ALTERAR] Pino BCM de sensor infravermelho/obstáculo digital
+
+
+v4l2_camera:
+  ros__parameters:
+    # --------------------------------------------------------------------------
+    # 5. CÂMERA USB CONECTADA NA RASPBERRY PI
+    # --------------------------------------------------------------------------
+    video_device: "/dev/video0"          # [ALTERAR] Porta da câmera USB (rode 'ls /dev/video*')
+    image_size: [640, 480]               # Resolução [largura, altura]
+    time_per_frame: [1, 30]              # [1, 30] = 30 FPS
+    camera_frame_id: "camera_link_optical"

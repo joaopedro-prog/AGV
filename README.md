@@ -1,1251 +1,284 @@
-# AGV Simulation Environment
+# AGV Autonomous Mobile Robot - ROS 2 Humble
 
-Ambiente de desenvolvimento e simulação do AGV utilizando:
-
-* Windows 10/11
-* WSL 2
-* Ubuntu
-* Docker Desktop
-* Docker Compose
-* ROS 2 Humble
-* Gazebo
-* RViz2
-* WSLg
-* GPU via D3D12
-
-O objetivo deste ambiente é permitir o desenvolvimento e teste do robô em simulação antes da execução no hardware real.
-
-A arquitetura foi projetada para que os mesmos conceitos e interfaces ROS 2 possam ser utilizados posteriormente no Raspberry Pi 5 do robô.
+Ambiente completo de desenvolvimento, simulação e controle para **Robô Móvel Guiado (AGV / AMR)** utilizando **ROS 2 Humble**, **Gazebo Classic**, **RViz 2** e integração com **Docker + WSL 2 (Windows 10/11 com aceleração de GPU)** e transição direta para **Raspberry Pi 5 + Microcontrolador (Arduino/ESP32)**.
 
 ---
 
+## 📑 Sumário
 
-# - Inicialização:
- Abrir o Ubuntu
-wsl -d Ubuntu-24.04
+1. [Visão Geral e Arquitetura](#1-visão-geral-e-arquitetura)
+2. [Estrutura de Pastas e Pacotes](#2-estrutura-de-pastas-e-pacotes)
+3. [Como Executar no Dia a Dia (Scripts Rápidos)](#3-como-executar-no-dia-a-dia-scripts-rápidos)
+4. [Simulação vs Robô Real](#4-simulação-vs-robô-real)
+5. [Orquestração do Seguidor de Linha (START / STOP)](#5-orquestração-do-seguidor-de-linha-start--stop)
+6. [Checklist Quando o Robô Físico Chegar](#6-checklist-quando-o-robô-físico-chegar)
+7. [Configuração Inicial do Ambiente (PC / Notebook Novo)](#7-configuração-inicial-do-ambiente-pc--notebook-novo)
+8. [Solução de Problemas Comuns (Troubleshooting)](#8-solução-de-problemas-comuns-troubleshooting)
 
+---
 
- Entrar na pasta do AGV
-cd /caminho/da/pasta/AGV
+## 1. Visão Geral e Arquitetura
 
-
- Iniciar o Docker
-docker compose up -d
-
-
- Entrar no container
-docker exec -it meu_container_ros bash
-
-
- Ir para o workspace
-cd /workspace
-
-
- Compilar, se necessário
-colcon build --symlink-install
-
-
- Carregar o ambiente ROS 2
-source install/setup.bash
-
-# 1. Arquitetura
+O projeto foi projetado com uma separação clara entre **hardware físico**, **simulação gráfica** e **camada de inteligência**:
 
 ```text
-┌───────────────────────────────────────────────┐
-│                  Windows                      │
-│                                               │
-│  Windows Terminal / PowerShell               │
-│                                               │
-│  GPU AMD                                      │
-│      │                                        │
-└──────┼────────────────────────────────────────┘
-       │
-       ▼
-┌───────────────────────────────────────────────┐
-│                    WSL 2                      │
-│                                               │
-│  Ubuntu                                       │
-│                                               │
-│  WSLg                                         │
-│    │                                          │
-│    └── D3D12 / GPU                            │
-│                                               │
-│  Docker CLI                                   │
-│    │                                          │
-└────┼──────────────────────────────────────────┘
-     │
-     ▼
-┌───────────────────────────────────────────────┐
-│               Docker Desktop                  │
-│                                               │
-│  Container: meu_container_ros                 │
-│                                               │
-│  ├── ROS 2 Humble                              │
-│  ├── Gazebo                                    │
-│  ├── RViz2                                     │
-│  ├── ros2_control                              │
-│  ├── ROS 2 packages                            │
-│  └── /workspace                               │
-│                                               │
-│  GPU                                           │
-│  └── /dev/dxg → D3D12 → GPU                   │
-└───────────────────────────────────────────────┘
+                                [ CÂMERA USB / REAL ]                  [ MICROCONTROLADOR ] (ESP32/Arduino)
+                                          │                                      ▲  (Motores, Encoders, Sensores)
+                                          │ USB                                  │  USB Serial (/dev/ttyUSB0)
+┌─────────────────────────────────────────┼──────────────────────────────────────┼──────────────────────────────┐
+│ RASPBERRY PI (REAL) / DOCKER (SIMULAÇÃO)▼                                      ▼                              │
+│                                 [v4l2_camera_node]                    [serial_bridge_node]                    │
+│                                         │                                      ▲                              │
+│                                         │ /camera/image_raw                    │ /cmd_vel                     │
+│                                         ▼                                      │ (velocidade linear e angular)│
+│                                [line_detector_node]                            │                              │
+│                               (OpenCV: acha a fita)                            │                              │
+│                                         │                                      │                              │
+│                                         │ /agv/line_error                      │                              │
+│                                         ▼                                      │                              │
+│                             [line_follower_controller] ────────────────────────┘                              │
+│                               (PID: calcula velocidade)                                                       │
+│                                         ▲                                                                     │
+│                                         │ /agv/command ("START", "STOP")                                      │
+│                                    [SEU COMANDO] (Terminal / Scripts / Dashboard)                             │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Principais Características
+* **Independência de Ambiente:** Os mesmos nós de visão e controle funcionam tanto no Gazebo quanto no robô físico real sem alterar o código-fonte.
+* **Aceleração Gráfica por Hardware:** Suporte a D3D12/WSLg no WSL 2 para renderização fluida do Gazebo e RViz 2 no Windows.
+* **Segurança e Watchdog:** Desaceleração automática em curvas, parada emergencial por detecção de obstáculo e timeout dos motores se a comunicação serial cair.
 
 ---
 
-# 2. Pré-requisitos
-
-O computador precisa possuir:
-
-* Windows 10 versão 21H2 ou superior, ou Windows 11
-* Virtualização habilitada na BIOS/UEFI
-* WSL 2
-* Ubuntu
-* Docker Desktop
-* Driver de GPU compatível com WSL
-* Git
-
-Para aplicativos GUI Linux no WSL, a Microsoft utiliza uma GPU virtual (vGPU) para aceleração de OpenGL.
-
-Para Docker Desktop, o backend WSL 2 é o ambiente recomendado para containers Linux no Windows.
-
----
-
-# 3. Instalação do WSL
-
-Abra o **PowerShell como Administrador**.
-
-Verifique se o WSL está instalado:
-
-```powershell
-wsl --version
-```
-
-Atualize o WSL:
-
-```powershell
-wsl --update
-```
-
-Verifique as distribuições instaladas:
-
-```powershell
-wsl --list --verbose
-```
-
-A distribuição utilizada pelo projeto deve estar rodando em:
-
-```text
-VERSION 2
-```
-
-Exemplo:
-
-```text
-NAME            STATE       VERSION
-Ubuntu-24.04    Stopped     2
-```
-
-Caso a distribuição esteja utilizando WSL 1:
-
-```powershell
-wsl --set-version Ubuntu-24.04 2
-```
-
----
-
-# 4. Verificar suporte à GPU no WSL
-
-Entre no Ubuntu:
-
-```powershell
-wsl -d Ubuntu-24.04
-```
-
-Dentro do Ubuntu:
-
-```bash
-ls -l /dev/dxg
-```
-
-Deve existir:
-
-```text
-/dev/dxg
-```
-
-Esse dispositivo é utilizado pelo WSL para disponibilizar a GPU virtual para aplicações Linux.
-
-Também é possível verificar as bibliotecas:
-
-```bash
-ls /usr/lib/wsl/lib/
-```
-
-Devem existir bibliotecas como:
-
-```text
-libd3d12.so
-libd3d12core.so
-libdxcore.so
-```
-
----
-
-# 5. Configurar aceleração gráfica no WSL
-
-Instale as ferramentas de teste:
-
-```bash
-sudo apt update
-sudo apt install -y mesa-utils
-```
-
-Execute:
-
-```bash
-glxinfo -B
-```
-
-O resultado deve indicar uma GPU real/virtual acelerada.
-
-Exemplo:
-
-```text
-OpenGL vendor string: Microsoft Corporation
-OpenGL renderer string: D3D12 (AMD Radeon RX 580 2048SP)
-Accelerated: yes
-```
-
-### Importante
-
-Não instalar drivers AMD Linux dentro do WSL para esse propósito.
-
-No WSL, a GPU é disponibilizada através da camada de virtualização gráfica do Windows/D3D12.
-
----
-
-# 6. Configurar o Docker Desktop
-
-Instale o Docker Desktop no Windows.
-
-Durante a configuração, utilize o backend:
-
-```text
-WSL 2
-```
-
-Depois de instalar, abra o Docker Desktop e certifique-se de que ele está funcionando.
-
-No Ubuntu:
-
-```bash
-docker --version
-```
-
-Teste:
-
-```bash
-docker run hello-world
-```
-
-Se aparecer a mensagem de sucesso do `hello-world`, o Docker está funcionando.
-
----
-
-# 7. Permissão do Docker no Ubuntu
-
-Caso apareça:
-
-```text
-permission denied while trying to connect to the Docker daemon
-```
-
-execute:
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-Depois saia do WSL:
-
-```bash
-exit
-```
-
-No PowerShell:
-
-```powershell
-wsl --shutdown
-```
-
-Abra novamente:
-
-```powershell
-wsl -d Ubuntu-24.04
-```
-
-Teste:
-
-```bash
-docker run hello-world
-```
-
----
-
-# 8. Clonar o projeto
-
-O projeto foi desenvolvido para ser independente da localização do repositório.
-
-Clone o repositório normalmente:
-
-```bash
-git clone <URL_DO_REPOSITORIO>
-```
-
-Entre na pasta:
-
-```bash
-cd <PASTA_DO_REPOSITORIO>
-```
-
-Exemplo:
-
-```bash
-git clone https://github.com/usuario/AGV.git
-cd AGV
-```
-
-> O caminho da pasta pode ser diferente em cada computador. Nenhum caminho absoluto do Windows deve ser necessário.
-
----
-
-# 9. Estrutura esperada
-
-A raiz do projeto deve conter algo semelhante a:
+## 2. Estrutura de Pastas e Pacotes
 
 ```text
 AGV/
+├── .gitignore                    # Arquivos ignorados pelo Git (build, install, log, etc.)
+├── dockerfile                    # Imagem ROS 2 Humble com todas as dependências instaladas
+├── docker-compose.yml            # Orquestrador do container com montagem do workspace e GPU
+├── iniciar.bat                   # [ATALHO PRINCIPAL] Menu interativo no Windows
+├── README.md                     # Documentação completa do projeto
 │
-├── Dockerfile
-├── docker-compose.yml
-├── README.md
+├── firmware/                     # Firmware do Microcontrolador
+│   └── agv_mcu_firmware/
+│       └── agv_mcu_firmware.ino  # Código C++ para Arduino / ESP32 / STM32
 │
-├── src/
-│   └── ...
+├── scripts/                      # Scripts de automação e atalhos Windows (.bat) e Linux (.sh)
+│   ├── menu_agv.bat              # Menu interativo do AGV
+│   ├── 1_ver_robo_rviz.bat       # Abre o RViz 2 com controles deslizantes das rodas
+│   ├── 2_iniciar_simulacao.bat   # Abre o Gazebo com a pista e o robô
+│   ├── 3_ver_camera.bat          # Monitor visual da detecção de linha (rqt_image_view)
+│   ├── 4_agv_start.bat           # Manda o AGV começar a seguir linha (START)
+│   ├── 5_agv_stop.bat            # Manda o AGV parar imediatamente (STOP)
+│   ├── 6_painel_interativo.bat   # Painel CLI de missões do AGV
+│   ├── compilar.bat              # Executa colcon build no workspace
+│   ├── entrar_container.bat      # Abre um terminal bash direto dentro do container
+│   ├── atualizar_projeto.bat     # Atualizador automático (git pull + docker + build)
+│   └── ros_exec.sh               # Intermediador oficial Linux para carregar o ROS 2
 │
-├── launch/
-│   └── ...
+├── src/                          # Código-fonte ROS 2 (3 Pacotes Principais)
+│   ├── articubot_one/            # [PACOTE 1] Modelagem 3D, URDF/Xacro e Mundos Gazebo
+│   │   ├── description/          # Arquivos Xacro (robot_core, camera, lidar, inertials)
+│   │   ├── launch/               # Launches de simulação (launch_sim, view_robot, rsp)
+│   │   └── worlds/               # Circuitos de simulação (circuit1.world com tiles)
+│   │
+│   ├── agv_hardware/             # [PACOTE 2] Ponte de Hardware Real e Orquestração
+│   │   ├── agv_hardware/         # serial_bridge_node (USB Serial) e rpi_sensors_node (GPIO)
+│   │   ├── config/               # hardware_params.yaml (portas USB, medidas físicas, encoders)
+│   │   └── launch/               # agv_complete.launch.py (Orquestrador Mestre Sim vs Real)
+│   │
+│   └── agv_brain/                # [PACOTE 3] Inteligência, Visão Computacional e PID
+│       ├── agv_brain/            # line_detector_node (OpenCV) e line_follower_node (PID)
+│       ├── config/               # brain_params.yaml (ganhos PID, velocidades, cor da linha)
+│       └── launch/               # brain.launch.py (detecção + seguidor de linha)
 │
-├── description/
-│   └── ...
-│
-└── ...
+├── tiles/                        # Modelos 3D modulares de pista (tile-reta, curva, curva90)
+└── gazebo_world/                 # Definições de circuitos industriais
 ```
-
-A estrutura poderá evoluir conforme o desenvolvimento do robô.
 
 ---
 
-# 10. Dockerfile
+## 3. Como Executar no Dia a Dia (Scripts Rápidos)
 
-O projeto utiliza ROS 2 Humble através da imagem:
+Na raiz do projeto no Windows, basta dar **dois cliques em `iniciar.bat`**.
 
-```dockerfile
-FROM osrf/ros:humble-desktop-full
-```
-
-O ambiente contém as principais ferramentas necessárias para a simulação:
-
-* ROS 2 Humble
-* Gazebo
-* RViz2
-* gazebo_ros
-* ros2_control
-* ros2_controllers
-* controller_manager
-* gazebo_ros2_control
-* twist_mux
-* colcon
-
----
-
-# 11. Configuração da GPU no Docker
-
-Para aplicativos gráficos dentro de containers no WSLg, é necessário disponibilizar os recursos gráficos do WSL ao container.
-
-O WSLg documenta três elementos principais para acesso à vGPU:
+O menu interativo será exibido:
 
 ```text
-/dev/dxg
-/usr/lib/wsl
-LD_LIBRARY_PATH=/usr/lib/wsl/lib
+======================================================================
+                    PAINEL DE CONTROLE DO AGV (ROS 2)
+======================================================================
+
+  [1] Abrir Terminal Interativo ROS 2 (bash dentro do container)
+  [2] Visualizar Robo 3D no RViz 2 (com controles de rodas)
+  [3] Iniciar SIMULACAO COMPLETA no Gazebo (Pista + Robo + Visao)
+  [4] Ver Camera e Deteccao de Linha (rqt_image_view)
+
+  -------------------------- COMANDOS DO AGV -------------------------
+  [5] Mandar o Robo SEGUIR A LINHA (START)
+  [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
+  [7] Abrir Painel Interativo de Missoes (agv_cmd)
+
+  -------------------------- FERRAMENTAS -----------------------------
+  [8] Recompilar o Workspace (colcon build)
+  [9] Baixar Atualizacoes do GitHub (git pull + docker + build)
+  [0] Sair
+======================================================================
+Digite o numero da opcao (0-9):
 ```
 
-Além disso, para aplicações gráficas, o container precisa acessar os recursos do WSLg.
-
-O `docker-compose.yml` deve conter uma configuração semelhante a:
-
-```yaml
-services:
-
-  ros_sim:
-
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    image: meu-agv:latest
-
-    container_name: meu_container_ros
-
-    stdin_open: true
-    tty: true
-
-    network_mode: host
-    ipc: host
-
-    environment:
-      - DISPLAY=${DISPLAY}
-      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
-      - XDG_RUNTIME_DIR=/tmp/runtime-user
-      - PULSE_SERVER=${PULSE_SERVER}
-
-      - QT_X11_NO_MITSHM=1
-
-      # D3D12 / WSL GPU
-      - GALLIUM_DRIVER=d3d12
-      - LD_LIBRARY_PATH=/usr/lib/wsl/lib
-
-    volumes:
-
-      # Workspace do projeto
-      - .:/workspace
-
-      # X11
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-
-      # WSLg
-      - /mnt/wslg:/mnt/wslg
-
-      # Wayland
-      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:/tmp/runtime-user/${WAYLAND_DISPLAY}
-
-      # Bibliotecas da GPU do WSL
-      - /usr/lib/wsl:/usr/lib/wsl
-
-    devices:
-
-      # WSL virtual GPU
-      - /dev/dxg:/dev/dxg
-```
+> **Dica:** Você também pode dar dois cliques diretamente nos arquivos dentro da pasta `scripts/` (ex: `scripts/2_iniciar_simulacao.bat`) para abrir tarefas específicas sem passar pelo menu.
 
 ---
 
-# 12. Construir a imagem
+## 4. Simulação vs Robô Real
 
-Na raiz do repositório:
+O arquivo mestre [`src/agv_hardware/launch/agv_complete.launch.py`](src/agv_hardware/launch/agv_complete.launch.py) orquestra todo o sistema através do argumento `sim_mode`:
 
+### A) Modo Simulação (No computador com Gazebo)
 ```bash
-docker compose build
+ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true
 ```
+* Sobe o **Gazebo Classic** com a pista `circuit1.world`.
+* Spawna o robô automaticamente sobre a faixa preta (`x=0.02, y=-0.07`).
+* A câmera simulada renderiza frames virtuais e publica em `/camera/image_raw`.
+* O nó de detecção e o controlador PID iniciam em modo de espera (`IDLE`).
 
-Ou:
-
+### B) Modo Robô Real (Na Raspberry Pi 5)
 ```bash
-docker compose up -d --build
+ros2 launch agv_hardware agv_complete.launch.py sim_mode:=false
 ```
-
-A imagem será criada com:
-
-```text
-meu-agv:latest
-```
+* O Gazebo **não é carregado** (economiza CPU e memória).
+* Inicia o nó `serial_bridge` conectado à porta serial do microcontrolador (ex: `/dev/ttyUSB0`).
+* Inicia o nó `v4l2_camera` lendo a webcam física via USB em `/camera/image_raw`.
+* Inicia o leitor de botões físicos GPIO (`rpi_sensors_node`).
+* O robô fica pronto para seguir a linha assim que receber o comando de início.
 
 ---
 
-# 13. Iniciar o ambiente
+## 5. Orquestração do Seguidor de Linha (START / STOP)
 
-Na raiz do projeto:
+Por segurança, o robô **sempre inicia parado** no estado `IDLE`. Ele só começa a seguir linha quando você autorizar.
 
+Você pode enviar comandos de três formas:
+
+1. **Pelo Menu Interativo / Atalhos:**
+   * Opção `[5]` no menu (ou `scripts/4_agv_start.bat`) $\rightarrow$ Inicia o movimento.
+   * Opção `[6]` no menu (ou `scripts/5_agv_stop.bat`) $\rightarrow$ Para imediatamente.
+
+2. **Pelo Terminal CLI do ROS 2:**
+   ```bash
+   # Iniciar seguidor de linha
+   ros2 run agv_brain agv_cmd start
+
+   # Parar o robô
+   ros2 run agv_brain agv_cmd stop
+
+   # Painel interativo com menu
+   ros2 run agv_brain agv_cmd
+   ```
+
+3. **Via Serviço ROS 2:**
+   ```bash
+   ros2 service call /agv/set_following std_srvs/srv/SetBool "{data: true}"
+   ```
+
+### Visualizar a Câmera e Detecção ao Vivo
+Abra outro terminal (ou use a opção `[4]` do menu):
 ```bash
-docker compose up -d
+ros2 run rqt_image_view rqt_image_view /agv/line_debug_image
 ```
-
-Verifique:
-
-```bash
-docker ps
-```
-
-Deve aparecer:
-
-```text
-meu_container_ros
-```
+*Uma janela exibirá a visão do chão com a faixa delimitada em verde, o centro da imagem e o cálculo do desvio lateral em tempo real.*
 
 ---
 
-# 14. Entrar no container
+## 6. Checklist Quando o Robô Físico Chegar
 
-Execute:
+Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** onde estão as marcações `[ALTERAR]`:
 
-```bash
-docker exec -it meu_container_ros bash
-```
+### 1. Portas e Medidas em [`src/agv_hardware/config/hardware_params.yaml`](src/agv_hardware/config/hardware_params.yaml)
+* `serial_port`: Porta onde o microcontrolador conectou na Raspberry (ex: `"/dev/ttyUSB0"` ou `"/dev/ttyACM0"`).
+* `baud_rate`: Taxa de transmissão (padrão `115200`).
+* `wheel_radius`: Raio da roda real em metros (ex: `0.033` = 3.3 cm).
+* `wheel_separation`: Distância entre o centro das duas rodas em metros.
+* `encoder_ticks_per_rev`: Quantidade de pulsos gerados pelo encoder para 1 volta completa da roda.
+* `invert_left_motor` / `invert_right_motor`: Mude para `true` se alguma roda girar invertida.
 
-O terminal deverá ficar semelhante a:
+### 2. Sintonia do PID em [`src/agv_brain/config/brain_params.yaml`](src/agv_brain/config/brain_params.yaml)
+* `detection_mode`: `"dark_line"` (fita preta no chão claro) ou `"hsv"` (fita colorida).
+* `base_linear_speed`: Velocidade para frente em reta ($m/s$).
+* `kp`, `ki`, `kd`: Ganhos do controlador para deixar as curvas mais suaves ou agressivas.
 
-```text
-user@docker-desktop:/workspace$
-```
+### 3. Modelo 3D em [`src/articubot_one/description/robot_core.xacro`](src/articubot_one/description/robot_core.xacro)
+* Ajuste as propriedades `chassis_length`, `chassis_width`, `chassis_height` e `wheel_radius` para refletir as dimensões reais do chassi.
 
-O diretório:
-
-```text
-/workspace
-```
-
-corresponde à raiz do repositório.
+### 4. Pinos do Microcontrolador em [`firmware/agv_mcu_firmware/agv_mcu_firmware.ino`](firmware/agv_mcu_firmware/agv_mcu_firmware.ino)
+* Ajuste os pinos da Ponte H (`PIN_MOTOR_L_PWM`, `IN1`, `IN2`, etc.) e dos encoders de quadratura (`PIN_ENC_L_A`, `B`) para corresponder à ligação elétrica da sua placa e grave via Arduino IDE.
 
 ---
 
-# 15. Testar a GPU dentro do container
+## 7. Configuração Inicial do Ambiente (PC / Notebook Novo)
 
-Dentro do container:
+Se você for clonar e rodar este projeto em um novo computador ou notebook:
 
+### Pré-requisitos
+1. Windows 10 (versão 21H2+) ou Windows 11 com virtualização ativada na BIOS.
+2. **WSL 2** instalado com Ubuntu 24.04:
+   ```powershell
+   wsl --install -d Ubuntu-24.04
+   ```
+3. **Docker Desktop** instalado no Windows com backend WSL 2 ativado.
+4. No Docker Desktop, vá em:
+   * **Settings (Engrenagem)** $\rightarrow$ **Resources** $\rightarrow$ **WSL integration**
+   * Marque a opção do **`Ubuntu-24.04`** e clique em **Apply & restart**.
+
+### Clonando e Configurando com 1 Clique
+No Windows PowerShell:
+```powershell
+git clone https://github.com/joaopedro-prog/AGV.git
+cd AGV
+```
+Dê dois cliques no arquivo **[`scripts/atualizar_projeto.bat`](scripts/atualizar_projeto.bat)**:
+* Ele baixará atualizações pendentes do GitHub.
+* Construirá a imagem Docker com todas as dependências automaticamente.
+* Compilará o workspace ROS 2 (`colcon build`).
+* Deixará o ambiente 100% pronto para você dar dois cliques no `iniciar.bat`!
+
+---
+
+## 8. Solução de Problemas Comuns (Troubleshooting)
+
+### Erro: `The command 'docker' could not be found in this WSL 2 distro`
+* **Causa:** A integração do Docker Desktop com o Ubuntu foi desativada ou o serviço do Docker reiniciou.
+* **Solução:** No Docker Desktop, abra **Settings** $\rightarrow$ **Resources** $\rightarrow$ **WSL integration**, ligue a chavinha do **Ubuntu-24.04** e clique em **Apply & restart**.
+
+### Erro: `ERROR_NETNAME_DELETED` ou `E_UNEXPECTED` no WSL
+* **Causa:** A ponte de rede virtual do Hyper-V/WSL travou temporariamente no Windows.
+* **Solução:**
+  1. Feche o Docker Desktop completamente (botão direito no ícone perto do relógio $\rightarrow$ *Quit Docker Desktop*).
+  2. No PowerShell como Administrador, execute:
+     ```powershell
+     wsl --shutdown
+     ```
+  3. Abra o Ubuntu (`wsl -d Ubuntu-24.04`) e depois reabra o Docker Desktop.
+
+### Aceleração Gráfica no WSLg
+Para verificar se a aceleração 3D via D3D12 está ativa no Linux:
 ```bash
 glxinfo -B
 ```
-
-Se `glxinfo` não estiver instalado:
-
-```bash
-sudo apt update
-sudo apt install -y mesa-utils
-```
-
-Depois:
-
-```bash
-glxinfo -B
-```
-
-O resultado esperado é semelhante a:
-
+O resultado deve indicar:
 ```text
 OpenGL vendor string: Microsoft Corporation
-OpenGL renderer string: D3D12 (AMD Radeon RX 580 2048SP)
-Accelerated: yes
-```
-
-### Resultado correto
-
-```text
-Device: D3D12 (AMD Radeon RX 580 2048SP)
-Accelerated: yes
-```
-
-Isso confirma:
-
-```text
-Windows
-   ↓
-WSL 2
-   ↓
-WSLg
-   ↓
-Docker
-   ↓
-/dev/dxg
-   ↓
-D3D12
-   ↓
-GPU
-```
-
-Em vez de:
-
-```text
-OpenGL renderer string: llvmpipe
-```
-
-`llvmpipe` significa renderização por software/CPU e não é o resultado desejado para o ambiente de simulação.
-
----
-
-# 16. Testar o Gazebo
-
-Dentro do container:
-
-```bash
-gazebo
-```
-
-O Gazebo deverá abrir uma janela no Windows.
-
-Se a janela abrir e a GPU estiver reportando:
-
-```text
-Accelerated: yes
-```
-
-a aceleração gráfica está funcionando.
-
----
-
-# 17. Testar o RViz2
-
-Abra outra aba do Windows Terminal.
-
-Entre no WSL:
-
-```powershell
-wsl -d Ubuntu-24.04
-```
-
-Entre no mesmo container:
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-Execute:
-
-```bash
-rviz2
-```
-
-O RViz2 deverá abrir através do WSLg.
-
----
-
-# 18. Utilizar vários terminais
-
-Não é necessário criar vários containers.
-
-Todos os processos podem utilizar o mesmo container.
-
-Exemplo:
-
-```text
-Windows Terminal
-│
-├── Aba 1
-│   └── meu_container_ros
-│       └── Gazebo
-│
-├── Aba 2
-│   └── meu_container_ros
-│       └── RViz2
-│
-├── Aba 3
-│   └── meu_container_ros
-│       └── ROS 2 nodes
-│
-└── Aba 4
-    └── meu_container_ros
-        └── Debug / comandos
-```
-
-Em cada nova aba:
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
----
-
-# 19. Comandos ROS 2
-
-Dentro do container:
-
-### Listar nós
-
-```bash
-ros2 node list
-```
-
-### Listar tópicos
-
-```bash
-ros2 topic list
-```
-
-### Ver informações de um tópico
-
-```bash
-ros2 topic info /cmd_vel
-```
-
-### Ver mensagens
-
-```bash
-ros2 topic echo /cmd_vel
-```
-
-### Listar serviços
-
-```bash
-ros2 service list
-```
-
-### Listar parâmetros
-
-```bash
-ros2 param list
-```
-
----
-
-# 20. Executar o projeto
-
-Quando os pacotes do AGV estiverem implementados, os launch files poderão ser executados diretamente dentro do container.
-
-Exemplo:
-
-```bash
-ros2 launch <pacote> <arquivo>.launch.py
-```
-
-A arquitetura pretendida é:
-
-```text
-ROS 2
- │
- ├── Robot Description
- │
- ├── Gazebo
- │    ├── Chassis
- │    ├── Wheels
- │    ├── LiDAR
- │    ├── Camera
- │    └── Sensors
- │
- ├── ros2_control
- │
- ├── Controllers
- │
- ├── Odometry
- │
- ├── TF
- │
- └── Navigation
-```
-
----
-
-# 21. Simulação x Robô real
-
-O objetivo é manter interfaces ROS 2 semelhantes entre simulação e hardware.
-
-```text
-                 ROS 2
-                   │
-          ┌────────┴────────┐
-          │                 │
-       SIMULAÇÃO          ROBÔ REAL
-          │                 │
-       Gazebo           Raspberry Pi 5
-          │                 │
-   Sensores virtuais   Sensores reais
-          │                 │
-          └────────┬────────┘
-                   │
-              ROS 2 Topics
-```
-
-Exemplos:
-
-```text
-/cmd_vel
-/odom
-/scan
-/image_raw
-/tf
-/tf_static
-```
-
-Isso permite desenvolver algoritmos na simulação antes de transferi-los para o robô físico.
-
----
-
-# 22. Quando reconstruir a imagem
-
-Não é necessário executar:
-
-```bash
-docker compose build
-```
-
-toda vez.
-
-Reconstrua quando houver alterações no:
-
-```text
-Dockerfile
-```
-
-ou quando novas dependências forem adicionadas.
-
-Para reconstruir:
-
-```bash
-docker compose build
-```
-
-Depois:
-
-```bash
-docker compose up -d
-```
-
-Ou diretamente:
-
-```bash
-docker compose up -d --build
-```
-
----
-
-# 23. Quando apenas iniciar
-
-Se nada relacionado ao Dockerfile mudou:
-
-```bash
-docker compose up -d
-```
-
-Não é necessário reconstruir a imagem.
-
----
-
-# 24. Parar o ambiente
-
-Para parar o container:
-
-```bash
-docker compose down
-```
-
-Isso remove o container, mas não remove a imagem Docker.
-
-A imagem:
-
-```text
-meu-agv:latest
-```
-
-continua disponível.
-
----
-
-# 25. Rotina diária
-
-Depois que o ambiente já estiver configurado, o fluxo normal é:
-
-### 1. Abrir Ubuntu
-
-```powershell
-wsl -d Ubuntu-24.04
-```
-
-### 2. Entrar na pasta do repositório
-
-```bash
-cd <PASTA_DO_REPOSITORIO>
-```
-
-### 3. Iniciar Docker
-
-```bash
-docker compose up -d
-```
-
-### 4. Abrir um terminal no container
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-### 5. Abrir outros terminais conforme necessário
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-### 6. Executar:
-
-```text
-Gazebo
-RViz2
-ROS 2 nodes
-Launch files
-Debug
-```
-
----
-
-# 26. Checklist de GPU
-
-Caso Gazebo/RViz estejam lentos ou utilizando CPU excessivamente:
-
-### WSL
-
-```bash
-ls -l /dev/dxg
-```
-
-Deve existir:
-
-```text
-/dev/dxg
-```
-
-### Bibliotecas
-
-```bash
-ls /usr/lib/wsl/lib/
-```
-
-Verifique se existem:
-
-```text
-libd3d12.so
-libd3d12core.so
-libdxcore.so
-```
-
-### WSL OpenGL
-
-```bash
-glxinfo -B
-```
-
-Esperado:
-
-```text
-D3D12 (GPU)
-Accelerated: yes
-```
-
-### Container
-
-Entre no container:
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-Depois:
-
-```bash
-glxinfo -B
-```
-
-Esperado:
-
-```text
-D3D12 (GPU)
-Accelerated: yes
-```
-
-Se aparecer:
-
-```text
-llvmpipe
-```
-
-a renderização está acontecendo por software e a configuração de GPU precisa ser revisada.
-
----
-
-# 27. Diagnóstico rápido
-
-## Problema: Docker não conecta
-
-```bash
-docker run hello-world
-```
-
-Se houver erro de permissão:
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-Depois:
-
-```bash
-exit
-```
-
-No PowerShell:
-
-```powershell
-wsl --shutdown
-```
-
-Abra novamente o Ubuntu.
-
----
-
-## Problema: `/dev/dxg` não existe
-
-No WSL:
-
-```bash
-ls -l /dev/dxg
-```
-
-Se não existir:
-
-1. Atualize o WSL:
-
-```powershell
-wsl --update
-```
-
-2. Reinicie o WSL:
-
-```powershell
-wsl --shutdown
-```
-
-3. Verifique novamente.
-
----
-
-## Problema: container usa `llvmpipe`
-
-Dentro do container:
-
-```bash
-glxinfo -B
-```
-
-Se aparecer:
-
-```text
-OpenGL renderer string: llvmpipe
-```
-
-verifique:
-
-```bash
-echo $LD_LIBRARY_PATH
-```
-
-Deve conter:
-
-```text
-/usr/lib/wsl/lib
-```
-
-Verifique:
-
-```bash
-ls /usr/lib/wsl/lib/
-```
-
-E:
-
-```bash
-ls -l /dev/dxg
-```
-
----
-
-# 28. Princípio do ambiente
-
-Este projeto utiliza Docker principalmente para garantir que:
-
-```text
-ROS 2
-Gazebo
-RViz2
-Dependências
-Pacotes
-Ferramentas
-```
-
-sejam reproduzíveis entre diferentes computadores.
-
-O caminho do projeto no Windows **não é fixo**.
-
-O Docker Compose utiliza:
-
-```yaml
-- .:/workspace
-```
-
-onde `.` representa a raiz do repositório atual.
-
-Portanto, o projeto pode estar em:
-
-```text
-C:\Projetos\AGV
-```
-
-ou:
-
-```text
-D:\Git\AGV
-```
-
-ou em qualquer outra localização.
-
-O procedimento continua sendo:
-
-```bash
-cd <PASTA_DO_REPOSITORIO>
-docker compose up -d
-```
-
----
-
-# 29. Resumo dos comandos
-
-## Primeira configuração
-
-```powershell
-wsl --update
-wsl --list --verbose
-```
-
-No Ubuntu:
-
-```bash
-ls -l /dev/dxg
-ls /usr/lib/wsl/lib/
-```
-
-Teste:
-
-```bash
-sudo apt update
-sudo apt install -y mesa-utils
-glxinfo -B
-```
-
-Docker:
-
-```bash
-docker run hello-world
-```
-
-Projeto:
-
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd <PASTA_DO_REPOSITORIO>
-docker compose up -d --build
-```
-
-Teste do container:
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-Dentro:
-
-```bash
-glxinfo -B
-```
-
-Esperado:
-
-```text
-D3D12 (GPU)
+OpenGL renderer string: D3D12 (...)
 Accelerated: yes
 ```
 
 ---
 
-# 30. Rotina normal
+## 👨‍💻 Autor e Licença
 
-```bash
-cd <PASTA_DO_REPOSITORIO>
-```
-
-```bash
-docker compose up -d
-```
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-E em outras abas:
-
-```bash
-docker exec -it meu_container_ros bash
-```
-
-Para finalizar:
-
-```bash
-docker compose down
-```
-
----
-
-## Resultado esperado
-
-Ao final da configuração, o ambiente deverá possuir:
-
-```text
-Windows
-   │
-   ▼
-WSL 2
-   │
-   ├── Ubuntu
-   │
-   ├── WSLg
-   │     └── GPU acelerada
-   │
-   ▼
-Docker Desktop
-   │
-   ▼
-ROS 2 Humble Container
-   │
-   ├── Gazebo
-   ├── RViz2
-   ├── ros2_control
-   ├── AGV simulation
-   │
-   └── GPU
-        └── D3D12
-             └── AMD GPU
-```
-
-O objetivo final é utilizar este ambiente como base para desenvolver, testar e validar o software do AGV em simulação antes da implementação no robô físico.
-
-## Para rodar o ROS2
-
-1. **Garanta que está na raiz do seu workspace:**
-
-```
-cd /workspace
-
-```
-
-2. **Compile o workspace:**
-
-```
-colcon build --symlink-install
-
-```
-
-3. **Carregue o ambiente local:**
-
-```
-source install/setup.bash
-
-```
-
-Agora o ROS 2 reconhecerá todos os seus pacotes locais
+Desenvolvido para projeto de AGV Móvel com ROS 2 Humble.  
+Licença: MIT.

@@ -27,8 +27,8 @@ line_detector:
     roi_bottom_ratio: 0.95               # Termina em 95% da altura da imagem
 
     # Filtros de área para descartar ruídos pequenos ou telas inteiras escuras
-    min_contour_area: 40.0              # Área mínima da linha (em pixels)
-    max_contour_area_ratio: 0.35         # Descarta contornos maiores que 45% da ROI (evita detectar o chão inteiro)
+    min_contour_area: 80.0               # Área mínima da linha (em pixels)
+    max_contour_area_ratio: 0.45         # Descarta contornos maiores que 45% da ROI (evita detectar o chão inteiro)
 
 
 line_follower:
@@ -39,21 +39,21 @@ line_follower:
     # --------------------------------------------------------------------------
     # VELOCIDADES E GANHOS DO CONTROLADOR PID
     # --------------------------------------------------------------------------
-    base_linear_speed: 0.15              # Velocidade em linha reta (m/s)
-    min_linear_speed: 0.05               # Velocidade mínima ao contornar curvas (m/s)
+    base_linear_speed: 0.20              # Velocidade em linha reta (m/s)
+    min_linear_speed: 0.08               # Velocidade mínima ao contornar curvas (m/s)
     max_angular_speed: 1.50              # Velocidade máxima de giro nas curvas (rad/s)
     curve_slowdown_factor: 0.70          # Reduz velocidade linear proporcionalmente ao erro
 
     # Ganhos do PID:
-    kp: 1.50                             # Força de correção proporcional ao erro
+    kp: 1.40                             # Força de correção proporcional ao erro
     ki: 0.00                             # Ganho integral
-    kd: 0.25                             # Ganho derivativo para amortecer oscilações
+    kd: 0.30                             # Ganho derivativo para amortecer oscilações
 
     # --------------------------------------------------------------------------
     # BUSCA ATIVA DA LINHA EM CURVAS FECHADAS (QUANDO A LINHA SAI DA CÂMERA)
     # --------------------------------------------------------------------------
     search_on_lost_line: true            # Ativa busca inteligente se perder a linha na curva
-    search_linear_speed: 0.03            # Avanço suave durante a busca (m/s)
+    search_linear_speed: 0.04            # Avanço suave durante a busca (m/s)
     search_angular_speed: 0.55           # Rotação suave em direção ao último lado onde a linha foi vista
     max_lost_line_time_sec: 4.0          # Tempo limite de busca antes de parar por segurança (segundos)
     stop_on_obstacle: true               # Pausa imediatamente se houver obstáculo frontal

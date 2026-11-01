@@ -3,7 +3,7 @@ Launch Orquestrador Mestre do AGV (Simulação vs Robô Real).
 
 Como usar:
   1) MODO SIMULAÇÃO (Gazebo + Visão + Seguidor de Linha):
-     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true
+     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=circuit1.world
 
   2) MODO ROBÔ REAL NA RASPBERRY PI (Serial MCU + Câmera USB + Visão + Seguidor de Linha):
      ros2 launch agv_hardware agv_complete.launch.py sim_mode:=false
@@ -26,12 +26,14 @@ def generate_launch_description():
     sim_mode = LaunchConfiguration('sim_mode')
     auto_start = LaunchConfiguration('auto_start')
     enable_camera = LaunchConfiguration('enable_camera')
+    world = LaunchConfiguration('world')
 
     # A) Camada de Simulação (executada somente quando sim_mode == true)
     sim_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(pkg_desc, 'launch', 'launch_sim.launch.py')
         ]),
+        launch_arguments={'world': world}.items(),
         condition=IfCondition(sim_mode),
     )
 
@@ -60,6 +62,11 @@ def generate_launch_description():
             'sim_mode',
             default_value='true',
             description='True para rodar no Gazebo (PC), False para rodar no Robo Real (Raspberry Pi)',
+        ),
+        DeclareLaunchArgument(
+            'world',
+            default_value='circuit1.world',
+            description='Nome ou caminho do mundo do Gazebo (ex: circuit1.world, circle_world.world, empty.world)',
         ),
         DeclareLaunchArgument(
             'auto_start',

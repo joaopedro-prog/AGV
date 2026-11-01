@@ -12,31 +12,31 @@
     <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera_link"/>
-        <origin xyz="0.215 0 0.070" rpy="0 0.75 0"/>
+        <origin xyz="0.360 0 0.120" rpy="0 0.75 0"/>
     </joint>
 
     <link name="camera_link">
         <!-- Corpo da câmera -->
         <visual>
             <geometry>
-                <box size="0.015 0.030 0.020"/>
+                <box size="0.020 0.040 0.030"/>
             </geometry>
             <material name="black"/>
         </visual>
         <!-- Haste de suporte ligando ao chassi -->
         <visual>
-            <origin xyz="-0.015 0 -0.025" rpy="0 0.75 0"/>
+            <origin xyz="-0.020 0 -0.040" rpy="0 0.75 0"/>
             <geometry>
-                <cylinder radius="0.003" length="0.050"/>
+                <cylinder radius="0.005" length="0.080"/>
             </geometry>
             <material name="black"/>
         </visual>
         <collision>
             <geometry>
-                <box size="0.015 0.030 0.020"/>
+                <box size="0.020 0.040 0.030"/>
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.03" x="0.015" y="0.030" z="0.020">
+        <xacro:inertial_box mass="0.05" x="0.020" y="0.040" z="0.030">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </xacro:inertial_box>
     </link>

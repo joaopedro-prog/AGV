@@ -65,7 +65,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'world',
-            default_value='circuit1.world',
+            default_value='pista_completa_3d.world',
             description='Nome ou caminho do mundo do Gazebo (ex: circuit1.world, circle_world.world, empty.world)',
         ),
         DeclareLaunchArgument(

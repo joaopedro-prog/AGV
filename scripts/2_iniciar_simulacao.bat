@@ -8,26 +8,6 @@ set "ROOT_WORLDS_DIR=%~dp0..\worlds"
 REM Garante que a pasta worlds na raiz exista
 if not exist "!ROOT_WORLDS_DIR!" mkdir "!ROOT_WORLDS_DIR!" >nul 2>&1
 
-REM Converte arquivos sem extensao salvos pelo Gazebo na pasta worlds para .world
-if exist "!ROOT_WORLDS_DIR!" (
-    for /f "delims=" %%G in ('dir /b /a-d "!ROOT_WORLDS_DIR!" 2^>nul') do (
-        if "%%~xG"=="" (
-            if not exist "!ROOT_WORLDS_DIR!\%%G.world" (
-                copy /y "!ROOT_WORLDS_DIR!\%%G" "!ROOT_WORLDS_DIR!\%%G.world" >nul 2>&1
-            )
-        )
-    )
-)
-if exist "!WORLDS_DIR!" (
-    for /f "delims=" %%G in ('dir /b /a-d "!WORLDS_DIR!" 2^>nul') do (
-        if "%%~xG"=="" (
-            if not exist "!WORLDS_DIR!\%%G.world" (
-                copy /y "!WORLDS_DIR!\%%G" "!WORLDS_DIR!\%%G.world" >nul 2>&1
-            )
-        )
-    )
-)
-
 REM Sincroniza arquivos .world entre a raiz worlds e src/articubot_one/worlds
 if exist "!ROOT_WORLDS_DIR!" if exist "!WORLDS_DIR!" (
     copy /y "!ROOT_WORLDS_DIR!\*.world" "!WORLDS_DIR!\" >nul 2>&1
@@ -50,39 +30,32 @@ echo ======================================================================
 echo             ESCOLHA O MUNDO PARA A SIMULACAO DO GAZEBO
 echo ======================================================================
 echo.
-echo   Mundos disponiveis na pasta worlds:
+echo   Mundos em destaque (Recomendados):
 echo.
 
 set count=0
 set "DEFAULT_INDEX=1"
 
-REM 1. Coloca a pista oficial circuit1.world como primeira opcao
-if exist "%WORLDS_DIR%\circuit1.world" (
-    set /a count+=1
-    set "WORLD_!count!=circuit1.world"
-    echo     [!count!] circuit1.world  ^(Pista Oficial Completa - Recomendada^)
-)
+REM Adiciona mundos em ordem de destaque e clareza
+set /a count+=1
+set "WORLD_!count!=pista_completa_3d.world"
+echo     [!count!] pista_completa_3d.world   (★ Pista 3D Multinivel - Rampas, Viaduto e Tunel)
 
-REM 2. Lista os demais mundos dinamicamente
-for /f "delims=" %%F in ('dir /b /a-d "%WORLDS_DIR%\*.world" 2^>nul') do (
-    if /i not "%%F"=="circuit1.world" (
-        set /a count+=1
-        set "WORLD_!count!=%%F"
-        if /i "%%F"=="circle_world.world" (
-            echo     [!count!] %%F  ^(Pista Circular - 4 Curvas^)
-        ) else (
-            echo     [!count!] %%F
-        )
-    )
-)
+set /a count+=1
+set "WORLD_!count!=pista_oficial.world"
+echo     [!count!] pista_oficial.world       (Pista Oficial Completa - 38 Tiles)
 
-if !count! equ 0 (
-    echo   [AVISO] Nenhum arquivo .world encontrado na pasta worlds.
-    echo.
-    echo   Pressione qualquer tecla para voltar...
-    pause >nul
-    exit /b 1
-)
+set /a count+=1
+set "WORLD_!count!=pista_teste_8_tiles.world"
+echo     [!count!] pista_teste_8_tiles.world (Circuito Compacto de Teste - 8 Tiles - 90x90cm)
+
+set /a count+=1
+set "WORLD_!count!=pista_obstaculos.world"
+echo     [!count!] pista_obstaculos.world    (Pista com Obstaculos Desafiadores)
+
+set /a count+=1
+set "WORLD_!count!=mundo_vazio.world"
+echo     [!count!] mundo_vazio.world         (Mundo Vazio para Testes Livres)
 
 echo.
 echo     [0] Cancelar e voltar ao menu
@@ -129,7 +102,7 @@ echo  Mundo selecionado: !MUNDO_ESCOLHIDO!
 echo ======================================================================
 echo.
 
-wsl -d Ubuntu-24.04 docker start meu_container_ros >nul 2>&1
+wsl -d Ubuntu-24.04 docker start meu_container_ros >nul 2>&1
 wsl -d Ubuntu-24.04 docker exec meu_container_ros pkill -9 -f "gzserver|gzclient" >nul 2>&1
 start "Simulacao AGV - Gazebo (!MUNDO_ESCOLHIDO!)" cmd /k "wsl -d Ubuntu-24.04 docker exec -it meu_container_ros /workspace/scripts/ros_exec.sh ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=!MUNDO_ESCOLHIDO!"
 

@@ -537,14 +537,14 @@
           <geometry>
             <mesh>
               <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1.05 1 1</scale>
             </mesh>
           </geometry>
         </visual>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>0.30 0.30 0.003</size>
+              <size>0.315 0.30 0.006</size>
             </box>
           </geometry>
           <surface>
@@ -556,7 +556,7 @@
           </surface>
         </collision>
       </link>
-      <pose>-1.2000 -0.4500 0.0010 0 -0.304693 1.570800</pose>
+      <pose>-1.2000 -0.4500 0.0460 0 -0.291457 1.570800</pose>
     </model>
 
     <model name='tile_rampa_subida_2'>
@@ -567,14 +567,14 @@
           <geometry>
             <mesh>
               <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1.05 1 1</scale>
             </mesh>
           </geometry>
         </visual>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>0.30 0.30 0.003</size>
+              <size>0.315 0.30 0.006</size>
             </box>
           </geometry>
           <surface>
@@ -586,7 +586,7 @@
           </surface>
         </collision>
       </link>
-      <pose>-1.2000 -0.1500 0.0910 0 -0.304693 1.570800</pose>
+      <pose>-1.2000 -0.1500 0.1360 0 -0.291457 1.570800</pose>
     </model>
 
     <model name='tile_reta_topo_w'>
@@ -807,14 +807,14 @@
           <geometry>
             <mesh>
               <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1.05 1 1</scale>
             </mesh>
           </geometry>
         </visual>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>0.30 0.30 0.003</size>
+              <size>0.315 0.30 0.006</size>
             </box>
           </geometry>
           <surface>
@@ -826,7 +826,7 @@
           </surface>
         </collision>
       </link>
-      <pose>-0.0000 -0.1500 0.1810 0 0.304693 4.712400</pose>
+      <pose>-0.0000 -0.1500 0.1360 0 0.291457 4.712400</pose>
     </model>
 
     <model name='tile_rampa_descida_2'>
@@ -837,14 +837,14 @@
           <geometry>
             <mesh>
               <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1.05 1 1</scale>
             </mesh>
           </geometry>
         </visual>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>0.30 0.30 0.003</size>
+              <size>0.315 0.30 0.006</size>
             </box>
           </geometry>
           <surface>
@@ -856,7 +856,7 @@
           </surface>
         </collision>
       </link>
-      <pose>-0.0000 -0.4500 0.0910 0 0.304693 4.712400</pose>
+      <pose>-0.0000 -0.4500 0.0460 0 0.291457 4.712400</pose>
     </model>
 
     <model name='tile_curva_ret_1'>

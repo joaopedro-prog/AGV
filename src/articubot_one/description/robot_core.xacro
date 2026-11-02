@@ -14,7 +14,7 @@
     <xacro:property name="wheel_offset_x" value="0.100"/>
     <xacro:property name="wheel_offset_y" value="0.080"/>
     <xacro:property name="wheel_offset_z" value="0.005"/>
-    <xacro:property name="caster_wheel_radius" value="0.008"/>
+    <xacro:property name="caster_wheel_radius" value="0.012"/>
     <xacro:property name="caster_wheel_mass" value="0.01"/>
     <xacro:property name="caster_wheel_offset_x" value="0.045"/>
     <xacro:property name="caster_wheel_offset_z" value="${wheel_offset_z - wheel_radius + caster_wheel_radius}"/>
@@ -74,9 +74,9 @@
             <material name="orange"/>
         </visual>
         <collision>
-            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}"/>
+            <origin xyz="${chassis_length/2 - 0.005} 0 ${chassis_height/2 + 0.010}"/>
             <geometry>
-                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+                <box size="${chassis_length - 0.020} ${chassis_width - 0.005} ${chassis_height - 0.015}"/>
             </geometry>
         </collision>
         <xacro:inertial_box mass="0.5" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
@@ -118,6 +118,11 @@
 
     <gazebo reference="left_wheel">
         <material>Gazebo/Blue</material>
+        <mu1 value="100.0"/>
+        <mu2 value="100.0"/>
+        <kp value="1000000.0"/>
+        <kd value="1.0"/>
+        <minDepth value="0.001"/>
     </gazebo>
 
 
@@ -151,6 +156,11 @@
 
     <gazebo reference="right_wheel">
         <material>Gazebo/Blue</material>
+        <mu1 value="100.0"/>
+        <mu2 value="100.0"/>
+        <kp value="1000000.0"/>
+        <kd value="1.0"/>
+        <minDepth value="0.001"/>
     </gazebo>
 
 
@@ -181,8 +191,8 @@
 
     <gazebo reference="front_caster_wheel">
         <material>Gazebo/White</material>
-        <mu1 value="0.001"/>
-        <mu2 value="0.001"/>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
     </gazebo>
 
     <!-- REAR CASTER WHEEL LINK -->
@@ -212,8 +222,8 @@
 
     <gazebo reference="rear_caster_wheel">
         <material>Gazebo/White</material>
-        <mu1 value="0.001"/>
-        <mu2 value="0.001"/>
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
     </gazebo>
 
 </robot>

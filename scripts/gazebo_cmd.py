@@ -7,10 +7,17 @@ Sem necessidade de reiniciar o Gazebo!
 import sys
 import subprocess
 import time
+import shlex
 
-def run_cmd(cmd_list, timeout=15):
+def run_cmd(cmd_list, timeout=25):
     try:
-        res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=timeout)
+        # Garante ambiente ROS 2 carregado caso execute via python puro
+        if isinstance(cmd_list, list):
+            cmd_str = shlex.join(cmd_list)
+        else:
+            cmd_str = str(cmd_list)
+        full_cmd = f"source /opt/ros/humble/setup.bash && source /workspace/install/setup.bash 2>/dev/null && {cmd_str}"
+        res = subprocess.run(["/bin/bash", "-c", full_cmd], capture_output=True, text=True, timeout=timeout)
         return res.returncode == 0, res.stdout, res.stderr
     except Exception as e:
         return False, "", str(e)
@@ -22,26 +29,17 @@ def reload_robot():
     
     # 1. Gera o URDF novo a partir do Xacro
     print("[1/3] Processando xacro atualizado...")
-    xacro_cmd = [
-        "xacro",
-        "/workspace/src/articubot_one/description/robot.urdf.xacro",
-        "use_ros2_control:=false",
-        "sim_mode:=true"
-    ]
-    with open("/tmp/reloaded_robot.urdf", "w") as f:
-        p = subprocess.run(xacro_cmd, stdout=f, stderr=subprocess.PIPE, text=True)
-        if p.returncode != 0:
-            print(f"[ERRO] Falha ao processar Xacro:\n{p.stderr}")
-            return False
+    xacro_cmd = "xacro /workspace/src/articubot_one/description/robot.urdf.xacro use_ros2_control:=false sim_mode:=true > /tmp/reloaded_robot.urdf"
+    ok, out, err = run_cmd(xacro_cmd, timeout=20)
+    if not ok:
+        print(f"[ERRO] Falha ao processar Xacro:\n{err}\n{out}")
+        return False
 
     # 2. Deleta a entidade atual
     print("[2/3] Removendo modelo antigo do Gazebo...")
-    del_cmd = [
-        "ros2", "service", "call", "/delete_entity",
-        "gazebo_msgs/srv/DeleteEntity", "{name: 'my_bot'}"
-    ]
-    run_cmd(del_cmd, timeout=10)
-    time.sleep(0.5)
+    run_cmd(["gz", "model", "-m", "my_bot", "-d"], timeout=10)
+    run_cmd(["ros2", "service", "call", "/delete_entity", "gazebo_msgs/srv/DeleteEntity", "{name: 'my_bot'}"], timeout=10)
+    time.sleep(1.0)
 
     # 3. Spawna o novo modelo na linha
     print("[3/3] Inserindo modelo atualizado sobre a linha...")

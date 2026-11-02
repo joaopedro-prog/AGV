@@ -80,6 +80,8 @@ def launch_setup(context, *args, **kwargs):
             '-y', spawn_y_val,
             '-z', spawn_z_val,
             '-Y', spawn_yaw_val,
+            '-timeout', '120.0',
+            '-spawn_service_timeout', '120.0',
         ],
         output='screen',
     )

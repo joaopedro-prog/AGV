@@ -87,7 +87,7 @@
       <shadows>0</shadows>
     </scene>
     <audio>
-      <device>default</device>
+      <device>none</device>
     </audio>
     <wind/>
     <spherical_coordinates>

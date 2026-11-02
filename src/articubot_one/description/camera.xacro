@@ -5,18 +5,18 @@
       ==========================================================================
       POSICIONAMENTO E ANGULAÇÃO DA CÂMERA DO AGV
       ==========================================================================
-      Arquivo: src/articubot_one/description/camera.xacro
-      Joint:   camera_joint -> <origin xyz="X Y Z" rpy="roll PITCH yaw"/>
+      Arquivo - src/articubot_one/description/camera.xacro
+      Joint -   camera_joint -> <origin xyz="X Y Z" rpy="roll PITCH yaw"/>
 
       1. PITCH (Inclinação para cima / baixo) - Em radianos:
          - rpy="0 0.00 0" -> 0°   (Totalmente horizontal, olha para o horizonte)
          - rpy="0 0.35 0" -> 20°  (Olha suavemente para a frente e o piso distante)
-         - rpy="0 0.52 0" -> 30°  (PADRÃO ATUAL: foca o chão de 15cm a 60cm à frente)
+         - rpy="0 0.52 0" -> 30°  (PADRÃO ATUAL - foca o chão de 15cm a 60cm à frente)
          - rpy="0 0.70 0" -> 40°  (Mais inclinada para baixo, foca de 10cm a 35cm)
          - rpy="0 0.90 0" -> 51.5°(Bem inclinada, piso próximo)
          - rpy="0 1.57 0" -> 90°  (Totalmente vertical, olhando direto pro chão)
 
-      2. POSIÇÃO (xyz em metros):
+      2. POSIÇÃO (xyz em metros) -
          - X = 0.210 m (1 cm à frente do para-choque dianteiro)
          - Y = 0.000 m (Centralizada na largura)
          - Z = 0.090 m (Altura acima da base do chassi)

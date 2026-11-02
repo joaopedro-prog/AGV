@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version='1.0' encoding='utf-8'?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
   <asset>
     <contributor>
@@ -76,20 +76,20 @@
   </library_effects>
   <library_materials>
     <material id="PlasticW-WGlossyWeWhitef" name="Plastic - Glossy (White)">
-      <instance_effect url="#PlasticW-WGlossyWeWhitef-fx"/>
+      <instance_effect url="#PlasticW-WGlossyWeWhitef-fx" />
     </material>
     <material id="PowderWCoatWeBlackf" name="Powder Coat (Black)">
-      <instance_effect url="#PowderWCoatWeBlackf-fx"/>
+      <instance_effect url="#PowderWCoatWeBlackf-fx" />
     </material>
     <material id="material_2" name="">
-      <instance_effect url="#material_2-fx"/>
+      <instance_effect url="#material_2-fx" />
     </material>
   </library_materials>
   <library_geometries>
-    <geometry id="meshesQ0S" name="meshes[0]" >
+    <geometry id="meshesQ0S" name="meshes[0]">
       <mesh>
         <source id="meshesQ0S-positions" name="meshesQ0S-positions">
-          <float_array id="meshesQ0S-positions-array" count="90"> 0 0.300000012 0 0 0 0 0 0.150000006 15 0 0 30 0 0.300000012 30 30 0.300000012 0 30 0 0 15 0.150000006 0 0 0 0 0 0.300000012 0 30 0.300000012 30 30 0 30 30 0.150000006 15 30 0 0 30 0.300000012 0 0 0.300000012 30 0 0 30 15 0.150000006 30 30 0 30 30 0.300000012 30 0 0.300000012 0 0 0.300000012 30 15 0.300000012 15 30 0.300000012 30 30 0.300000012 0 30 0 0 30 0 30 15 0 15 0 0 30 0 0 0 </float_array>
+          <float_array id="meshesQ0S-positions-array" count="90">0.000000 0.003000 0.000000 0.000000 0.000000 0.000000 0.000000 0.001500 0.150000 0.000000 0.000000 0.300000 0.000000 0.003000 0.300000 0.300000 0.003000 0.000000 0.300000 0.000000 0.000000 0.150000 0.001500 0.000000 0.000000 0.000000 0.000000 0.000000 0.003000 0.000000 0.300000 0.003000 0.300000 0.300000 0.000000 0.300000 0.300000 0.001500 0.150000 0.300000 0.000000 0.000000 0.300000 0.003000 0.000000 0.000000 0.003000 0.300000 0.000000 0.000000 0.300000 0.150000 0.001500 0.300000 0.300000 0.000000 0.300000 0.300000 0.003000 0.300000 0.000000 0.003000 0.000000 0.000000 0.003000 0.300000 0.150000 0.003000 0.150000 0.300000 0.003000 0.300000 0.300000 0.003000 0.000000 0.300000 0.000000 0.000000 0.300000 0.000000 0.300000 0.150000 0.000000 0.150000 0.000000 0.000000 0.300000 0.000000 0.000000 0.000000</float_array>
           <technique_common>
             <accessor count="30" offset="0" source="#meshesQ0S-positions-array" stride="3">
               <param name="X" type="float" />
@@ -129,10 +129,10 @@
         </polylist>
       </mesh>
     </geometry>
-    <geometry id="meshesQ1S" name="meshes[1]" >
+    <geometry id="meshesQ1S" name="meshes[1]">
       <mesh>
         <source id="meshesQ1S-positions" name="meshesQ1S-positions">
-          <float_array id="meshesQ1S-positions-array" count="90"> 30 0.319999993 15.75 30 0.300000012 15.75 30 0.310000002 15 30 0.300000012 14.25 30 0.319999993 14.25 0 0.319999993 15.75 0 0.300000012 15.75 15 0.310000002 15.75 30 0.300000012 15.75 30 0.319999993 15.75 0 0.319999993 14.25 0 0.300000012 14.25 0 0.310000002 15 0 0.300000012 15.75 0 0.319999993 15.75 30 0.319999993 14.25 30 0.300000012 14.25 15 0.310000002 14.25 0 0.300000012 14.25 0 0.319999993 14.25 30 0.319999993 15.75 30 0.319999993 14.25 15 0.319999993 15 0 0.319999993 14.25 0 0.319999993 15.75 0 0.300000012 15.75 0 0.300000012 14.25 15 0.300000012 15 30 0.300000012 14.25 30 0.300000012 15.75 </float_array>
+          <float_array id="meshesQ1S-positions-array" count="90">0.300000 0.003200 0.157500 0.300000 0.003000 0.157500 0.300000 0.003100 0.150000 0.300000 0.003000 0.142500 0.300000 0.003200 0.142500 0.000000 0.003200 0.157500 0.000000 0.003000 0.157500 0.150000 0.003100 0.157500 0.300000 0.003000 0.157500 0.300000 0.003200 0.157500 0.000000 0.003200 0.142500 0.000000 0.003000 0.142500 0.000000 0.003100 0.150000 0.000000 0.003000 0.157500 0.000000 0.003200 0.157500 0.300000 0.003200 0.142500 0.300000 0.003000 0.142500 0.150000 0.003100 0.142500 0.000000 0.003000 0.142500 0.000000 0.003200 0.142500 0.300000 0.003200 0.157500 0.300000 0.003200 0.142500 0.150000 0.003200 0.150000 0.000000 0.003200 0.142500 0.000000 0.003200 0.157500 0.000000 0.003000 0.157500 0.000000 0.003000 0.142500 0.150000 0.003000 0.150000 0.300000 0.003000 0.142500 0.300000 0.003000 0.157500</float_array>
           <technique_common>
             <accessor count="30" offset="0" source="#meshesQ1S-positions-array" stride="3">
               <param name="X" type="float" />
@@ -180,24 +180,24 @@
       <node id="PlacaWv1" name="Placa v1" type="NODE">
         <matrix sid="matrix">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <node id="Body1" name="Body1" type="NODE">
-          <matrix sid="matrix">10 0 0 0 0 10 0 0 0 0 10 0 0 0 0 1</matrix>
+          <matrix sid="matrix">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
           <instance_geometry url="#meshesQ0S">
             <bind_material>
               <technique_common>
                 <instance_material symbol="defaultMaterial" target="#PlasticW-WGlossyWeWhitef">
-                  <bind_vertex_input semantic="CHANNEL0" input_semantic="TEXCOORD" input_set="0"/>
+                  <bind_vertex_input semantic="CHANNEL0" input_semantic="TEXCOORD" input_set="0" />
                 </instance_material>
               </technique_common>
             </bind_material>
           </instance_geometry>
         </node>
         <node id="Body2" name="Body2" type="NODE">
-          <matrix sid="matrix">10 0 0 0 0 10 0 0 0 0 10 0 0 0 0 1</matrix>
+          <matrix sid="matrix">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
           <instance_geometry url="#meshesQ1S">
             <bind_material>
               <technique_common>
                 <instance_material symbol="defaultMaterial" target="#PowderWCoatWeBlackf">
-                  <bind_vertex_input semantic="CHANNEL0" input_semantic="TEXCOORD" input_set="0"/>
+                  <bind_vertex_input semantic="CHANNEL0" input_semantic="TEXCOORD" input_set="0" />
                 </instance_material>
               </technique_common>
             </bind_material>

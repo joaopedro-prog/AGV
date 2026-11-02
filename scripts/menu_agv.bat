@@ -23,7 +23,7 @@ echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
 echo   [9] Baixar Atualizacoes do GitHub (git pull + docker + build)
 echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
-echo   [Z] Comandos Rapidos do Gazebo (Hot-Reload Robo, Luz, Teleporte)
+echo   [Z] Comandos Rapidos do Gazebo (Janela Externa: Hot-Reload, Luz, Teleporte)
 echo   [0] Sair
 echo ======================================================================
 choice /C 123456789GZ0 /N /M "Digite a opcao: "

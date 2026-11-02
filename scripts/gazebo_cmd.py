@@ -66,6 +66,15 @@ def teleport_start():
     else:
         print(f"[ERRO] {err}")
 
+def teleport_ramp():
+    print("\n[Gazebo] Teleportando AGV para a subida da rampa (x=-1.20, y=-0.65)...")
+    cmd = ["gz", "model", "-m", "my_bot", "-x", "-1.20", "-y", "-0.65", "-z", "0.03", "-R", "0", "-P", "0", "-Y", "1.5708"]
+    ok, out, err = run_cmd(cmd)
+    if ok:
+        print("[SUCESSO] Robô reposicionado em frente à rampa!")
+    else:
+        print(f"[ERRO] {err}")
+
 def toggle_pause(pause_state):
     state_str = "Pausando" if pause_state else "Despausando"
     service = "/pause_physics" if pause_state else "/unpause_physics"
@@ -109,6 +118,8 @@ def main():
             reload_robot()
         elif cmd == "teleport":
             teleport_start()
+        elif cmd == "ramp" or cmd == "rampa":
+            teleport_ramp()
         elif cmd == "pause":
             toggle_pause(True)
         elif cmd == "unpause":
@@ -126,22 +137,23 @@ def main():
     while True:
         print("\n" + "="*70)
         print("                 COMANDOS RÁPIDOS DO GAZEBO")
-        print("          (Controle do Simulador sem Reiniciar)")
+        print("         (Janela Externa de Controle sem Reiniciar)")
         print("="*70)
         print("  [1] Hot-Reload: Recarregar Modelo do Robo (atualiza URDF/Xacro agora)")
         print("  [2] Teleportar Robo para a Largada (x=-0.45, y=0.0)")
-        print("  [3] Pausar a Simulacao")
-        print("  [4] Continuar / Despausar Simulacao")
-        print("  [5] Resetar Fisica do Mundo (Reset World)")
-        print("  [6] Mudar Iluminacao: Diurna Clara (Alto Brilho)")
-        print("  [7] Mudar Iluminacao: Natural Suave (Padrao)")
-        print("  [8] Mudar Iluminacao: Entardecer / Alaranjada")
-        print("  [9] Mudar Iluminacao: Penumbra Noturna (Teste de Camera/Lidar)")
-        print("  [0] Voltar ao Menu Principal")
+        print("  [3] Teleportar Robo para a Rampa (x=-1.20, y=-0.65)")
+        print("  [4] Pausar a Simulacao")
+        print("  [5] Continuar / Despausar Simulacao")
+        print("  [6] Resetar Fisica do Mundo (Reset World)")
+        print("  [7] Mudar Iluminacao: Diurna Clara (Alto Brilho)")
+        print("  [8] Mudar Iluminacao: Natural Suave (Padrao)")
+        print("  [9] Mudar Iluminacao: Entardecer / Alaranjada")
+        print("  [N] Mudar Iluminacao: Penumbra Noturna (Teste de Sensores)")
+        print("  [0] Fechar esta Janela")
         print("="*70)
         
         try:
-            opc = input("Escolha uma opcao [0-9]: ").strip()
+            opc = input("Escolha uma opcao: ").strip().lower()
         except (KeyboardInterrupt, EOFError):
             break
             
@@ -151,19 +163,21 @@ def main():
             reload_robot()
         elif opc == "2":
             teleport_start()
-        elif opc == "3":
-            toggle_pause(True)
+        elif opc == "3" or opc == "r":
+            teleport_ramp()
         elif opc == "4":
-            toggle_pause(False)
+            toggle_pause(True)
         elif opc == "5":
-            reset_world()
+            toggle_pause(False)
         elif opc == "6":
-            set_light("dia")
+            reset_world()
         elif opc == "7":
-            set_light("suave")
+            set_light("dia")
         elif opc == "8":
-            set_light("entardecer")
+            set_light("suave")
         elif opc == "9":
+            set_light("entardecer")
+        elif opc == "n":
             set_light("noite")
         else:
             print("[ERRO] Opcao invalida!")

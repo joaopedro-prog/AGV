@@ -1,4 +1,5 @@
 import os
+import xml.etree.ElementTree as ET
 
 # Poses for the 8-tile stadium loop
 tiles = [
@@ -39,7 +40,7 @@ for name, mtype, x, y, z, r, p, yaw in tiles:
             <contact><ode/></contact>
             <bounce/>
             <friction>
-              <torsional><ode/></friction>
+              <torsional><ode/></torsional>
               <ode/>
             </friction>
           </surface>
@@ -167,7 +168,9 @@ world_content = f"""<sdf version='1.7'>
 
 destinations = [
     'src/articubot_one/worlds/circle_world.world',
+    'src/articubot_one/worlds/circuito_8_tiles.world',
     'worlds/circle_world.world',
+    'worlds/circuito_8_tiles.world',
     'gazebo_world/circle_world.world',
 ]
 
@@ -175,15 +178,6 @@ for d in destinations:
     os.makedirs(os.path.dirname(d), exist_ok=True)
     with open(d, 'w', encoding='utf-8') as f:
         f.write(world_content)
-    print('Wrote', d)
-
-# Update launch_sim.launch.py spawn for circle_world
-launch_path = 'src/articubot_one/launch/launch_sim.launch.py'
-with open(launch_path, 'r', encoding='utf-8') as f:
-    lt = f.read()
-lt = lt.replace("spawn_x_val = '0.15'", "spawn_x_val = '0.0'")
-lt = lt.replace("spawn_y_val = '0.0'", "spawn_y_val = '0.30'")
-lt = lt.replace("spawn_yaw_val = '1.5708'", "spawn_yaw_val = '0.0'")
-with open(launch_path, 'w', encoding='utf-8') as f:
-    f.write(lt)
-print('Updated spawn in launch_sim.launch.py')
+    # Validate with ET
+    ET.parse(d)
+    print('Validated & Wrote', d)

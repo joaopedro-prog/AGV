@@ -47,7 +47,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'auto_start',
-            default_value='false',
+            default_value='true',
             description='Se true, comeca a seguir linha imediatamente sem aguardar comando START',
         ),
         DeclareLaunchArgument(

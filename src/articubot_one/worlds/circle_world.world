@@ -45,9 +45,7 @@
                 <mu>100</mu>
                 <mu2>50</mu2>
               </ode>
-              <torsional>
-                <ode/>
-              </torsional>
+              <torsional><ode/></torsional>
             </friction>
             <bounce/>
           </surface>
@@ -64,7 +62,7 @@
           <material>
             <script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Grey</name>
+              <name>Gazebo/DarkGrey</name>
             </script>
           </material>
         </visual>
@@ -98,20 +96,19 @@
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
 
-    <!-- Curva 0: Topo (0.30m x 0.30m) -->
-    <model name='tile_curva'>
+    <model name='tile_reta_top'>
       <static>1</static>
-      <link name='tile_curva'>
-        <visual name='visual_tile_curva'>
+      <link name='link'>
+        <visual name='visual'>
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </visual>
-        <collision name='colisao_tile_curva'>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>0.30 0.30 0.003</size>
@@ -119,14 +116,10 @@
           </geometry>
           <max_contacts>10</max_contacts>
           <surface>
-            <contact>
-              <ode/>
-            </contact>
+            <contact><ode/></contact>
             <bounce/>
             <friction>
-              <torsional>
-                <ode/>
-              </torsional>
+              <torsional><ode/></friction>
               <ode/>
             </friction>
           </surface>
@@ -135,23 +128,22 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.0 0.30 0 0 -0 0</pose>
+      <pose>-0.1500 0.4500 0.0010 0 0 0.000000</pose>
     </model>
 
-    <!-- Curva 1: Esquerda (0.30m x 0.30m) -->
-    <model name='tile_curva_0'>
+    <model name='tile_curva_tr'>
       <static>1</static>
-      <link name='tile_curva'>
-        <visual name='visual_tile_curva'>
+      <link name='link'>
+        <visual name='visual'>
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </visual>
-        <collision name='colisao_tile_curva'>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>0.30 0.30 0.003</size>
@@ -159,14 +151,10 @@
           </geometry>
           <max_contacts>10</max_contacts>
           <surface>
-            <contact>
-              <ode/>
-            </contact>
+            <contact><ode/></contact>
             <bounce/>
             <friction>
-              <torsional>
-                <ode/>
-              </torsional>
+              <torsional><ode/></friction>
               <ode/>
             </friction>
           </surface>
@@ -175,23 +163,22 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>-0.30 0.0 0 0 0 1.570796</pose>
+      <pose>0.1500 0.4500 0.0010 0 0 0.000000</pose>
     </model>
 
-    <!-- Curva 2: Base (0.30m x 0.30m) -->
-    <model name='tile_curva_1'>
+    <model name='tile_reta_right'>
       <static>1</static>
-      <link name='tile_curva'>
-        <visual name='visual_tile_curva'>
+      <link name='link'>
+        <visual name='visual'>
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </visual>
-        <collision name='colisao_tile_curva'>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>0.30 0.30 0.003</size>
@@ -199,14 +186,10 @@
           </geometry>
           <max_contacts>10</max_contacts>
           <surface>
-            <contact>
-              <ode/>
-            </contact>
+            <contact><ode/></contact>
             <bounce/>
             <friction>
-              <torsional>
-                <ode/>
-              </torsional>
+              <torsional><ode/></friction>
               <ode/>
             </friction>
           </surface>
@@ -215,23 +198,22 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.0 -0.30 0 0 0 3.141593</pose>
+      <pose>0.4500 0.1500 0.0010 0 0 -1.570796</pose>
     </model>
 
-    <!-- Curva 3: Direita (0.30m x 0.30m) -->
-    <model name='tile_curva_2'>
+    <model name='tile_curva_br'>
       <static>1</static>
-      <link name='tile_curva'>
-        <visual name='visual_tile_curva'>
+      <link name='link'>
+        <visual name='visual'>
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
         </visual>
-        <collision name='colisao_tile_curva'>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>0.30 0.30 0.003</size>
@@ -239,14 +221,10 @@
           </geometry>
           <max_contacts>10</max_contacts>
           <surface>
-            <contact>
-              <ode/>
-            </contact>
+            <contact><ode/></contact>
             <bounce/>
             <friction>
-              <torsional>
-                <ode/>
-              </torsional>
+              <torsional><ode/></friction>
               <ode/>
             </friction>
           </surface>
@@ -255,68 +233,152 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.30 0.0 0 0 0 -1.570796</pose>
+      <pose>0.4500 -0.1500 0.0010 0 0 -1.570796</pose>
     </model>
 
-    <state world_name='default'>
-      <sim_time>0 0</sim_time>
-      <real_time>0 0</real_time>
-      <wall_time>0 0</wall_time>
-      <iterations>0</iterations>
-      <model name='ground_plane'>
-        <pose>0 0 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='tile_curva'>
-        <pose>0.0 0.30 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='tile_curva'>
-          <pose>0.0 0.30 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='tile_curva_0'>
-        <pose>-0.30 0.0 0 0 0 1.570796</pose>
-        <scale>1 1 1</scale>
-        <link name='tile_curva'>
-          <pose>-0.30 0.0 0 0 0 1.570796</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='tile_curva_1'>
-        <pose>0.0 -0.30 0 0 0 3.141593</pose>
-        <scale>1 1 1</scale>
-        <link name='tile_curva'>
-          <pose>0.0 -0.30 0 0 0 3.141593</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='tile_curva_2'>
-        <pose>0.30 0.0 0 0 0 -1.570796</pose>
-        <scale>1 1 1</scale>
-        <link name='tile_curva'>
-          <pose>0.30 0.0 0 0 0 -1.570796</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-    </state>
+    <model name='tile_reta_bottom'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.30 0.30 0.003</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact><ode/></contact>
+            <bounce/>
+            <friction>
+              <torsional><ode/></friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>0.1500 -0.4500 0.0010 0 0 3.141593</pose>
+    </model>
+
+    <model name='tile_curva_bl'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.30 0.30 0.003</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact><ode/></contact>
+            <bounce/>
+            <friction>
+              <torsional><ode/></friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>-0.1500 -0.4500 0.0010 0 0 3.141593</pose>
+    </model>
+
+    <model name='tile_reta_left'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.30 0.30 0.003</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact><ode/></contact>
+            <bounce/>
+            <friction>
+              <torsional><ode/></friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>-0.4500 -0.1500 0.0010 0 0 1.570796</pose>
+    </model>
+
+    <model name='tile_curva_tl'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.30 0.30 0.003</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact><ode/></contact>
+            <bounce/>
+            <friction>
+              <torsional><ode/></friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>-0.4500 0.1500 0.0010 0 0 1.570796</pose>
+    </model>
+
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>0.0 -1.2 1.4 0 0.9 1.57</pose>
+        <pose>0.0 -0.2 2.2 0 1.570796 1.570796</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

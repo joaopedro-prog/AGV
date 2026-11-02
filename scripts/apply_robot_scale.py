@@ -90,3 +90,15 @@ ld = ld.replace("self.declare_parameter('dark_threshold', 85)", "self.declare_pa
 with open(ld_path, 'w', encoding='utf-8') as f:
     f.write(ld)
 print('Updated line_detector_node.py')
+
+# 8. Update auto_start defaults in launch files
+for path in ['src/agv_hardware/launch/agv_complete.launch.py', 'src/agv_brain/launch/brain.launch.py']:
+    with open(path, 'r', encoding='utf-8') as f:
+        t = f.read()
+    t = t.replace("default_value='false',\n            description='Se true, inicia seguindo linha", "default_value='true',\n            description='Se true, inicia seguindo linha")
+    t = t.replace("default_value='false',\r\n            description='Se true, inicia seguindo linha", "default_value='true',\r\n            description='Se true, inicia seguindo linha")
+    t = t.replace("default_value='false',\n            description='Se true, comeca a seguir linha", "default_value='true',\n            description='Se true, comeca a seguir linha")
+    t = t.replace("default_value='false',\r\n            description='Se true, comeca a seguir linha", "default_value='true',\r\n            description='Se true, comeca a seguir linha")
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(t)
+    print('Updated auto_start in', path)

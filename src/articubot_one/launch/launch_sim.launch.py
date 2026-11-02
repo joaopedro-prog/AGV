@@ -52,10 +52,10 @@ def launch_setup(context, *args, **kwargs):
 
     # Ajusta o spawn padrão sobre a linha conforme o mundo se não houver coordenadas customizadas
     if 'circle' in resolved_world.lower() and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
-        spawn_x_val = '0.15'
-        spawn_y_val = '0.0'
+        spawn_x_val = '0.0'
+        spawn_y_val = '0.30'
         spawn_z_val = '0.05'
-        spawn_yaw_val = '1.5708'
+        spawn_yaw_val = '0.0'
         print(f"[launch_sim] Posição de spawn ajustada para circle_world: x={spawn_x_val}, y={spawn_y_val}")
 
     # Gazebo Classic com parâmetros e mundo da pista

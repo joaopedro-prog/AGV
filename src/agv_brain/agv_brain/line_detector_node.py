@@ -29,14 +29,14 @@ class LineDetectorNode(Node):
         self.declare_parameter('image_topic', '/camera/image_raw')
         self.declare_parameter('publish_debug_image', True)
         self.declare_parameter('detection_mode', 'dark_line')
-        self.declare_parameter('dark_threshold', 85)
-        self.declare_parameter('min_contrast', 25.0)
+        self.declare_parameter('dark_threshold', 95)
+        self.declare_parameter('min_contrast', 20.0)
         self.declare_parameter('hsv_lower', [20, 100, 100])
         self.declare_parameter('hsv_upper', [35, 255, 255])
         self.declare_parameter('roi_top_ratio', 0.40)
         self.declare_parameter('roi_bottom_ratio', 0.95)
-        self.declare_parameter('min_contour_area', 100.0)
-        self.declare_parameter('max_contour_area_ratio', 0.45)
+        self.declare_parameter('min_contour_area', 50.0)
+        self.declare_parameter('max_contour_area_ratio', 0.85)
 
         image_topic = self.get_parameter('image_topic').value
         self.publish_debug = self.get_parameter('publish_debug_image').value

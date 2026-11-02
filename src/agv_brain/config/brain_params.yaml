@@ -12,11 +12,11 @@ line_detector:
 
     # Na detecção dark_line:
     # A imagem é normalizada no contraste. Valores abaixo de dark_threshold (0-255) são considerados linha.
-    dark_threshold: 85
+    dark_threshold: 95
 
     # Contraste mínimo (max_val - min_val no cinza) para validar que existe uma linha na cena.
     # Evita falsos positivos de tela inteira escura ou piso sem linha.
-    min_contrast: 25.0
+    min_contrast: 20.0
 
     # Faixa HSV caso detection_mode seja "hsv" (Exemplo para fita amarela):
     hsv_lower: [20, 100, 100]
@@ -27,13 +27,13 @@ line_detector:
     roi_bottom_ratio: 0.95               # Termina em 95% da altura da imagem
 
     # Filtros de área para descartar ruídos pequenos ou telas inteiras escuras
-    min_contour_area: 80.0               # Área mínima da linha (em pixels)
-    max_contour_area_ratio: 0.45         # Descarta contornos maiores que 45% da ROI (evita detectar o chão inteiro)
+    min_contour_area: 50.0               # Área mínima da linha (em pixels)
+    max_contour_area_ratio: 0.85         # Descarta contornos maiores que 45% da ROI (evita detectar o chão inteiro)
 
 
 line_follower:
   ros__parameters:
-    auto_start: false                    # Se false, inicia em IDLE e aguarda comando START
+    auto_start: true                    # Se false, inicia em IDLE e aguarda comando START
     cmd_vel_topic: "/cmd_vel_line"       # Conectado à entrada prioritária do twist_mux
 
     # --------------------------------------------------------------------------

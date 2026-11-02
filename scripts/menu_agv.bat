@@ -23,11 +23,13 @@ echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
 echo   [9] Baixar Atualizacoes do GitHub (git pull + docker + build)
 echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
+echo   [Z] Comandos Rapidos do Gazebo (Hot-Reload Robo, Luz, Teleporte)
 echo   [0] Sair
 echo ======================================================================
-choice /C 123456789G0 /N /M "Digite a opcao: "
+choice /C 123456789GZ0 /N /M "Digite a opcao: "
 
-if errorlevel 11 goto SAIR
+if errorlevel 12 goto SAIR
+if errorlevel 11 goto CMD_GAZEBO
 if errorlevel 10 goto CMD_GPU
 if errorlevel 9 goto CMD_UPDATE
 if errorlevel 8 goto CMD_BUILD
@@ -78,6 +80,10 @@ goto MENU
 
 :CMD_GPU
 call verificar_gpu.bat
+goto MENU
+
+:CMD_GAZEBO
+call 7_menu_gazebo.bat
 goto MENU
 
 :SAIR

@@ -18,7 +18,7 @@ services:
       - XDG_RUNTIME_DIR=/tmp/runtime-user
       - PULSE_SERVER=${PULSE_SERVER}
       - QT_X11_NO_MITSHM=1
-      # Aceleração por Hardware GPU Direta (DirectX 12 / Mesa D3D12 vGPU)
+      # Aceleração por Hardware GPU Direta (DirectX 12 / Mesa D3D12 vGPU via WSLg)
       - GALLIUM_DRIVER=d3d12
       - LD_LIBRARY_PATH=/usr/lib/wsl/lib
 

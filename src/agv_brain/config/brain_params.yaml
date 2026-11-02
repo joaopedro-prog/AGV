@@ -33,7 +33,7 @@ line_detector:
 
 line_follower:
   ros__parameters:
-    auto_start: true                    # Se false, inicia em IDLE e aguarda comando START
+    auto_start: false                    # Se false, inicia em IDLE e aguarda comando START
     cmd_vel_topic: "/cmd_vel_line"       # Conectado à entrada prioritária do twist_mux
 
     # --------------------------------------------------------------------------

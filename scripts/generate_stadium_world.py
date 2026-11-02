@@ -1,22 +1,21 @@
 import os
 import xml.etree.ElementTree as ET
 
-# Poses for the 8-tile stadium loop
+# Poses for the 8-tile stadium loop (90x90cm)
 tiles = [
-    # (name, model_type, x, y, z, r, p, yaw)
-    ('tile_reta_top', 'tile_reta', -0.15, 0.45, 0.001, 0, 0, 0.0),
-    ('tile_curva_tr', 'tile_curva', 0.15, 0.45, 0.001, 0, 0, 0.0),
-    ('tile_reta_right', 'tile_reta', 0.45, 0.15, 0.001, 0, 0, -1.570796),
-    ('tile_curva_br', 'tile_curva', 0.45, -0.15, 0.001, 0, 0, -1.570796),
-    ('tile_reta_bottom', 'tile_reta', 0.15, -0.45, 0.001, 0, 0, 3.141593),
-    ('tile_curva_bl', 'tile_curva', -0.15, -0.45, 0.001, 0, 0, 3.141593),
-    ('tile_reta_left', 'tile_reta', -0.45, -0.15, 0.001, 0, 0, 1.570796),
-    ('tile_curva_tl', 'tile_curva', -0.45, 0.15, 0.001, 0, 0, 1.570796),
+    # (name, folder, mesh_file, x, y, z, r, p, yaw)
+    ('tile_reta_top', 'tile-reta', 'tile_reta.dae', -0.15, 0.45, 0.001, 0, 0, 0.0),
+    ('tile_curva_tr', 'tile-curva', 'tile_curva.dae', 0.15, 0.45, 0.001, 0, 0, 0.0),
+    ('tile_reta_right', 'tile-reta', 'tile_reta.dae', 0.45, 0.15, 0.001, 0, 0, -1.570796),
+    ('tile_curva_br', 'tile-curva', 'tile_curva.dae', 0.45, -0.15, 0.001, 0, 0, -1.570796),
+    ('tile_reta_bottom', 'tile-reta', 'tile_reta.dae', 0.15, -0.45, 0.001, 0, 0, 3.141593),
+    ('tile_curva_bl', 'tile-curva', 'tile_curva.dae', -0.15, -0.45, 0.001, 0, 0, 3.141593),
+    ('tile_reta_left', 'tile-reta', 'tile_reta.dae', -0.45, -0.15, 0.001, 0, 0, 1.570796),
+    ('tile_curva_tl', 'tile-curva', 'tile_curva.dae', -0.45, 0.15, 0.001, 0, 0, 1.570796),
 ]
 
 models_xml = []
-for name, mtype, x, y, z, r, p, yaw in tiles:
-    dae_name = 'tile_reta' if mtype == 'tile_reta' else 'tile_curva'
+for name, folder, mesh_file, x, y, z, r, p, yaw in tiles:
     xml = f"""    <model name='{name}'>
       <static>1</static>
       <link name='link'>
@@ -24,7 +23,7 @@ for name, mtype, x, y, z, r, p, yaw in tiles:
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/{dae_name}/meshes/{dae_name}.dae</uri>
+              <uri>/workspace/tiles/{folder}/meshes/{mesh_file}</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -178,6 +177,5 @@ for d in destinations:
     os.makedirs(os.path.dirname(d), exist_ok=True)
     with open(d, 'w', encoding='utf-8') as f:
         f.write(world_content)
-    # Validate with ET
     ET.parse(d)
     print('Validated & Wrote', d)

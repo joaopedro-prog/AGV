@@ -103,7 +103,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -138,7 +138,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -173,7 +173,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -208,7 +208,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -243,7 +243,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -278,7 +278,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -313,7 +313,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_reta/meshes/tile_reta.dae</uri>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -348,7 +348,7 @@
           <pose>0 0 0 1.5708 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/workspace/tiles/tile_curva/meshes/tile_curva.dae</uri>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>

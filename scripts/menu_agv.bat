@@ -10,7 +10,7 @@ echo                     PAINEL DE CONTROLE DO AGV (ROS 2)
 echo ======================================================================
 echo.
 echo   [1] Abrir Terminal Interativo ROS 2 (bash dentro do container)
-echo   [2] Visualizar Robo 3D no RViz 2 (com controles de rodas)
+echo   [2] Visualizar Robo no RViz 2 (Odometria, Lidar, Rodas e Pista)
 echo   [3] Iniciar SIMULACAO COMPLETA no Gazebo (Pista + Robo + Visao)
 echo   [4] Ver Camera e Deteccao de Linha (rqt_image_view)
 echo.

@@ -18,8 +18,12 @@ services:
       - XDG_RUNTIME_DIR=/tmp/runtime-user
       - PULSE_SERVER=${PULSE_SERVER}
       - QT_X11_NO_MITSHM=1
+      # Aceleração por Hardware GPU Direta (DirectX 12 / Mesa D3D12 vGPU)
+      - LIBGL_ALWAYS_SOFTWARE=0
       - GALLIUM_DRIVER=d3d12
+      - MESA_D3D12_DEFAULT_ADAPTER_NAME=AMD
       - LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      - OGRE_RTT_MODE=FBO
 
     volumes:
       - .:/workspace

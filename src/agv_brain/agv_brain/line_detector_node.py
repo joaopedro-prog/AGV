@@ -51,6 +51,15 @@ class LineDetectorNode(Node):
         self.error_pub = self.create_publisher(Vector3, '/agv/line_error', 10)
         self.debug_pub = self.create_publisher(Image, '/agv/line_debug_image', 10)
 
+        try:
+            if cv2.ocl.haveOpenCL():
+                cv2.ocl.setUseOpenCL(True)
+                self.get_logger().info('OpenCV Aceleracao: OpenCL GPU Ativado')
+            else:
+                cv2.setNumThreads(4)
+        except Exception:
+            pass
+
         self.get_logger().info(
             f'LineDetectorNode iniciado | Escutando: {image_topic} | '
             f'Modo: {self.get_parameter("detection_mode").value}'

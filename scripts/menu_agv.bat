@@ -22,11 +22,13 @@ echo.
 echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
 echo   [9] Baixar Atualizacoes do GitHub (git pull + docker + build)
+echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
 echo   [0] Sair
 echo ======================================================================
-choice /C 1234567890 /N /M "Digite o numero da opcao (0-9): "
+choice /C 123456789G0 /N /M "Digite a opcao: "
 
-if errorlevel 10 goto SAIR
+if errorlevel 11 goto SAIR
+if errorlevel 10 goto CMD_GPU
 if errorlevel 9 goto CMD_UPDATE
 if errorlevel 8 goto CMD_BUILD
 if errorlevel 7 goto CMD_PANEL
@@ -72,6 +74,10 @@ goto MENU
 
 :CMD_UPDATE
 call atualizar_projeto.bat
+goto MENU
+
+:CMD_GPU
+call verificar_gpu.bat
 goto MENU
 
 :SAIR

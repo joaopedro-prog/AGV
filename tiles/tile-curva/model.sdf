@@ -10,7 +10,7 @@
         <geometry>
           <mesh>
             <uri>meshes/tile_curva.dae</uri>
-            <scale>0.01 0.01 0.01</scale>
+            <scale>0.001 0.001 0.001</scale>
           </mesh>
         </geometry>
       </visual>

@@ -39,21 +39,21 @@ line_follower:
     # --------------------------------------------------------------------------
     # VELOCIDADES E GANHOS DO CONTROLADOR PID
     # --------------------------------------------------------------------------
-    base_linear_speed: 0.20              # Velocidade em linha reta (m/s)
-    min_linear_speed: 0.08               # Velocidade mínima ao contornar curvas (m/s)
-    max_angular_speed: 1.50              # Velocidade máxima de giro nas curvas (rad/s)
-    curve_slowdown_factor: 0.70          # Reduz velocidade linear proporcionalmente ao erro
+    base_linear_speed: 0.35              # Velocidade em linha reta (m/s)
+    min_linear_speed: 0.15               # Velocidade mínima ao contornar curvas (m/s)
+    max_angular_speed: 3.00              # Velocidade máxima de giro nas curvas (rad/s)
+    curve_slowdown_factor: 0.50          # Reduz velocidade linear proporcionalmente ao erro
 
     # Ganhos do PID:
-    kp: 1.40                             # Força de correção proporcional ao erro
+    kp: 3.20                             # Força de correção proporcional ao erro
     ki: 0.00                             # Ganho integral
-    kd: 0.30                             # Ganho derivativo para amortecer oscilações
+    kd: 0.25                             # Ganho derivativo para amortecer oscilações
 
     # --------------------------------------------------------------------------
     # BUSCA ATIVA DA LINHA EM CURVAS FECHADAS (QUANDO A LINHA SAI DA CÂMERA)
     # --------------------------------------------------------------------------
     search_on_lost_line: true            # Ativa busca inteligente se perder a linha na curva
-    search_linear_speed: 0.04            # Avanço suave durante a busca (m/s)
-    search_angular_speed: 0.55           # Rotação suave em direção ao último lado onde a linha foi vista
+    search_linear_speed: 0.12            # Avanço suave durante a busca (m/s)
+    search_angular_speed: 1.20           # Rotação suave em direção ao último lado onde a linha foi vista
     max_lost_line_time_sec: 4.0          # Tempo limite de busca antes de parar por segurança (segundos)
     stop_on_obstacle: true               # Pausa imediatamente se houver obstáculo frontal

@@ -14,5 +14,9 @@ if [ -f /workspace/install/setup.bash ]; then
     source /workspace/install/setup.bash
 fi
 
+# Paths para o Gazebo Classic encontrar modelos e malhas STL diretamente
+export GAZEBO_MODEL_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_MODEL_PATH}
+export GAZEBO_RESOURCE_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_RESOURCE_PATH}
+
 # Executa o comando passado como argumento
 exec "$@"

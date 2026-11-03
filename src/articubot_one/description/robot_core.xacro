@@ -4,6 +4,9 @@
     <xacro:include filename="inertial_macros.xacro"/>
     <xacro:include filename="robot_cad_properties.xacro"/>
 
+    <!-- Caminho absoluto e robusto para as malhas STL (compatível com Gazebo e RViz) -->
+    <xacro:property name="mesh_dir" value="file://$(find articubot_one)/meshes"/>
+
     <!-- ====================================================================== -->
     <!-- MATERIAIS VISUAIS DO ROBÔ REAL                                          -->
     <!-- ====================================================================== -->
@@ -63,7 +66,7 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/base_link.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="aluminum"/>
         </visual>
@@ -72,29 +75,14 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/FL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/FL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
-            </geometry>
-            <material name="steel_silver"/>
-        </visual>
-
-        <visual>
-            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
-            <geometry>
-                <mesh filename="package://articubot_one/meshes/FR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
-            </geometry>
-            <material name="steel_silver"/>
-        </visual>
-        <visual>
-            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
-            <geometry>
-                <mesh filename="package://articubot_one/meshes/FR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
@@ -102,14 +90,14 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
@@ -117,14 +105,29 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/BL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/BL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="${mesh_dir}/BR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="${mesh_dir}/BR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="steel_silver"/>
         </visual>
@@ -133,28 +136,28 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/FL_wheel_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FL_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_white"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/FR_wheel_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/FR_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_white"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BL_wheel_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/BL_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_white"/>
         </visual>
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/BR_wheel_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/BR_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_white"/>
         </visual>
@@ -163,7 +166,7 @@
         <visual>
             <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/Webcam_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/Webcam_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="black"/>
         </visual>
@@ -204,7 +207,7 @@
         <visual>
             <origin xyz="0 0.04 -0.233888" rpy="${pi} ${pi/2} 0"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/left_wheel1_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/left_wheel1_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_black"/>
         </visual>
@@ -243,7 +246,7 @@
         <visual>
             <origin xyz="0 -0.04 -0.233888" rpy="0 -${pi/2} 0"/>
             <geometry>
-                <mesh filename="package://articubot_one/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="${mesh_dir}/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="polyurethane_black"/>
         </visual>

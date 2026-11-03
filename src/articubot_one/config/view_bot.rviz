@@ -215,7 +215,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 45; 45; 48
-    Fixed Frame: odom
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -255,7 +255,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.2
+      Distance: 1.8
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1

@@ -211,9 +211,10 @@
             </geometry>
             <material name="polyurethane_black"/>
         </visual>
+        <!-- Esfera no ponto de contato para tracao confiavel sem travamento de quina -->
         <collision>
             <geometry>
-                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                <sphere radius="${wheel_radius}"/>
             </geometry>
         </collision>
         <inertial>
@@ -225,11 +226,10 @@
 
     <gazebo reference="left_wheel">
         <material>Gazebo/DarkGrey</material>
-        <mu1 value="100.0"/>
-        <mu2 value="100.0"/>
+        <mu1 value="20.0"/>
+        <mu2 value="20.0"/>
         <kp value="1000000.0"/>
         <kd value="1.0"/>
-        <minDepth value="0.001"/>
     </gazebo>
 
     <!-- ====================================================================== -->
@@ -250,9 +250,10 @@
             </geometry>
             <material name="polyurethane_black"/>
         </visual>
+        <!-- Esfera no ponto de contato para tracao confiavel sem travamento de quina -->
         <collision>
             <geometry>
-                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                <sphere radius="${wheel_radius}"/>
             </geometry>
         </collision>
         <inertial>
@@ -264,15 +265,15 @@
 
     <gazebo reference="right_wheel">
         <material>Gazebo/DarkGrey</material>
-        <mu1 value="100.0"/>
-        <mu2 value="100.0"/>
+        <mu1 value="20.0"/>
+        <mu2 value="20.0"/>
         <kp value="1000000.0"/>
         <kd value="1.0"/>
-        <minDepth value="0.001"/>
     </gazebo>
 
     <!-- ====================================================================== -->
     <!-- 4 RODÍZIOS DE APOIO (FL, FR, BL, BR) - Pontos físicos de rolamento     -->
+    <!-- Rodas bobas passivas com folga de 3 mm para apoio anti-tombamento      -->
     <!-- ====================================================================== -->
     <xacro:macro name="caster_contact" params="prefix xyz radius mass *inertia_block">
         <joint name="${prefix}_caster_joint" type="fixed">
@@ -282,10 +283,10 @@
         </joint>
 
         <link name="${prefix}_caster_wheel">
-            <!-- Esfera de precisão tangente ao solo para rolagem suave -->
+            <!-- Esfera de apoio boba com folga de 3 mm para deixar o peso nas rodas motrizes -->
             <collision>
                 <geometry>
-                    <sphere radius="${radius}"/>
+                    <sphere radius="${radius - 0.003}"/>
                 </geometry>
             </collision>
             <inertial>
@@ -297,10 +298,8 @@
 
         <gazebo reference="${prefix}_caster_wheel">
             <material>Gazebo/White</material>
-            <mu1 value="0.0"/>
-            <mu2 value="0.0"/>
-            <kp value="1000000.0"/>
-            <kd value="1.0"/>
+            <mu1 value="0.001"/>
+            <mu2 value="0.001"/>
         </gazebo>
     </xacro:macro>
 

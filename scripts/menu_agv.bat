@@ -22,13 +22,15 @@ echo.
 echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
 echo   [9] Baixar Atualizacoes do GitHub (git pull + docker + build)
+echo   [U] Subir Atualizacoes para o GitHub (git add + commit + push)
 echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
 echo   [Z] Comandos Rapidos do Gazebo (Janela Externa: Hot-Reload, Luz, Teleporte)
 echo   [0] Sair
 echo ======================================================================
-choice /C 123456789GZ0 /N /M "Digite a opcao: "
+choice /C 123456789GZU0 /N /M "Digite a opcao: "
 
-if errorlevel 12 goto SAIR
+if errorlevel 13 goto SAIR
+if errorlevel 12 goto CMD_PUSH
 if errorlevel 11 goto CMD_GAZEBO
 if errorlevel 10 goto CMD_GPU
 if errorlevel 9 goto CMD_UPDATE
@@ -76,6 +78,10 @@ goto MENU
 
 :CMD_UPDATE
 call atualizar_projeto.bat
+goto MENU
+
+:CMD_PUSH
+call subir_atualizacoes.bat
 goto MENU
 
 :CMD_GPU

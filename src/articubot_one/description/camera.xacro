@@ -13,7 +13,7 @@
     <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera_link"/>
-        <origin xyz="${webcam_lens_x} 0.0 ${webcam_lens_z}" rpy="0 1.22 0"/>
+        <origin xyz="${webcam_lens_x} 0.0 ${webcam_lens_z}" rpy="0 0.60 0"/>
     </joint>
 
     <link name="camera_link">

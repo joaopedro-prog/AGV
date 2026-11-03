@@ -4,7 +4,10 @@
     <gazebo>
         <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
 
-            <!-- Informações das Rodas Motrizes do AGV Real -->
+            <!-- Frequência de atualização -->
+            <update_rate>50</update_rate>
+
+            <!-- Informações das Rodas Motrizes do AGV Real (Apenas left e right tracionadas) -->
             <left_joint>left_wheel_joint</left_joint>
             <right_joint>right_wheel_joint</right_joint>
             <wheel_separation>0.468</wheel_separation>
@@ -14,7 +17,9 @@
             <max_wheel_torque>200</max_wheel_torque>
             <max_wheel_acceleration>10.0</max_wheel_acceleration>
 
-            <!-- Odometria e TF -->
+            <!-- Tópicos e Odometria -->
+            <command_topic>cmd_vel</command_topic>
+            <odometry_topic>odom</odometry_topic>
             <odometry_frame>odom</odometry_frame>
             <robot_base_frame>base_link</robot_base_frame>
 

@@ -5,6 +5,13 @@ set -e
 export GALLIUM_DRIVER=d3d12
 export LD_LIBRARY_PATH=/usr/lib/wsl/lib:${LD_LIBRARY_PATH}
 
+# Carrega o ambiente do Gazebo Classic e bibliotecas OGRE para prevencao de falhas de renderizacao
+if [ -f /usr/share/gazebo/setup.sh ]; then
+    source /usr/share/gazebo/setup.sh
+elif [ -f /usr/share/gazebo-11/setup.sh ]; then
+    source /usr/share/gazebo-11/setup.sh
+fi
+
 # Carrega o ambiente do ROS 2 Humble e os pacotes compilados do workspace
 if [ -f /opt/ros/humble/setup.bash ]; then
     source /opt/ros/humble/setup.bash

@@ -47,7 +47,7 @@ def reload_robot():
         "ros2", "run", "gazebo_ros", "spawn_entity.py",
         "-file", "/tmp/reloaded_robot.urdf",
         "-entity", "my_bot",
-        "-x", "-0.45", "-y", "0.0", "-z", "0.05", "-Y", "0.0"
+        "-x", "-0.45", "-y", "0.0", "-z", "0.09", "-Y", "0.0"
     ]
     ok, out, err = run_cmd(spawn_cmd, timeout=20)
     if ok or "Successfully" in out:
@@ -59,7 +59,7 @@ def reload_robot():
 
 def teleport_start():
     print("\n[Gazebo] Teleportando AGV para a linha de largada (x=-0.45, y=0.0)...")
-    cmd = ["gz", "model", "-m", "my_bot", "-x", "-0.45", "-y", "0.0", "-z", "0.05", "-R", "0", "-P", "0", "-Y", "0"]
+    cmd = ["gz", "model", "-m", "my_bot", "-x", "-0.45", "-y", "0.0", "-z", "0.09", "-R", "0", "-P", "0", "-Y", "0"]
     ok, out, err = run_cmd(cmd)
     if ok:
         print("[SUCESSO] Robô reposicionado na largada!")
@@ -68,7 +68,7 @@ def teleport_start():
 
 def teleport_ramp():
     print("\n[Gazebo] Teleportando AGV para a subida da rampa (x=-1.20, y=-0.65)...")
-    cmd = ["gz", "model", "-m", "my_bot", "-x", "-1.20", "-y", "-0.65", "-z", "0.03", "-R", "0", "-P", "0", "-Y", "1.5708"]
+    cmd = ["gz", "model", "-m", "my_bot", "-x", "-1.20", "-y", "-0.65", "-z", "0.09", "-R", "0", "-P", "0", "-Y", "1.5708"]
     ok, out, err = run_cmd(cmd)
     if ok:
         print("[SUCESSO] Robô reposicionado em frente à rampa!")

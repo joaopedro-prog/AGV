@@ -49,8 +49,8 @@ class SerialBridgeNode(Node):
         self.declare_parameter('auto_reconnect', True)
         self.declare_parameter('mock_serial_if_disconnected', True)
 
-        self.declare_parameter('wheel_radius', 0.033)
-        self.declare_parameter('wheel_separation', 0.297)
+        self.declare_parameter('wheel_radius', 0.0762)
+        self.declare_parameter('wheel_separation', 0.468)
         self.declare_parameter('encoder_ticks_per_rev', 3436)
         self.declare_parameter('max_wheel_speed_rad_s', 15.0)
 

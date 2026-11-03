@@ -2,96 +2,197 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
     <xacro:include filename="inertial_macros.xacro"/>
+    <xacro:include filename="robot_cad_properties.xacro"/>
 
-
-    <xacro:property name="chassis_length" value="0.200"/>
-    <xacro:property name="chassis_width" value="0.140"/>
-    <xacro:property name="chassis_height" value="0.080"/>
-    <xacro:property name="chassis_mass" value="0.6"/>
-    <xacro:property name="wheel_radius" value="0.025"/>
-    <xacro:property name="wheel_thickness" value="0.018"/>
-    <xacro:property name="wheel_mass" value="0.03"/>
-    <xacro:property name="wheel_offset_x" value="0.100"/>
-    <xacro:property name="wheel_offset_y" value="0.080"/>
-    <xacro:property name="wheel_offset_z" value="0.005"/>
-    <xacro:property name="caster_wheel_radius" value="0.012"/>
-    <xacro:property name="caster_wheel_mass" value="0.01"/>
-    <xacro:property name="caster_wheel_offset_x" value="0.045"/>
-    <xacro:property name="caster_wheel_offset_z" value="${wheel_offset_z - wheel_radius + caster_wheel_radius}"/>
-
-    <material name="white">
-        <color rgba="1 1 1 1" />
+    <!-- ====================================================================== -->
+    <!-- MATERIAIS VISUAIS DO ROBÔ REAL                                          -->
+    <!-- ====================================================================== -->
+    <material name="aluminum">
+        <color rgba="0.75 0.77 0.80 1.0"/>
     </material>
 
-    <material name="orange">
-        <color rgba="1 0.3 0.1 1"/>
+    <material name="polyurethane_black">
+        <color rgba="0.12 0.12 0.14 1.0"/>
     </material>
 
-    <material name="blue">
-        <color rgba="0.2 0.2 1 1"/>
+    <material name="polyurethane_white">
+        <color rgba="0.95 0.95 0.98 1.0"/>
+    </material>
+
+    <material name="steel_silver">
+        <color rgba="0.82 0.82 0.85 1.0"/>
     </material>
 
     <material name="black">
-        <color rgba="0 0 0 1"/>
+        <color rgba="0.08 0.08 0.08 1.0"/>
     </material>
 
-    <material name="red">
-        <color rgba="1 0 0 1"/>
+    <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
     </material>
 
-    <!-- BASE LINK -->
-
+    <!-- ====================================================================== -->
+    <!-- BASE LINK (Centro geométrico do eixo das rodas motrizes)                -->
+    <!-- ====================================================================== -->
     <link name="base_link">
-
     </link>
 
-    <!-- BASE_FOOTPRINT LINK -->
-
+    <!-- ====================================================================== -->
+    <!-- BASE_FOOTPRINT (Projeção no chão, z = -wheel_radius)                   -->
+    <!-- ====================================================================== -->
     <joint name="base_footprint_joint" type="fixed">
         <parent link="base_link"/>
         <child link="base_footprint"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 -${wheel_radius}" rpy="0 0 0"/>
     </joint>
 
     <link name="base_footprint">
     </link>
 
-
-    <!-- CHASSIS LINK -->
-
+    <!-- ====================================================================== -->
+    <!-- CHASSIS LINK (Estrutura de Alumínio e Suportes dos Rodízios)            -->
+    <!-- ====================================================================== -->
     <joint name="chassis_joint" type="fixed">
         <parent link="base_link"/>
         <child link="chassis"/>
-        <origin xyz="${-wheel_offset_x} 0 ${-wheel_offset_z}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
     <link name="chassis">
+        <!-- 1. Corpo principal de Alumínio -->
         <visual>
-            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}"/>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+                <mesh filename="package://articubot_one/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="orange"/>
+            <material name="aluminum"/>
         </visual>
-        <collision>
-            <origin xyz="${chassis_length/2 - 0.005} 0 ${chassis_height/2 + 0.010}"/>
+
+        <!-- 2. Placas e suportes dos rodízios (Alumínio) -->
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
             <geometry>
-                <box size="${chassis_length - 0.020} ${chassis_width - 0.005} ${chassis_height - 0.015}"/>
+                <mesh filename="package://articubot_one/meshes/FL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/FL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/FR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/FR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BL_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BL_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BR_wheel_plate_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BR_wheel_support_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+
+        <!-- 3. Rodas dos rodízios (Poliuretano) -->
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/FL_wheel_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="polyurethane_white"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/FR_wheel_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="polyurethane_white"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BL_wheel_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="polyurethane_white"/>
+        </visual>
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/BR_wheel_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="polyurethane_white"/>
+        </visual>
+
+        <!-- 4. Carcaça da Webcam frontal -->
+        <visual>
+            <origin xyz="${cad_mesh_xyz}" rpy="${cad_mesh_rpy}"/>
+            <geometry>
+                <mesh filename="package://articubot_one/meshes/Webcam_1.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+
+        <!-- Colisão do Chassi (Caixa robusta otimizada para física contínua no Gazebo) -->
+        <collision>
+            <origin xyz="0 0 0.060" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.680 0.480 0.170"/>
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.5" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
-            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0"/>
-        </xacro:inertial_box>
+
+        <!-- Inércia do chassi de Alumínio calculada a partir do volume real da malha -->
+        <inertial>
+            <origin xyz="${chassis_com}" rpy="0 0 0"/>
+            <mass value="${chassis_mass}"/>
+            <xacro:chassis_inertia/>
+        </inertial>
     </link>
 
     <gazebo reference="chassis">
-        <material>Gazebo/Orange</material>
-        <mu1 value="0.001"/>
-        <mu2 value="0.001"/>
+        <material>Gazebo/Grey</material>
+        <mu1 value="0.05"/>
+        <mu2 value="0.05"/>
     </gazebo>
 
-    <!-- LEFT WHEEL LINK -->
-
+    <!-- ====================================================================== -->
+    <!-- RODA MOTRIZ ESQUERDA (Poliuretano)                                      -->
+    <!-- ====================================================================== -->
     <joint name="left_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="left_wheel"/>
@@ -101,23 +202,26 @@
 
     <link name="left_wheel">
         <visual>
+            <origin xyz="0 0.04 -0.233888" rpy="${pi} ${pi/2} 0"/>
             <geometry>
-                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                <mesh filename="package://articubot_one/meshes/left_wheel1_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="blue"/>
+            <material name="polyurethane_black"/>
         </visual>
         <collision>
             <geometry>
-                <sphere radius="${wheel_radius}"/>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
+        <inertial>
+            <origin xyz="${left_wheel_com}" rpy="0 0 0"/>
+            <mass value="${left_wheel_mass}"/>
+            <xacro:left_wheel_inertia/>
+        </inertial>
     </link>
 
     <gazebo reference="left_wheel">
-        <material>Gazebo/Blue</material>
+        <material>Gazebo/DarkGrey</material>
         <mu1 value="100.0"/>
         <mu2 value="100.0"/>
         <kp value="1000000.0"/>
@@ -125,11 +229,9 @@
         <minDepth value="0.001"/>
     </gazebo>
 
-
-
-
-    <!-- RIGHT WHEEL LINK -->
-
+    <!-- ====================================================================== -->
+    <!-- RODA MOTRIZ DIREITA (Poliuretano)                                       -->
+    <!-- ====================================================================== -->
     <joint name="right_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="right_wheel"/>
@@ -139,23 +241,26 @@
 
     <link name="right_wheel">
         <visual>
+            <origin xyz="0 -0.04 -0.233888" rpy="0 -${pi/2} 0"/>
             <geometry>
-                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                <mesh filename="package://articubot_one/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
             </geometry>
-            <material name="blue"/>
+            <material name="polyurethane_black"/>
         </visual>
         <collision>
             <geometry>
-                <sphere radius="${wheel_radius}"/>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_cylinder>
+        <inertial>
+            <origin xyz="${right_wheel_com}" rpy="0 0 0"/>
+            <mass value="${right_wheel_mass}"/>
+            <xacro:right_wheel_inertia/>
+        </inertial>
     </link>
 
     <gazebo reference="right_wheel">
-        <material>Gazebo/Blue</material>
+        <material>Gazebo/DarkGrey</material>
         <mu1 value="100.0"/>
         <mu2 value="100.0"/>
         <kp value="1000000.0"/>
@@ -163,67 +268,53 @@
         <minDepth value="0.001"/>
     </gazebo>
 
+    <!-- ====================================================================== -->
+    <!-- 4 RODÍZIOS DE APOIO (FL, FR, BL, BR) - Pontos físicos de rolamento     -->
+    <!-- ====================================================================== -->
+    <xacro:macro name="caster_contact" params="prefix xyz radius mass *inertia_block">
+        <joint name="${prefix}_caster_joint" type="fixed">
+            <parent link="chassis"/>
+            <child link="${prefix}_caster_wheel"/>
+            <origin xyz="${xyz}" rpy="0 0 0"/>
+        </joint>
 
-    <!-- FRONT CASTER WHEEL LINK -->
+        <link name="${prefix}_caster_wheel">
+            <!-- Esfera de precisão tangente ao solo para rolagem suave -->
+            <collision>
+                <geometry>
+                    <sphere radius="${radius}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="${mass}"/>
+                <xacro:insert_block name="inertia_block"/>
+            </inertial>
+        </link>
 
-    <joint name="front_caster_wheel_joint" type="fixed">
-        <parent link="chassis"/>
-        <child link="front_caster_wheel"/>
-        <origin xyz="0.170 0 ${caster_wheel_offset_z}"/>
-    </joint>
+        <gazebo reference="${prefix}_caster_wheel">
+            <material>Gazebo/White</material>
+            <mu1 value="0.0"/>
+            <mu2 value="0.0"/>
+            <kp value="1000000.0"/>
+            <kd value="1.0"/>
+        </gazebo>
+    </xacro:macro>
 
-    <link name="front_caster_wheel">
-        <visual>
-            <geometry>
-                <sphere radius="${caster_wheel_radius}"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-        <collision>
-            <geometry>
-                <sphere radius="${caster_wheel_radius}"/>
-            </geometry>
-        </collision>
-        <xacro:inertial_sphere mass="${caster_wheel_mass}" radius="${caster_wheel_radius}">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_sphere>
-    </link>
+    <xacro:caster_contact prefix="FL" xyz="${caster_FL_xyz}" radius="${caster_FL_radius}" mass="${caster_FL_mass}">
+        <xacro:caster_FL_inertia/>
+    </xacro:caster_contact>
 
-    <gazebo reference="front_caster_wheel">
-        <material>Gazebo/White</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
+    <xacro:caster_contact prefix="FR" xyz="${caster_FR_xyz}" radius="${caster_FR_radius}" mass="${caster_FR_mass}">
+        <xacro:caster_FR_inertia/>
+    </xacro:caster_contact>
 
-    <!-- REAR CASTER WHEEL LINK -->
+    <xacro:caster_contact prefix="BL" xyz="${caster_BL_xyz}" radius="${caster_BL_radius}" mass="${caster_BL_mass}">
+        <xacro:caster_BL_inertia/>
+    </xacro:caster_contact>
 
-    <joint name="rear_caster_wheel_joint" type="fixed">
-        <parent link="chassis"/>
-        <child link="rear_caster_wheel"/>
-        <origin xyz="0.030 0 ${caster_wheel_offset_z}"/>
-    </joint>
-
-    <link name="rear_caster_wheel">
-        <visual>
-            <geometry>
-                <sphere radius="${caster_wheel_radius}"/>
-            </geometry>
-            <material name="white"/>
-        </visual>
-        <collision>
-            <geometry>
-                <sphere radius="${caster_wheel_radius}"/>
-            </geometry>
-        </collision>
-        <xacro:inertial_sphere mass="${caster_wheel_mass}" radius="${caster_wheel_radius}">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-        </xacro:inertial_sphere>
-    </link>
-
-    <gazebo reference="rear_caster_wheel">
-        <material>Gazebo/White</material>
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-    </gazebo>
+    <xacro:caster_contact prefix="BR" xyz="${caster_BR_xyz}" radius="${caster_BR_radius}" mass="${caster_BR_mass}">
+        <xacro:caster_BR_inertia/>
+    </xacro:caster_contact>
 
 </robot>

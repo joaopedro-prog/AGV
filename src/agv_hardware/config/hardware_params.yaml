@@ -19,8 +19,8 @@ serial_bridge:
     # --------------------------------------------------------------------------
     # 2. CONSTANTES FÍSICAS DO ROBÔ (MEDIDAS EM METROS E PULSOS)
     # --------------------------------------------------------------------------
-    wheel_radius: 0.033                  # [ALTERAR] Raio da roda em metros (ex: 0.033 = 3.3 cm)
-    wheel_separation: 0.297              # [ALTERAR] Distância entre o centro da roda esq e dir (metros)
+    wheel_radius: 0.0762                  # [ALTERAR] Raio da roda em metros (ex: 0.033 = 3.3 cm)
+    wheel_separation: 0.468              # [ALTERAR] Distância entre o centro da roda esq e dir (metros)
     encoder_ticks_per_rev: 3436          # [ALTERAR] Pulsos de encoder por 1 volta completa da roda
     max_wheel_speed_rad_s: 15.0          # [ALTERAR] Velocidade máxima da roda (rad/s)
 

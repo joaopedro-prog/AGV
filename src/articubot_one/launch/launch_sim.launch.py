@@ -55,13 +55,13 @@ def launch_setup(context, *args, **kwargs):
     if ('pista_completa_3d' in rw_lower or '3d' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
         spawn_x_val = '-0.45'
         spawn_y_val = '0.0'
-        spawn_z_val = '0.05'
+        spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
         print(f"[launch_sim] Posição de spawn ajustada para pista_completa_3d: x={spawn_x_val}, y={spawn_y_val}")
     elif ('circle' in rw_lower or 'teste_8' in rw_lower or 'circuito_8' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
         spawn_x_val = '0.0'
         spawn_y_val = '0.30'
-        spawn_z_val = '0.05'
+        spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
         print(f"[launch_sim] Posição de spawn ajustada para circuito 8 tiles: x={spawn_x_val}, y={spawn_y_val}")
 
@@ -155,7 +155,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('spawn_x', default_value='0.05'),
         DeclareLaunchArgument('spawn_y', default_value='-0.157'),
-        DeclareLaunchArgument('spawn_z', default_value='0.05'),
+        DeclareLaunchArgument('spawn_z', default_value='0.09'),
         DeclareLaunchArgument('spawn_yaw', default_value='0.0'),
         rsp,
         twist_mux,

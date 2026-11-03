@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!--
+  ARQUIVO GERADO AUTOMATICAMENTE por scripts/gerar_propriedades_robo.py  (NAO edite a mao)
+  Fonte: STL do Fusion 360 em src/articubot_one/meshes/
+  Massas calculadas pelo VOLUME REAL de cada malha x densidade do material:
+    Chassi (aluminio 2700 kg/m3)          :   3404.0 cm3 -> 9.191 kg
+    Roda esquerda (poliuretano 1200 kg/m3):    181.3 cm3 -> 0.218 kg
+    Roda direita  (poliuretano 1200 kg/m3):    184.1 cm3 -> 0.221 kg
+    Rodizio FL (placa+suporte Al, roda PU) :    17.7 g   (correcao vertical +7.0 mm)
+    Rodizio FR (placa+suporte Al, roda PU) :    17.7 g   (correcao vertical +6.6 mm)
+    Rodizio BL (placa+suporte Al, roda PU) :    17.7 g   (correcao vertical +7.2 mm)
+    Rodizio BR (placa+suporte Al, roda PU) :    17.7 g   (correcao vertical +0.1 mm)
+    Webcam (ABS 1050 kg/m3)               :    49.4 g
+    TOTAL ESTRUTURA                       : 9.750 kg   (Fusion com aco dava 26.72 kg so no chassi)
+  Frame base_link = centro do eixo das rodas motrizes (X frente, Y esquerda, Z cima).
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Transformacao das malhas do Fusion (Y para cima, mm) para o frame base_link -->
+    <xacro:property name="cad_mesh_rpy" value="1.570796 0.000000 -1.570796"/>
+    <xacro:property name="cad_mesh_xyz" value="0.000000 0.000000 -0.040000"/>
+    <xacro:property name="cad_mesh_x" value="0.000000"/>
+    <xacro:property name="cad_mesh_y" value="0.000000"/>
+    <xacro:property name="cad_mesh_z" value="-0.040000"/>
+
+    <!-- Dimensoes principais medidas nas malhas -->
+    <xacro:property name="wheel_radius" value="0.076200"/>
+    <xacro:property name="wheel_thickness" value="0.034925"/>
+    <xacro:property name="wheel_separation" value="0.467775"/>
+    <xacro:property name="wheel_offset_y" value="0.233888"/>
+    <xacro:property name="chassis_min_x" value="-0.353553"/>
+    <xacro:property name="chassis_max_x" value="0.353553"/>
+    <xacro:property name="chassis_half_width" value="0.252000"/>
+    <xacro:property name="chassis_bottom_z" value="-0.040000"/>
+    <xacro:property name="chassis_top_z" value="0.160440"/>
+
+    <!-- Chassi (aluminio) -->
+    <xacro:property name="chassis_mass" value="9.190729"/>
+    <xacro:property name="chassis_com" value="0.000552 0.004338 0.005465"/>
+    <xacro:macro name="chassis_inertia">
+        <inertia ixx="2.951032e-01" ixy="2.187930e-05" ixz="-6.897835e-03" iyy="4.039126e-01" iyz="-4.802644e-04" izz="6.398004e-01"/>
+    </xacro:macro>
+
+    <!-- Roda motriz left (poliuretano) - centro em 0.000000 0.233888 0.000000 -->
+    <xacro:property name="left_wheel_mass" value="0.217601"/>
+    <xacro:property name="left_wheel_center_y" value="0.233888"/>
+    <xacro:property name="left_wheel_com" value="0.000000 0.000090 0.000002"/>
+    <xacro:macro name="left_wheel_inertia">
+        <inertia ixx="3.967880e-04" ixy="3.558149e-10" ixz="-5.790514e-10" iyy="7.695632e-04" iyz="3.337837e-09" izz="3.967940e-04"/>
+    </xacro:macro>
+
+    <!-- Roda motriz right (poliuretano) - centro em 0.000000 -0.233888 0.000000 -->
+    <xacro:property name="right_wheel_mass" value="0.220968"/>
+    <xacro:property name="right_wheel_center_y" value="-0.233888"/>
+    <xacro:property name="right_wheel_com" value="-0.000000 -0.000066 -0.000000"/>
+    <xacro:macro name="right_wheel_inertia">
+        <inertia ixx="4.042742e-04" ixy="1.571102e-11" ixz="-8.593552e-12" iyy="7.843411e-04" iyz="1.591664e-10" izz="4.042741e-04"/>
+    </xacro:macro>
+
+    <!-- Rodizio FL: placa + suporte (aluminio) + roda (poliuretano) -->
+    <xacro:property name="caster_FL_xyz" value="0.214981 0.189298 -0.061214"/>
+    <xacro:property name="caster_FL_dz" value="0.007006"/>
+    <xacro:property name="caster_FL_radius" value="0.014986"/>
+    <xacro:property name="caster_FL_mass" value="0.017721"/>
+    <xacro:property name="caster_FL_com" value="0.008202 0.000861 0.009854"/>
+    <xacro:macro name="caster_FL_inertia">
+        <inertia ixx="3.145204e-06" ixy="-1.653730e-07" ixz="-1.348712e-06" iyy="4.326197e-06" iyz="-1.934956e-07" izz="2.999995e-06"/>
+    </xacro:macro>
+
+    <!-- Rodizio FR: placa + suporte (aluminio) + roda (poliuretano) -->
+    <xacro:property name="caster_FR_xyz" value="0.204372 -0.210966 -0.061214"/>
+    <xacro:property name="caster_FR_dz" value="0.006648"/>
+    <xacro:property name="caster_FR_radius" value="0.014986"/>
+    <xacro:property name="caster_FR_mass" value="0.017721"/>
+    <xacro:property name="caster_FR_com" value="0.007114 0.000727 0.009854"/>
+    <xacro:macro name="caster_FR_inertia">
+        <inertia ixx="3.142793e-06" ixy="-1.439201e-07" ixz="-1.226741e-06" iyy="4.136621e-06" iyz="-1.785283e-07" izz="2.808009e-06"/>
+    </xacro:macro>
+
+    <!-- Rodizio BL: placa + suporte (aluminio) + roda (poliuretano) -->
+    <xacro:property name="caster_BL_xyz" value="-0.233855 0.177328 -0.061214"/>
+    <xacro:property name="caster_BL_dz" value="0.007240"/>
+    <xacro:property name="caster_BL_radius" value="0.014986"/>
+    <xacro:property name="caster_BL_mass" value="0.017721"/>
+    <xacro:property name="caster_BL_com" value="-0.007124 -0.000646 0.010173"/>
+    <xacro:macro name="caster_BL_inertia">
+        <inertia ixx="3.286367e-06" ixy="-1.374570e-07" ixz="1.274530e-06" iyy="4.282995e-06" iyz="1.757855e-07" izz="2.808288e-06"/>
+    </xacro:macro>
+
+    <!-- Rodizio BR: placa + suporte (aluminio) + roda (poliuretano) -->
+    <xacro:property name="caster_BR_xyz" value="-0.170915 -0.191749 -0.061214"/>
+    <xacro:property name="caster_BR_dz" value="0.000138"/>
+    <xacro:property name="caster_BR_radius" value="0.014986"/>
+    <xacro:property name="caster_BR_mass" value="0.017721"/>
+    <xacro:property name="caster_BR_com" value="-0.007134 0.000556 0.009854"/>
+    <xacro:macro name="caster_BR_inertia">
+        <inertia ixx="3.140297e-06" ixy="1.301703e-07" ixz="1.229004e-06" iyy="4.139896e-06" iyz="-1.593092e-07" izz="2.808786e-06"/>
+    </xacro:macro>
+
+    <!-- Webcam (ABS) - lente = centro da face inferior (olha para o piso) -->
+    <xacro:property name="webcam_lens_xyz" value="0.255703 0.000397 0.070440"/>
+    <xacro:property name="webcam_lens_x" value="0.255703"/>
+    <xacro:property name="webcam_lens_z" value="0.070440"/>
+    <xacro:property name="webcam_mass" value="0.049364"/>
+    <xacro:property name="webcam_com" value="0.000966 -0.000000 0.012465"/>
+    <xacro:macro name="webcam_inertia">
+        <inertia ixx="3.460120e-05" ixy="-4.535747e-11" ixz="-8.850650e-08" iyy="4.609242e-06" iyz="7.283577e-14" izz="3.543664e-05"/>
+    </xacro:macro>
+
+</robot>

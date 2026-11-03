@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <!--
+      ==========================================================================
+      SENSOR ULTRASSÔNICO DE DISTÂNCIA FRONTAL DO AGV
+      ==========================================================================
+      Montado no para-choque dianteiro (x = 0.355m, z = 0.040m).
+      Publica mensagens padrão sensor_msgs/msg/Range no tópico /agv/ultrasonic.
+      Pronto para detecção de obstáculos e parada de emergência.
+      ==========================================================================
+    -->
+    <joint name="ultrasonic_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="ultrasonic_frame"/>
+        <origin xyz="0.355 0 0.040" rpy="0 0 0"/>
+    </joint>
+
+    <link name="ultrasonic_frame">
+        <visual>
+            <origin xyz="-0.005 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.012 0.045 0.020"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <!-- Transdutor esquerdo -->
+        <visual>
+            <origin xyz="0.002 0.012 0" rpy="0 ${pi/2} 0"/>
+            <geometry>
+                <cylinder radius="0.008" length="0.006"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <!-- Transdutor direito -->
+        <visual>
+            <origin xyz="0.002 -0.012 0" rpy="0 ${pi/2} 0"/>
+            <geometry>
+                <cylinder radius="0.008" length="0.006"/>
+            </geometry>
+            <material name="steel_silver"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.015 0.045 0.020"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.015" x="0.015" y="0.045" z="0.020">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <gazebo reference="ultrasonic_frame">
+        <material>Gazebo/Black</material>
+
+        <sensor name="ultrasonic_sensor" type="ray">
+            <pose> 0 0 0 0 0 0 </pose>
+            <visualize>false</visualize>
+            <update_rate>20</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>5</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.15</min_angle>
+                        <max_angle>0.15</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>5</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.05</min_angle>
+                        <max_angle>0.05</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.03</min>
+                    <max>3.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+            </ray>
+            <plugin name="ultrasonic_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <argument>~/out:=/agv/ultrasonic</argument>
+                </ros>
+                <output_type>sensor_msgs/Range</output_type>
+                <radiation_type>ultrasound</radiation_type>
+                <frame_name>ultrasonic_frame</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+</robot>

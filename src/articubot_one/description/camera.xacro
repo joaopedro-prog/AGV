@@ -3,53 +3,26 @@
 
     <!--
       ==========================================================================
-      POSICIONAMENTO E ANGULAÇÃO DA CÂMERA DO AGV
+      POSICIONAMENTO E ANGULAÇÃO DA CÂMERA DO AGV REAL (WEBCAM)
       ==========================================================================
-      Arquivo - src/articubot_one/description/camera.xacro
-      Joint -   camera_joint -> <origin xyz="X Y Z" rpy="roll PITCH yaw"/>
-
-      1. PITCH (Inclinação para cima / baixo) - Em radianos:
-         - rpy="0 0.00 0" -> 0°   (Totalmente horizontal, olha para o horizonte)
-         - rpy="0 0.35 0" -> 20°  (Olha suavemente para a frente e o piso distante)
-         - rpy="0 0.52 0" -> 30°  (PADRÃO ATUAL - foca o chão de 15cm a 60cm à frente)
-         - rpy="0 0.70 0" -> 40°  (Mais inclinada para baixo, foca de 10cm a 35cm)
-         - rpy="0 0.90 0" -> 51.5°(Bem inclinada, piso próximo)
-         - rpy="0 1.57 0" -> 90°  (Totalmente vertical, olhando direto pro chão)
-
-      2. POSIÇÃO (xyz em metros) -
-         - X = 0.210 m (1 cm à frente do para-choque dianteiro)
-         - Y = 0.000 m (Centralizada na largura)
-         - Z = 0.090 m (Altura acima da base do chassi)
+      A carcaça física da Webcam_1 já faz parte do modelo CAD em chassis.
+      Este arquivo posiciona a lente óptica no ponto exato da abertura inferior
+      do chassi de alumínio, focando a pista e a linha guia à frente do robô.
       ==========================================================================
     -->
     <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera_link"/>
-        <origin xyz="0.210 0 0.090" rpy="0 0.80 0"/>
+        <origin xyz="${webcam_lens_x} 0.0 ${webcam_lens_z}" rpy="0 1.22 0"/>
     </joint>
 
     <link name="camera_link">
-        <!-- Corpo da câmera -->
-        <visual>
-            <geometry>
-                <box size="0.015 0.030 0.020"/>
-            </geometry>
-            <material name="black"/>
-        </visual>
-        <!-- Haste de suporte ligando ao chassi -->
-        <visual>
-            <origin xyz="-0.020 0 -0.040" rpy="0 0.30 0"/>
-            <geometry>
-                <cylinder radius="0.005" length="0.050"/>
-            </geometry>
-            <material name="black"/>
-        </visual>
         <collision>
             <geometry>
-                <box size="0.015 0.030 0.020"/>
+                <box size="0.020 0.080 0.020"/>
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.05" x="0.020" y="0.040" z="0.030">
+        <xacro:inertial_box mass="${webcam_mass}" x="0.020" y="0.080" z="0.020">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </xacro:inertial_box>
     </link>
@@ -70,14 +43,14 @@
             <visualize>true</visualize>
             <update_rate>30</update_rate>
             <camera>
-                <horizontal_fov>1.15</horizontal_fov>
+                <horizontal_fov>1.35</horizontal_fov>
                 <image>
                     <format>R8G8B8</format>
                     <width>640</width>
                     <height>480</height>
                 </image>
                 <clip>
-                    <near>0.03</near>
+                    <near>0.02</near>
                     <far>8.0</far>
                 </clip>
             </camera>

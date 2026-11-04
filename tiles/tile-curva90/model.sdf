@@ -10,7 +10,7 @@
         <geometry>
           <mesh>
             <uri>meshes/tile_curva90.dae</uri>
-            <scale>1 1 1</scale>
+            <scale>4.0 1.0 4.0</scale>
           </mesh>
         </geometry>
       </visual>
@@ -18,7 +18,7 @@
       <collision name="colisao_tile_curva90">
         <geometry>
           <box>
-            <size>0.30 0.30 0.003</size>
+            <size>1.20 1.20 0.003</size>
           </box>
         </geometry>
       </collision>

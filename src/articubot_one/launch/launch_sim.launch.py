@@ -53,17 +53,23 @@ def launch_setup(context, *args, **kwargs):
     # Ajusta o spawn padrão sobre a linha conforme o mundo se não houver coordenadas customizadas
     rw_lower = resolved_world.lower()
     if ('pista_completa_3d' in rw_lower or '3d' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
-        spawn_x_val = '-0.45'
+        spawn_x_val = '-1.80'
         spawn_y_val = '0.0'
         spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
-        print(f"[launch_sim] Posição de spawn ajustada para pista_completa_3d: x={spawn_x_val}, y={spawn_y_val}")
+        print(f"[launch_sim] Posição de spawn ajustada para pista_completa_3d (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
     elif ('circle' in rw_lower or 'teste_8' in rw_lower or 'circuito_8' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
-        spawn_x_val = '0.0'
-        spawn_y_val = '0.30'
+        spawn_x_val = '-0.60'
+        spawn_y_val = '1.80'
         spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
-        print(f"[launch_sim] Posição de spawn ajustada para circuito 8 tiles: x={spawn_x_val}, y={spawn_y_val}")
+        print(f"[launch_sim] Posição de spawn ajustada para circuito 8 tiles (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
+    elif ('oficial' in rw_lower or 'circuit1' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
+        spawn_x_val = '0.0'
+        spawn_y_val = '0.0'
+        spawn_z_val = '0.09'
+        spawn_yaw_val = '0.0'
+        print(f"[launch_sim] Posição de spawn ajustada para pista_oficial (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
 
     # Gazebo Classic com parâmetros e mundo da pista
     gazebo = IncludeLaunchDescription(

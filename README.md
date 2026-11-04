@@ -195,15 +195,15 @@ Ao digitar **`[Z]`** no menu principal, uma janela externa de comandos rápidos 
 
 ## 7. Mundos e Circuitos no Gazebo
 
-Ao escolher a opção **`[3]`** no menu, você pode selecionar qual circuito carregar:
+Os circuitos do Gazebo foram redimensionados para a escala **$4.0\times$** (tiles de $1.20\text{ m} \times 1.20\text{ m}$, raio de curvatura de $0.60\text{ m}$), mantendo a proporção ideal para a bitola de $0.468\text{ m}$ e comprimento de $0.70\text{ m}$ do robô real. Além disso, o chão e horizonte de todos os mundos foram padronizados em **Branco Puro** (`Gazebo/White`), proporcionando contraste máximo e sem ruído para o sensor de visão da câmera sobre as linhas pretas:
 
 | Mundo | Descrição | Destaques |
 | :--- | :--- | :--- |
-| **`pista_completa_3d.world`** | Pista 3D Multinível Completa | 64 tiles, rampas de $15^\circ$, viaduto elevado, pilares e túnel subterrâneo. |
-| **`pista_oficial.world`** | Pista Oficial Completa | 38 tiles modulares com retas, curvas de $90^\circ$ e cruzamentos. |
-| **`pista_teste_8_tiles.world`** | Circuito Compacto de Teste | 8 tiles ($90\times 90\text{ cm}$), ideal para validação ágil do algoritmo PID. |
-| **`pista_obstaculos.world`** | Pista com Obstáculos | Elementos estáticos na pista para teste de parada e desvio. |
-| **`mundo_vazio.world`** | Mundo Vazio | Chão plano padrão para teleoperação e testes livres. |
+| **`pista_completa_3d.world`** | Pista 3D Multinível Completa | 32 tiles escalados ($1.20\text{ m}$), viaduto elevado a $0.50\text{ m}$ (com passagem inferior livre para o robô e Lidar), rampas suaves de $12^\circ$ e pilares de sustentação. |
+| **`pista_oficial.world`** | Pista Oficial Modular | Circuito com retas de $1.20\text{ m}$, curvas amplas de $90^\circ$ ($R=0.60\text{ m}$) e pista de alta velocidade. |
+| **`pista_teste_8_tiles.world`** | Circuito Compacto de Teste | 8 tiles ($3.6\times 3.6\text{ m}$, $R=0.60\text{ m}$), ideal para validação ágil do algoritmo PID e testes de visão. |
+| **`pista_obstaculos.world`** | Pista com Obstáculos | Elementos estáticos na pista (cones e barris espaçados) para teste de parada e desvio autônomo. |
+| **`mundo_vazio.world`** | Mundo Vazio | Chão plano branco padrão para teleoperação e testes livres. |
 
 ---
 

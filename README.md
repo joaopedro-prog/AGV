@@ -199,7 +199,7 @@ Os circuitos do Gazebo foram redimensionados para a escala **$4.0\times$** (tile
 
 | Mundo | Descrição | Destaques |
 | :--- | :--- | :--- |
-| **`pista_completa_3d.world`** | Pista 3D Multinível Completa | 32 tiles escalados ($1.20\text{ m}$), viaduto elevado a $0.50\text{ m}$ (com passagem inferior livre para o robô e Lidar), rampas suaves de $12^\circ$ e pilares de sustentação. |
+| **`pista_completa_plana.world`** | Pista 3D Multinível Completa | 32 tiles escalados ($1.20\text{ m}$), viaduto elevado a $0.50\text{ m}$ (com passagem inferior livre para o robô e Lidar), rampas suaves de $12^\circ$ e pilares de sustentação. |
 | **`pista_oficial.world`** | Pista Oficial Modular | Circuito com retas de $1.20\text{ m}$, curvas amplas de $90^\circ$ ($R=0.60\text{ m}$) e pista de alta velocidade. |
 | **`pista_teste_8_tiles.world`** | Circuito Compacto de Teste | 8 tiles ($3.6\times 3.6\text{ m}$, $R=0.60\text{ m}$), ideal para validação ágil do algoritmo PID e testes de visão. |
 | **`pista_obstaculos.world`** | Pista com Obstáculos | Elementos estáticos na pista (cones e barris espaçados) para teste de parada e desvio autônomo. |
@@ -251,7 +251,7 @@ O arquivo mestre [`src/agv_hardware/launch/agv_complete.launch.py`](src/agv_hard
 
 ### A) Modo Simulação (No computador com Gazebo)
 ```bash
-ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=pista_completa_3d.world
+ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=pista_completa_plana.world
 ```
 * Sobe o Gazebo Classic com o circuito selecionado.
 * Spawna o robô CAD com física de tração nas duas rodas e casters passivos.

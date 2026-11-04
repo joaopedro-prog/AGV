@@ -42,9 +42,9 @@ def launch_setup(context, *args, **kwargs):
             break
 
     if not resolved_world:
-        default_world = os.path.join('/workspace/src/articubot_one/worlds', 'pista_completa_3d.world')
+        default_world = os.path.join('/workspace/src/articubot_one/worlds', 'pista_completa_plana.world')
         if not os.path.isfile(default_world):
-            default_world = os.path.join(pkg_share, 'worlds', 'pista_completa_3d.world')
+            default_world = os.path.join(pkg_share, 'worlds', 'pista_completa_plana.world')
         resolved_world = default_world
         print(f"[launch_sim] AVISO: Mundo '{world_arg}' nao encontrado. Usando padrao: {resolved_world}")
     else:
@@ -52,24 +52,18 @@ def launch_setup(context, *args, **kwargs):
 
     # Ajusta o spawn padrão sobre a linha conforme o mundo se não houver coordenadas customizadas
     rw_lower = resolved_world.lower()
-    if ('pista_completa_3d' in rw_lower or '3d' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
-        spawn_x_val = '-1.80'
-        spawn_y_val = '0.0'
-        spawn_z_val = '0.09'
-        spawn_yaw_val = '0.0'
-        print(f"[launch_sim] Posição de spawn ajustada para pista_completa_3d (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
-    elif ('circle' in rw_lower or 'teste_8' in rw_lower or 'circuito_8' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
-        spawn_x_val = '-0.60'
+    if ('plana' in rw_lower or 'completa' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
+        spawn_x_val = '-1.20'
         spawn_y_val = '1.80'
         spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
-        print(f"[launch_sim] Posição de spawn ajustada para circuito 8 tiles (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
-    elif ('oficial' in rw_lower or 'circuit1' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
+        print(f"[launch_sim] Posição de spawn ajustada para pista_completa_plana (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
+    elif ('teste_8' in rw_lower or '8_tiles' in rw_lower or 'circuito_8' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
         spawn_x_val = '0.0'
-        spawn_y_val = '0.0'
+        spawn_y_val = '1.20'
         spawn_z_val = '0.09'
         spawn_yaw_val = '0.0'
-        print(f"[launch_sim] Posição de spawn ajustada para pista_oficial (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
+        print(f"[launch_sim] Posição de spawn ajustada para circuito 8 tiles (escala 4x): x={spawn_x_val}, y={spawn_y_val}")
 
     # Gazebo Classic com parâmetros e mundo da pista
     gazebo = IncludeLaunchDescription(
@@ -151,8 +145,8 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'world',
-            default_value='pista_completa_3d.world',
-            description='Mundo do Gazebo a ser carregado (ex: circuit1.world, circle_world.world, empty.world)',
+            default_value='pista_completa_plana.world',
+            description='Mundo do Gazebo a ser carregado (pista_completa_plana.world ou pista_teste_8_tiles.world)',
         ),
         DeclareLaunchArgument(
             'use_ros2_control',

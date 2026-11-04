@@ -75,7 +75,7 @@
     <audio><device>none</device></audio>
 
 
-    <model name='tile_reta_g1'>
+    <model name='tile_top_1'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -102,10 +102,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-2.4000 0.6000 0.0010 0 0.000000 0.000000</pose>
+      <pose>-2.4000 2.4000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_tunnel'>
+    <model name='tile_top_2'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -132,10 +132,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-1.2000 0.6000 0.0010 0 0.000000 0.000000</pose>
+      <pose>-1.2000 2.4000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_g3'>
+    <model name='tile_top_3'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -162,10 +162,10 @@
           </surface>
         </collision>
       </link>
-      <pose>0.0000 0.6000 0.0010 0 0.000000 0.000000</pose>
+      <pose>0.0000 2.4000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_g4'>
+    <model name='tile_top_4'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -192,10 +192,10 @@
           </surface>
         </collision>
       </link>
-      <pose>1.2000 0.6000 0.0010 0 0.000000 0.000000</pose>
+      <pose>1.2000 2.4000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_curva_r1'>
+    <model name='tile_curva_tr'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -222,10 +222,10 @@
           </surface>
         </collision>
       </link>
-      <pose>2.4000 0.6000 0.0010 0 0.000000 0.000000</pose>
+      <pose>2.4000 2.4000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_r2'>
+    <model name='tile_right_1'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -252,10 +252,10 @@
           </surface>
         </collision>
       </link>
-      <pose>3.6000 -0.6000 0.0010 0 0.000000 4.712400</pose>
+      <pose>3.6000 1.2000 0.0010 0.0000 0.0000 -1.570796</pose>
     </model>
 
-    <model name='tile_reta_r3'>
+    <model name='tile_right_2'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -282,10 +282,10 @@
           </surface>
         </collision>
       </link>
-      <pose>3.6000 -1.8000 0.0010 0 0.000000 4.712400</pose>
+      <pose>3.6000 0.0000 0.0010 0.0000 0.0000 -1.570796</pose>
     </model>
 
-    <model name='tile_curva_r4'>
+    <model name='tile_curva_br'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -312,10 +312,10 @@
           </surface>
         </collision>
       </link>
-      <pose>3.6000 -3.0000 0.0010 0 0.000000 4.712400</pose>
+      <pose>3.6000 -1.2000 0.0010 0.0000 0.0000 -1.570796</pose>
     </model>
 
-    <model name='tile_reta_s1'>
+    <model name='tile_bottom_1'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -342,10 +342,10 @@
           </surface>
         </collision>
       </link>
-      <pose>2.4000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>2.4000 -2.4000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_s2'>
+    <model name='tile_bottom_2'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -372,10 +372,10 @@
           </surface>
         </collision>
       </link>
-      <pose>1.2000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>1.2000 -2.4000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_s3'>
+    <model name='tile_bottom_3'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -402,10 +402,10 @@
           </surface>
         </collision>
       </link>
-      <pose>0.0000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>0.0000 -2.4000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_s4'>
+    <model name='tile_bottom_4'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -432,40 +432,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-1.2000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>-1.2000 -2.4000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_s5'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-2.4000 -4.2000 0.0010 0 0.000000 3.141600</pose>
-    </model>
-
-    <model name='tile_curva_w1'>
+    <model name='tile_curva_bl'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -492,10 +462,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-3.6000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>-2.4000 -2.4000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_w2'>
+    <model name='tile_left_1'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -522,10 +492,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-4.8000 -3.0000 0.0010 0 0.000000 1.570800</pose>
+      <pose>-3.6000 -1.2000 0.0010 0.0000 0.0000 1.570796</pose>
     </model>
 
-    <model name='tile_rampa_subida_1'>
+    <model name='tile_left_2'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -552,70 +522,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-4.8000 -1.8000 0.0010 0 -0.209871 1.570800</pose>
+      <pose>-3.6000 0.0000 0.0010 0.0000 0.0000 1.570796</pose>
     </model>
 
-    <model name='tile_rampa_subida_2'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-4.8000 -0.6000 0.2510 0 -0.209871 1.570800</pose>
-    </model>
-
-    <model name='tile_reta_topo_w'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-4.8000 0.6000 0.5010 0 0.000000 1.570800</pose>
-    </model>
-
-    <model name='tile_curva_topo_nw'>
+    <model name='tile_curva_tl'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -642,10 +552,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-4.8000 1.8000 0.5010 0 0.000000 1.570800</pose>
+      <pose>-3.6000 1.2000 0.0010 0.0000 0.0000 1.570796</pose>
     </model>
 
-    <model name='tile_reta_topo_n1'>
+    <model name='tile_mid_h1'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -672,10 +582,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-3.6000 3.0000 0.5010 0 0.000000 0.000000</pose>
+      <pose>-3.0000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_topo_n2'>
+    <model name='tile_mid_h2'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -702,10 +612,190 @@
           </surface>
         </collision>
       </link>
-      <pose>-2.4000 3.0000 0.5010 0 0.000000 0.000000</pose>
+      <pose>-1.8000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_curva_topo_ne'>
+    <model name='tile_mid_h3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-0.6000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_mid_h4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.6000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_mid_h5'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>1.8000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_mid_v1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.6000 1.8000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_mid_v2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.6000 0.6000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_mid_v3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.6000 -0.6000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_bypass_ne'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -732,130 +822,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-1.2000 3.0000 0.5010 0 0.000000 0.000000</pose>
+      <pose>0.0000 1.2000 0.0010 0.0000 0.0000 0.000000</pose>
     </model>
 
-    <model name='tile_reta_bridge_app'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-0.0000 1.8000 0.5010 0 0.000000 4.712400</pose>
-    </model>
-
-    <model name='tile_reta_viaduto'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-0.0000 0.6000 0.5010 0 0.000000 4.712400</pose>
-    </model>
-
-    <model name='tile_rampa_descida_1'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-0.0000 -0.6000 0.5010 0 0.209871 4.712400</pose>
-    </model>
-
-    <model name='tile_rampa_descida_2'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-0.0000 -1.8000 0.2510 0 0.209871 4.712400</pose>
-    </model>
-
-    <model name='tile_curva_ret_1'>
+    <model name='tile_bypass_se'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -882,40 +852,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-0.0000 -3.0000 0.0010 0 0.000000 4.712400</pose>
+      <pose>1.2000 0.0000 0.0010 0.0000 0.0000 -1.570796</pose>
     </model>
 
-    <model name='tile_reta_ret_2'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-1.2000 -4.2000 0.0010 0 0.000000 3.141600</pose>
-    </model>
-
-    <model name='tile_curva_ret_3'>
+    <model name='tile_bypass_sw'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -942,70 +882,10 @@
           </surface>
         </collision>
       </link>
-      <pose>-2.4000 -4.2000 0.0010 0 0.000000 3.141600</pose>
+      <pose>0.0000 -1.2000 0.0010 0.0000 0.0000 3.141593</pose>
     </model>
 
-    <model name='tile_reta_ret_4'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-3.6000 -3.0000 0.0010 0 0.000000 1.570800</pose>
-    </model>
-
-    <model name='tile_reta_ret_5'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <pose>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
-              <scale>4.0 1 4.0</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <box>
-              <size>1.20 1.20 0.003</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact><ode/></contact>
-            <friction>
-              <ode><mu>100</mu><mu2>50</mu2></ode>
-              <torsional><ode/></torsional>
-            </friction>
-          </surface>
-        </collision>
-      </link>
-      <pose>-3.6000 -1.8000 0.0010 0 0.000000 1.570800</pose>
-    </model>
-
-    <model name='tile_curva_ret_6'>
+    <model name='tile_bypass_nw'>
       <static>1</static>
       <link name='link'>
         <visual name='visual'>
@@ -1032,215 +912,12 @@
           </surface>
         </collision>
       </link>
-      <pose>-3.6000 -0.6000 0.0010 0 0.000000 1.570800</pose>
-    </model>
-
-    <model name='pillar_nw'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>-0.9000 0.6000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_ne'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>0.9000 0.6000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_sw'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>-0.9000 -0.6000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_se'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>0.9000 -0.6000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_n_top'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>-2.4000 1.8000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_w_top'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>-4.8000 0.6000 0.2500 0 0 0</pose>
-    </model>
-
-    <model name='pillar_e_top'>
-      <static>1</static>
-      <link name='link'>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
-            </script>
-          </material>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <cylinder>
-              <radius>0.06</radius>
-              <length>0.50</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-      <pose>-3.6000 0.6000 0.2500 0 0 0</pose>
+      <pose>-1.2000 0.0000 0.0010 0.0000 0.0000 1.570796</pose>
     </model>
 
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>2.5 -6.0 6.5 0 0.65 2.15</pose>
+        <pose>0.0 -1.0 10.0 0 1.5708 1.5708</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

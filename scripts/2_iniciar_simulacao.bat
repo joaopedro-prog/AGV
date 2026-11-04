@@ -38,24 +38,12 @@ set "DEFAULT_INDEX=1"
 
 REM Adiciona mundos em ordem de destaque e clareza
 set /a count+=1
-set "WORLD_!count!=pista_completa_3d.world"
-echo     [!count!] pista_completa_3d.world   (★ Pista 3D Multinivel - Rampas, Viaduto e Tunel)
-
-set /a count+=1
-set "WORLD_!count!=pista_oficial.world"
-echo     [!count!] pista_oficial.world       (Pista Oficial Completa - 38 Tiles)
+set "WORLD_!count!=pista_completa_plana.world"
+echo     [!count!] pista_completa_plana.world  (★ Pista Plana Completa - Retas, Curvas, Cruzamentos e Rotatoria)
 
 set /a count+=1
 set "WORLD_!count!=pista_teste_8_tiles.world"
-echo     [!count!] pista_teste_8_tiles.world (Circuito Compacto de Teste - 8 Tiles - 90x90cm)
-
-set /a count+=1
-set "WORLD_!count!=pista_obstaculos.world"
-echo     [!count!] pista_obstaculos.world    (Pista com Obstaculos Desafiadores)
-
-set /a count+=1
-set "WORLD_!count!=mundo_vazio.world"
-echo     [!count!] mundo_vazio.world         (Mundo Vazio para Testes Livres)
+echo     [!count!] pista_teste_8_tiles.world   (Circuito Compacto de Teste - 8 Tiles - 3.6m x 3.6m)
 
 echo.
 echo     [0] Cancelar e voltar ao menu

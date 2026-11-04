@@ -7,9 +7,8 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
-        - /TF1
       Splitter Ratio: 0.5
-    Tree Height: 600
+    Tree Height: 424
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -17,7 +16,7 @@ Panels:
       - /2D Goal Pose1
       - /Publish Point1
     Name: Tool Properties
-    Splitter Ratio: 0.588
+    Splitter Ratio: 0.5879999995231628
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
@@ -32,7 +31,7 @@ Visualization Manager:
       Color: 140; 140; 144
       Enabled: true
       Line Style:
-        Line Width: 0.03
+        Line Width: 0.029999999329447746
         Value: Lines
       Name: Grid (Pista / Odom)
       Normal Cell Count: 0
@@ -49,17 +48,23 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        BL_caster_wheel:
+          Value: true
+        BR_caster_wheel:
+          Value: true
+        FL_caster_wheel:
+          Value: true
+        FR_caster_wheel:
+          Value: true
+        base_footprint:
+          Value: true
         base_link:
           Value: true
         camera_link:
           Value: true
         camera_link_optical:
           Value: true
-        caster_wheel:
-          Value: true
         chassis:
-          Value: true
-        face_link:
           Value: true
         left_wheel:
           Value: true
@@ -67,21 +72,31 @@ Visualization Manager:
           Value: true
         right_wheel:
           Value: true
+        ultrasonic_frame:
+          Value: true
       Marker Scale: 0.5
       Name: TF (Transforms)
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
         odom:
           base_link:
+            base_footprint:
+              {}
             chassis:
+              BL_caster_wheel:
+                {}
+              BR_caster_wheel:
+                {}
+              FL_caster_wheel:
+                {}
+              FR_caster_wheel:
+                {}
               camera_link:
                 camera_link_optical:
                   {}
-              caster_wheel:
-                {}
-              face_link:
+              ultrasonic_frame:
                 {}
             left_wheel:
               {}
@@ -103,10 +118,34 @@ Visualization Manager:
       Enabled: true
       Links:
         All Links Enabled: true
+        BL_caster_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        BR_caster_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
+        FL_caster_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        FR_caster_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -120,22 +159,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        caster_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         chassis:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        face_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        laser_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -150,6 +174,14 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        ultrasonic_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
@@ -157,6 +189,7 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz_default_plugins/Camera
       Enabled: false
+      Far Plane Distance: 100
       Image Rendering: background and overlay
       Name: Camera (Visao Dianteira)
       Overlay Alpha: 0.5
@@ -168,11 +201,26 @@ Visualization Manager:
         Value: /camera/image_raw
       Value: false
       Visibility:
+        "": true
         Grid (Pista / Odom): true
         RobotModel: false
         TF (Transforms): false
         Value: true
       Zoom Factor: 1
+    - Alpha: 0.20000000298023224
+      Buffer Length: 1
+      Class: rviz_default_plugins/Range
+      Color: 255; 0; 0
+      Enabled: true
+      Name: Range
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /agv/ultrasonic
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 45; 45; 48
@@ -188,6 +236,9 @@ Visualization Manager:
     - Class: rviz_default_plugins/Measure
       Line color: 128; 128; 0
     - Class: rviz_default_plugins/SetInitialPose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -216,32 +267,41 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.2
+      Distance: 4.661589622497559
       Enable Stereo Rendering:
-        Stereo Eye Separation: 0.06
+        Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.0
-        Y: 0.0
-        Z: 0.05
+        X: -0.06607984006404877
+        Y: -0.33626484870910645
+        Z: -0.49300187826156616
       Focal Shape Fixed Size: true
-      Focal Shape Size: 0.05
+      Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
-      Near Clip Distance: 0.01
-      Pitch: 0.55
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.6549999117851257
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.8
+      Yaw: 5.120002746582031
     Saved: ~
 Window Geometry:
-  Displays:
+  Camera (Visao Dianteira):
     collapsed: false
-  Height: 900
-  Hide Left Dock: false
+  Displays:
+    collapsed: true
+  Height: 647
+  Hide Left Dock: true
   Hide Right Dock: true
-  Width: 1400
-  X: 50
-  Y: 50
+  QMainWindow State: 000000ff00000000fd00000001000000000000015600000231fc0200000005fb0000003000430061006d006500720061002000280056006900730061006f0020004400690061006e0074006500690072006100290000000000ffffffff0000002800fffffffb000000100044006900730070006c006100790073000000003b00000231000000c700fffffffb0000001200530065006c0065006300740069006f006e00000001900000009a0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000001d7000000bb0000005c00fffffffb0000000a0056006900650077007300000002420000019c000000a000ffffff000003b40000023100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 948
+  X: 928
+  Y: 493

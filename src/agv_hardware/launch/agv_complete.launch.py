@@ -3,7 +3,7 @@ Launch Orquestrador Mestre do AGV (Simulação vs Robô Real).
 
 Como usar:
   1) MODO SIMULAÇÃO (Gazebo + Visão + Seguidor de Linha):
-     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=circuit1.world
+     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=pista_completa_plana.world
 
   2) MODO ROBÔ REAL NA RASPBERRY PI (Serial MCU + Câmera USB + Visão + Seguidor de Linha):
      ros2 launch agv_hardware agv_complete.launch.py sim_mode:=false
@@ -65,8 +65,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'world',
-            default_value='pista_completa_3d.world',
-            description='Nome ou caminho do mundo do Gazebo (ex: circuit1.world, circle_world.world, empty.world)',
+            default_value='pista_completa_plana.world',
+            description='Nome do mundo do Gazebo (pista_completa_plana.world ou pista_teste_8_tiles.world)',
         ),
         DeclareLaunchArgument(
             'auto_start',

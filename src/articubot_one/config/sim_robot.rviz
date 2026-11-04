@@ -8,7 +8,6 @@ Panels:
         - /Status1
         - /RobotModel1
         - /TF1
-        - /LaserScan1
       Splitter Ratio: 0.5
     Tree Height: 600
   - Class: rviz_common/Selection
@@ -62,8 +61,6 @@ Visualization Manager:
           Value: true
         face_link:
           Value: true
-        laser_frame:
-          Value: true
         left_wheel:
           Value: true
         odom:
@@ -85,8 +82,6 @@ Visualization Manager:
               caster_wheel:
                 {}
               face_link:
-                {}
-              laser_frame:
                 {}
             left_wheel:
               {}
@@ -160,39 +155,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/LaserScan
-      Color: 0; 255; 160
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 0
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: LaserScan (Lidar 360)
-      Position Transformer: XYZ
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.04
-      Style: Flat Squares
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: System Default
-        Value: /scan
-      Use Fixed Frame: false
-      Use rainbow: false
-      Value: true
     - Class: rviz_default_plugins/Camera
       Enabled: false
       Image Rendering: background and overlay
@@ -207,7 +169,6 @@ Visualization Manager:
       Value: false
       Visibility:
         Grid (Pista / Odom): true
-        LaserScan (Lidar 360): true
         RobotModel: false
         TF (Transforms): false
         Value: true

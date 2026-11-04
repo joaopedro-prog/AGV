@@ -14,7 +14,7 @@ Ambiente completo de desenvolvimento, simulação física de alta fidelidade e c
 6. [Comandos Rápidos do Gazebo (Janela Externa)](#6-comandos-rápidos-do-gazebo-janela-externa)
 7. [Mundos e Circuitos no Gazebo](#7-mundos-e-circuitos-no-gazebo)
 8. [Aceleração por GPU e Otimização de Desempenho (60 FPS)](#8-aceleração-por-gpu-e-otimização-de-desempenho-60-fps)
-9. [Posicionamento e Sensores (Câmera, Lidar e Ultrassônico)](#9-posicionamento-e-sensores-câmera-lidar-e-ultrassônico)
+9. [Posicionamento e Sensores (Câmera e Ultrassônico)](#9-posicionamento-e-sensores-câmera-e-ultrassônico)
 10. [Simulação vs Robô Real](#10-simulação-vs-robô-real)
 11. [Orquestração do Seguidor de Linha (START / STOP)](#11-orquestração-do-seguidor-de-linha-start--stop)
 12. [Checklist Quando o Robô Físico Chegar](#12-checklist-quando-o-robô-físico-chegar)
@@ -92,7 +92,7 @@ AGV/
 │
 ├── scripts/                      # Scripts de automação e atalhos Windows (.bat) e Linux (.sh)
 │   ├── menu_agv.bat              # Menu interativo do AGV
-│   ├── 1_ver_robo_rviz.bat       # Abre o RViz 2 com robô real, Lidar, odometria e pista
+│   ├── 1_ver_robo_rviz.bat       # Abre o RViz 2 com robô real, odometria, rodas e pista
 │   ├── 2_iniciar_simulacao.bat   # Abre o Gazebo com seletor de mundos e robô
 │   ├── 3_ver_camera.bat          # Monitor visual da detecção de linha (rqt_image_view)
 │   ├── 4_agv_start.bat           # Manda o AGV começar a seguir linha (START)
@@ -109,7 +109,7 @@ AGV/
 │
 ├── src/                          # Código-fonte ROS 2 (3 Pacotes Principais)
 │   ├── articubot_one/            # [PACOTE 1] Modelagem 3D CAD, URDF/Xacro e Mundos Gazebo
-│   │   ├── description/          # Arquivos Xacro (robot_core, camera, lidar, ultrasonic, etc.)
+│   │   ├── description/          # Arquivos Xacro (robot_core, camera, ultrasonic, etc.)
 │   │   ├── meshes/               # 16 malhas STL reais do robô exportadas do Fusion 360
 │   │   ├── launch/               # Launches de simulação (launch_sim, view_robot, rsp)
 │   │   └── worlds/               # Circuitos de simulação (3D Multinível, Oficial, 8 Tiles)
@@ -142,7 +142,7 @@ O menu interativo será exibido:
 ======================================================================
 
   [1] Abrir Terminal Interativo ROS 2 (bash dentro do container)
-  [2] Visualizar Robo no RViz 2 (Odometria, Lidar, Rodas e Pista)
+  [2] Visualizar Robo no RViz 2 (Odometria, Rodas e Pista)
   [3] Iniciar SIMULACAO COMPLETA no Gazebo (Pista + Robo + Visao)
   [4] Ver Camera e Deteccao de Linha (rqt_image_view)
 
@@ -223,9 +223,9 @@ O ambiente utiliza repasse direto de hardware via WSLg (`/dev/dxg` e `GALLIUM_DR
 
 ---
 
-## 9. Posicionamento e Sensores (Câmera, Lidar e Ultrassônico)
+## 9. Posicionamento e Sensores (Câmera e Ultrassônico)
 
-O robô conta com 3 sensores integrados:
+O robô conta com sensores integrados focados em navegação por linha e segurança:
 
 ### 1. Câmera Inferior de Rastreamento (Webcam)
 * **Arquivo:** [`src/articubot_one/description/camera.xacro`](src/articubot_one/description/camera.xacro)
@@ -238,7 +238,7 @@ O robô conta com 3 sensores integrados:
 * **Posição:** Montado no topo do AGV ($z = 0.1604\text{ m}$) com visualização 360° desobstruída.
 * **Tópico:** `/scan` (`sensor_msgs/msg/LaserScan`).
 
-### 3. Sensor de Distância Dianteiro (Ultrassônico)
+### 2. Sensor de Distância Dianteiro (Ultrassônico)
 * **Arquivo:** [`src/articubot_one/description/ultrasonic.xacro`](src/articubot_one/description/ultrasonic.xacro)
 * **Posição:** Para-choque frontal dianteiro ($x = 0.355\text{ m}, z = 0.050\text{ m}$).
 * **Tópico:** `/agv/ultrasonic` (`sensor_msgs/msg/Range`, cone de $30^\circ$, alcance $2\text{ cm}$ a $3.0\text{ m}$).

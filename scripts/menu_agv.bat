@@ -18,6 +18,7 @@ echo   -------------------------- COMANDOS DO AGV -------------------------
 echo   [5] Mandar o Robo SEGUIR A LINHA (START)
 echo   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
 echo   [7] Abrir Painel Interativo de Missoes (agv_cmd)
+echo   [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
 echo.
 echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
@@ -27,9 +28,10 @@ echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
 echo   [Z] Comandos Rapidos do Gazebo (Janela Externa: Hot-Reload, Luz, Teleporte)
 echo   [0] Sair
 echo ======================================================================
-choice /C 123456789GZU0 /N /M "Digite a opcao: "
+choice /C 123456789GZUJ0 /N /M "Digite a opcao: "
 
-if errorlevel 13 goto SAIR
+if errorlevel 14 goto SAIR
+if errorlevel 13 goto CMD_JOYSTICK
 if errorlevel 12 goto CMD_PUSH
 if errorlevel 11 goto CMD_GAZEBO
 if errorlevel 10 goto CMD_GPU
@@ -72,6 +74,10 @@ goto MENU
 call 6_painel_interativo.bat
 goto MENU
 
+:CMD_JOYSTICK
+call controlar_joystick.bat
+goto MENU
+
 :CMD_BUILD
 call compilar.bat
 goto MENU
@@ -92,5 +98,6 @@ goto MENU
 call 7_menu_gazebo.bat
 goto MENU
 
+:CMD_SAIR
 :SAIR
 exit /b 0

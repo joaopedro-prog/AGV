@@ -17,9 +17,10 @@ Ambiente completo de desenvolvimento, simulação física de alta fidelidade e c
 9. [Posicionamento e Sensores (Câmera e Ultrassônico)](#9-posicionamento-e-sensores-câmera-e-ultrassônico)
 10. [Simulação vs Robô Real](#10-simulação-vs-robô-real)
 11. [Orquestração do Seguidor de Linha (START / STOP)](#11-orquestração-do-seguidor-de-linha-start--stop)
-12. [Checklist Quando o Robô Físico Chegar](#12-checklist-quando-o-robô-físico-chegar)
-13. [Configuração Inicial do Ambiente (PC / Notebook Novo)](#13-configuração-inicial-do-ambiente-pc--notebook-novo)
-14. [Solução de Problemas Comuns (Troubleshooting)](#14-solução-de-problemas-comuns-troubleshooting)
+12. [Teleoperação por Joystick USB (Simulação e Robô Real)](#12-teleoperação-por-joystick-usb-simulação-e-robô-real)
+13. [Checklist Quando o Robô Físico Chegar](#13-checklist-quando-o-robô-físico-chegar)
+14. [Configuração Inicial do Ambiente (PC / Notebook Novo)](#13-configuração-inicial-do-ambiente-pc--notebook-novo)
+15. [Solução de Problemas Comuns (Troubleshooting)](#14-solução-de-problemas-comuns-troubleshooting)
 
 ---
 
@@ -150,6 +151,7 @@ O menu interativo será exibido:
   [5] Mandar o Robo SEGUIR A LINHA (START)
   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
   [7] Abrir Painel Interativo de Missoes (agv_cmd)
+  [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
 
   -------------------------- FERRAMENTAS -----------------------------
   [8] Recompilar o Workspace (colcon build)
@@ -294,7 +296,39 @@ Você pode enviar comandos de três formas:
 
 ---
 
-## 12. Checklist Quando o Robô Físico Chegar
+---
+
+## 12. Teleoperação por Joystick USB (Simulação e Robô Real)
+
+O sistema conta com suporte completo para controle manual por **Joystick / Gamepad USB** (Xbox 360/One/Series, PlayStation DualShock/DualSense ou controles genéricos USB).
+
+### Destaques e Funcionamento:
+* **Detecção Automática ou Seleção de Porta:** Ao iniciar, o sistema escaneia todos os joysticks e portas USB/COM disponíveis. Se houver apenas 1 controle conectado, basta pressionar ENTER para detecção automática, ou escolher o índice desejado.
+* **Sem Janela Atrapalhando a Visão:** O script oferece a opção de **minimizar a janela automaticamente**, permitindo que você acompanhe a visão em tela cheia do Gazebo, RViz 2 ou da câmera sem nenhuma janela de terminal na frente.
+* **Resposta em Segundo Plano (SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS):** Mesmo com o terminal minimizado ou atrás das janelas gráficas, o controle responde instantaneamente aos comandos dos botões e analógicos.
+* **Controle Duplo (Simulado ou Real):**
+  * **Simulação Local (Gazebo / Docker):** Transmissão com latência sub-milissegundo via pipe direto para o nó 	eleop_joy_receiver.py dentro do container.
+  * **Robô Físico Real:** Envio de pacotes via socket UDP (porta 9876) diretamente para o IP da Raspberry Pi 5 pela rede local Wi-Fi.
+* **Prioridade Absoluta via 	wist_mux:** Os comandos manuais do joystick são publicados em /cmd_vel_joy com **prioridade máxima (100)**, assumindo o controle instantâneo do robô mesmo se ele estiver no modo autônomo de seguidor de linha.
+
+### Mapeamento dos Controles:
+| Comando / Botão | Ação no AGV |
+| :--- | :--- |
+| **Alavanca Esquerda (Vertical)** | Movimento para frente / marcha a ré suave com curva exponencial |
+| **Alavanca Esquerda / Direita (Horizontal)** | Rotação / curva (esterçamento para esquerda ou direita) |
+| **D-Pad (Setas direcionais)** | Ajuste fino e alinhamento milimétrico passo a passo |
+| **Gatilho Direito (RT / RB)** | **Modo TURBO:** Eleva a velocidade linear máxima para .85\text{ m/s}$ e angular para .80\text{ rad/s}$ |
+| **Gatilho Esquerdo (LT / LB)** | **Modo LENTO / PRECISÃO:** Reduz a velocidade para .15\text{ m/s}$ para manobras delicadas |
+| **Botão B (Círculo)** | **PARADA DE EMERGÊNCIA:** Trava os motores imediatamente e bloqueia novos comandos |
+| **Botão A (Cruz)** | **Liberar Emergência:** Desbloqueia o robô e retoma a teleoperação normal |
+| **Botão Back / Select** | Encerra o script com parada suave de segurança do robô |
+
+### Como Usar:
+1. Conecte o controle USB no computador.
+2. No menu principal iniciar.bat, digite **[J]** (ou dê duplo clique em controlar_joystick.bat).
+3. Confirme a detecção automática com ENTER e aproveite a pilotagem!
+
+## 13. Checklist Quando o Robô Físico Chegar
 
 Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** onde estão as marcações `[ALTERAR]`:
 
@@ -319,7 +353,7 @@ Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** 
 
 ---
 
-## 13. Configuração Inicial do Ambiente (PC / Notebook Novo)
+## 14. Configuração Inicial do Ambiente (PC / Notebook Novo)
 
 ### Pré-requisitos
 1. Windows 10 (versão 21H2+) ou Windows 11 com virtualização ativada na BIOS.
@@ -346,7 +380,7 @@ Dê dois cliques no arquivo **[`scripts/atualizar_projeto.bat`](scripts/atualiza
 
 ---
 
-## 14. Solução de Problemas Comuns (Troubleshooting)
+## 15. Solução de Problemas Comuns (Troubleshooting)
 
 ### Erro: `The command 'docker' could not be found in this WSL 2 distro`
 * **Solução:** No Docker Desktop, abra **Settings** $\rightarrow$ **Resources** $\rightarrow$ **WSL integration**, ligue a chave do **Ubuntu-24.04** e clique em **Apply & restart**.

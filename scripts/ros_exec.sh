@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+# Garante variaveis do servidor gráfico WSLg
+if [ -z "$DISPLAY" ]; then
+    export DISPLAY=:0
+fi
+if [ -z "$WAYLAND_DISPLAY" ]; then
+    export WAYLAND_DISPLAY=wayland-0
+fi
+if [ -z "$PULSE_SERVER" ]; then
+    export PULSE_SERVER=unix:/mnt/wslg/PulseServer
+fi
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR=/tmp/runtime-user
+fi
+
 # Driver de aceleracao por GPU nativo via WSLg Direct3D 12
 export GALLIUM_DRIVER=d3d12
 export LD_LIBRARY_PATH=/usr/lib/wsl/lib:${LD_LIBRARY_PATH}

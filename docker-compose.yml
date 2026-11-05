@@ -13,10 +13,10 @@ services:
     ipc: host
 
     environment:
-      - DISPLAY=${DISPLAY}
-      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      - DISPLAY=${DISPLAY:-:0}
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-0}
       - XDG_RUNTIME_DIR=/tmp/runtime-user
-      - PULSE_SERVER=${PULSE_SERVER}
+      - PULSE_SERVER=${PULSE_SERVER:-unix:/mnt/wslg/PulseServer}
       - QT_X11_NO_MITSHM=1
       # Aceleração por Hardware GPU Direta (DirectX 12 / Mesa D3D12 vGPU via WSLg)
       - GALLIUM_DRIVER=d3d12

@@ -96,6 +96,7 @@ echo.
 
 wsl -d Ubuntu-24.04 docker start meu_container_ros >nul 2>&1
 wsl -d Ubuntu-24.04 docker exec meu_container_ros pkill -9 -f "gzserver|gzclient" >nul 2>&1
-start "Simulacao AGV - Gazebo (!MUNDO_ESCOLHIDO!)" cmd /k "wsl -d Ubuntu-24.04 docker exec -it meu_container_ros /workspace/scripts/ros_exec.sh ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=!MUNDO_ESCOLHIDO!"
+wsl -d Ubuntu-24.04 docker exec -u 0 meu_container_ros chmod 777 /tmp/runtime-user >nul 2>&1
+start "Simulacao AGV - Gazebo (!MUNDO_ESCOLHIDO!)" cmd /k "wsl -d Ubuntu-24.04 docker exec -e DISPLAY=:0 -e WAYLAND_DISPLAY=wayland-0 -it meu_container_ros /workspace/scripts/ros_exec.sh ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=!MUNDO_ESCOLHIDO!"
 
 exit /b 0

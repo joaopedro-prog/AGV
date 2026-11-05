@@ -38,8 +38,12 @@ set "DEFAULT_INDEX=1"
 
 REM Adiciona mundos em ordem de destaque e clareza
 set /a count+=1
+set "WORLD_!count!=armazem_logistico.world"
+echo     [!count!] armazem_logistico.world   (★ NOVO: Armazem Fabril - Gondolas, Estoque, Circuito Ciclico e Marcadores)
+
+set /a count+=1
 set "WORLD_!count!=pista_completa_plana.world"
-echo     [!count!] pista_completa_plana.world  (★ Pista Plana Completa - Retas, Curvas, Cruzamentos e Rotatoria)
+echo     [!count!] pista_completa_plana.world  (Pista Plana Completa - Retas, Curvas, Cruzamentos e Rotatoria)
 
 set /a count+=1
 set "WORLD_!count!=pista_teste_8_tiles.world"

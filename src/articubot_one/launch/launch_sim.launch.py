@@ -52,6 +52,12 @@ def launch_setup(context, *args, **kwargs):
 
     # Ajusta o spawn padrão sobre a linha conforme o mundo se não houver coordenadas customizadas
     rw_lower = resolved_world.lower()
+    if ('armazem' in rw_lower or 'estoque' in rw_lower or 'fabril' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
+        spawn_x_val = '-2.40'
+        spawn_y_val = '3.00'
+        spawn_z_val = '0.09'
+        spawn_yaw_val = '0.0'
+        print(f"[launch_sim] Posicao de spawn ajustada para armazem_logistico (Doca de Entrada): x={spawn_x_val}, y={spawn_y_val}")
     if ('plana' in rw_lower or 'completa' in rw_lower) and spawn_x_val == '0.05' and spawn_y_val == '-0.157':
         spawn_x_val = '-1.20'
         spawn_y_val = '1.80'
@@ -145,7 +151,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'world',
-            default_value='pista_completa_plana.world',
+            default_value='armazem_logistico.world',
             description='Mundo do Gazebo a ser carregado (pista_completa_plana.world ou pista_teste_8_tiles.world)',
         ),
         DeclareLaunchArgument(

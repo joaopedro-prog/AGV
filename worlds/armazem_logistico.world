@@ -1,0 +1,1746 @@
+<sdf version='1.7'>
+  <world name='default'>
+    <!-- Iluminacao Industrial Zenital Suave (Sem Sombras Duras para Visao Computacional) -->
+    <light name='sun_industrial' type='directional'>
+      <cast_shadows>0</cast_shadows>
+      <pose>0 0 25 0 0 0</pose>
+      <diffuse>0.95 0.95 0.95 1</diffuse>
+      <specular>0.08 0.08 0.08 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>0.05 0.05 -1</direction>
+    </light>
+
+    <!-- Luminarias Industriais Distribuidas (Luzes High-Bay) -->
+    <light name='bay_light_1' type='point'>
+      <cast_shadows>0</cast_shadows>
+      <pose>-3.5 2.5 4.5 0 0 0</pose>
+      <diffuse>0.88 0.90 0.95 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
+    </light>
+
+    <light name='bay_light_2' type='point'>
+      <cast_shadows>0</cast_shadows>
+      <pose>3.5 2.5 4.5 0 0 0</pose>
+      <diffuse>0.88 0.90 0.95 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
+    </light>
+
+    <light name='bay_light_3' type='point'>
+      <cast_shadows>0</cast_shadows>
+      <pose>-3.5 -2.5 4.5 0 0 0</pose>
+      <diffuse>0.88 0.90 0.95 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
+    </light>
+
+    <light name='bay_light_4' type='point'>
+      <cast_shadows>0</cast_shadows>
+      <pose>3.5 -2.5 4.5 0 0 0</pose>
+      <diffuse>0.88 0.90 0.95 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
+    </light>
+
+    <light name='bay_light_center' type='point'>
+      <cast_shadows>0</cast_shadows>
+      <pose>0.0 0.0 5.0 0 0 0</pose>
+      <diffuse>0.92 0.92 0.95 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation><range>30</range><constant>0.8</constant><linear>0.015</linear><quadratic>0.003</quadratic></attenuation>
+    </light>
+
+    <!-- Ambiente Global do Armazem -->
+    <scene>
+      <ambient>0.92 0.92 0.94 1</ambient>
+      <background>0.95 0.95 0.98 1</background>
+      <shadows>0</shadows>
+      <grid>0</grid>
+    </scene>
+
+    <!-- Piso Industrial de Concreto Polido Claro (Alto Atrito e Contraste com Linhas Pretas) -->
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>150 150</size>
+            </plane>
+          </geometry>
+          <surface>
+            <contact><collide_bitmask>65535</collide_bitmask><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+            <bounce/>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>150 150</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/White</name>
+            </script>
+            <ambient>0.98 0.98 0.98 1</ambient>
+            <diffuse>0.98 0.98 0.98 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Parametros Fisicos ODE para Estabilidade Dinamica -->
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <audio><device>none</device></audio>
+
+
+    <!-- Parede Perimetral Norte -->
+    <model name='parede_norte'>
+      <static>1</static>
+      <pose>0.0 6.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>16.2 0.3 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>16.2 0.3 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script>
+            <ambient>0.75 0.77 0.80 1</ambient><diffuse>0.75 0.77 0.80 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- Parede Perimetral Sul -->
+    <model name='parede_sul'>
+      <static>1</static>
+      <pose>0.0 -6.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>16.2 0.3 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>16.2 0.3 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script>
+            <ambient>0.75 0.77 0.80 1</ambient><diffuse>0.75 0.77 0.80 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- Parede Oeste com Doca de Entrada -->
+    <model name='parede_oeste_1'>
+      <static>1</static>
+      <pose>-8.0 -2.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.3 8.0 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.3 8.0 4.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+        </visual>
+      </link>
+    </model>
+    <model name='parede_oeste_2'>
+      <static>1</static>
+      <pose>-8.0 5.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.3 2.0 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.3 2.0 4.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+        </visual>
+      </link>
+    </model>
+    <!-- Portao da Doca de Entrada (Inbound Bay) -->
+    <model name='portao_doca_entrada'>
+      <static>1</static>
+      <pose>-8.0 3.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <visual name='vis'>
+          <geometry><box><size>0.1 2.8 4.2</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/ZincYellow</name></script>
+            <ambient>0.90 0.80 0.2 1</ambient><diffuse>0.90 0.80 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- Parede Leste com Doca de Expedicao -->
+    <model name='parede_leste_1'>
+      <static>1</static>
+      <pose>8.0 2.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.3 8.0 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.3 8.0 4.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+        </visual>
+      </link>
+    </model>
+    <model name='parede_leste_2'>
+      <static>1</static>
+      <pose>8.0 -5.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.3 2.0 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.3 2.0 4.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/Grey</name></script></material>
+        </visual>
+      </link>
+    </model>
+    <!-- Portao da Doca de Expedicao (Outbound Bay) -->
+    <model name='portao_doca_expedicao'>
+      <static>1</static>
+      <pose>8.0 -3.0 2.25 0 0 0</pose>
+      <link name='link'>
+        <visual name='vis'>
+          <geometry><box><size>0.1 2.8 4.2</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/ZincYellow</name></script>
+            <ambient>0.90 0.80 0.2 1</ambient><diffuse>0.90 0.80 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_1'>
+      <static>1</static>
+      <pose>-5.50 4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_2'>
+      <static>1</static>
+      <pose>0.00 4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_3'>
+      <static>1</static>
+      <pose>5.50 4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_4'>
+      <static>1</static>
+      <pose>-5.50 -4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_5'>
+      <static>1</static>
+      <pose>0.00 -4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='coluna_industrial_6'>
+      <static>1</static>
+      <pose>5.50 -4.50 2.25 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>0.45 0.45 4.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>0.45 0.45 4.5</size></box></geometry>
+          <material>
+            <script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/DarkGrey</name></script>
+            <ambient>0.25 0.28 0.32 1</ambient><diffuse>0.30 0.33 0.37 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Gondola Industrial Porta-Paletes: gondola_setor_a_norte -->
+    <model name='gondola_setor_a_norte'>
+      <static>1</static>
+      <pose>-2.1000 1.5000 0.0 0 0 0.000000</pose>
+      <link name='link'>
+        <!-- Colisao da Base Estrutural para Evitar Colisoes do Robo -->
+        <collision name='col_base'>
+          <pose>0 0 1.60 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 3.20</size></box></geometry>
+        </collision>
+
+        <!-- Pilares Verticais Metalicos (Laranja Industrial) -->
+        <visual name='pilar_fl'>
+          <pose>-1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_fr'>
+          <pose>1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_bl'>
+          <pose>-1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_br'>
+          <pose>1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+
+        <!-- Vigas Horizontais das Prateleiras (Nivel 1: 0.8m, Nivel 2: 1.8m, Nivel 3: 2.8m) -->
+        <visual name='prateleira_1'>
+          <pose>0 0 0.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_2'>
+          <pose>0 0 1.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_3'>
+          <pose>0 0 2.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas: Pallets de Madeira e Caixas de Papelao no Nivel 1 -->
+        <visual name='pallet_l1_a'>
+          <pose>-0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l1_a'>
+          <pose>-0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>0.95 0.70 0.60</size></box></geometry>
+          <material><ambient>0.78 0.58 0.38 1</ambient><diffuse>0.78 0.58 0.38 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l1_b'>
+          <pose>0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='container_l1_b'>
+          <pose>0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.70 0.55</size></box></geometry>
+          <material><ambient>0.10 0.40 0.75 1</ambient><diffuse>0.10 0.40 0.75 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas no Nivel 2 -->
+        <visual name='pallet_l2_a'>
+          <pose>-0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_a'>
+          <pose>-0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>0.90 0.65 0.60</size></box></geometry>
+          <material><ambient>0.72 0.52 0.32 1</ambient><diffuse>0.72 0.52 0.32 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l2_b'>
+          <pose>0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_b'>
+          <pose>0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.68 0.60</size></box></geometry>
+          <material><ambient>0.80 0.60 0.40 1</ambient><diffuse>0.80 0.60 0.40 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Gondola Industrial Porta-Paletes: gondola_setor_a_sul -->
+    <model name='gondola_setor_a_sul'>
+      <static>1</static>
+      <pose>-2.1000 -1.5000 0.0 0 0 0.000000</pose>
+      <link name='link'>
+        <!-- Colisao da Base Estrutural para Evitar Colisoes do Robo -->
+        <collision name='col_base'>
+          <pose>0 0 1.60 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 3.20</size></box></geometry>
+        </collision>
+
+        <!-- Pilares Verticais Metalicos (Laranja Industrial) -->
+        <visual name='pilar_fl'>
+          <pose>-1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_fr'>
+          <pose>1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_bl'>
+          <pose>-1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_br'>
+          <pose>1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+
+        <!-- Vigas Horizontais das Prateleiras (Nivel 1: 0.8m, Nivel 2: 1.8m, Nivel 3: 2.8m) -->
+        <visual name='prateleira_1'>
+          <pose>0 0 0.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_2'>
+          <pose>0 0 1.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_3'>
+          <pose>0 0 2.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas: Pallets de Madeira e Caixas de Papelao no Nivel 1 -->
+        <visual name='pallet_l1_a'>
+          <pose>-0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l1_a'>
+          <pose>-0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>0.95 0.70 0.60</size></box></geometry>
+          <material><ambient>0.78 0.58 0.38 1</ambient><diffuse>0.78 0.58 0.38 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l1_b'>
+          <pose>0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='container_l1_b'>
+          <pose>0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.70 0.55</size></box></geometry>
+          <material><ambient>0.10 0.40 0.75 1</ambient><diffuse>0.10 0.40 0.75 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas no Nivel 2 -->
+        <visual name='pallet_l2_a'>
+          <pose>-0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_a'>
+          <pose>-0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>0.90 0.65 0.60</size></box></geometry>
+          <material><ambient>0.72 0.52 0.32 1</ambient><diffuse>0.72 0.52 0.32 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l2_b'>
+          <pose>0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_b'>
+          <pose>0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.68 0.60</size></box></geometry>
+          <material><ambient>0.80 0.60 0.40 1</ambient><diffuse>0.80 0.60 0.40 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Gondola Industrial Porta-Paletes: gondola_setor_b_norte -->
+    <model name='gondola_setor_b_norte'>
+      <static>1</static>
+      <pose>2.1000 1.5000 0.0 0 0 0.000000</pose>
+      <link name='link'>
+        <!-- Colisao da Base Estrutural para Evitar Colisoes do Robo -->
+        <collision name='col_base'>
+          <pose>0 0 1.60 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 3.20</size></box></geometry>
+        </collision>
+
+        <!-- Pilares Verticais Metalicos (Laranja Industrial) -->
+        <visual name='pilar_fl'>
+          <pose>-1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_fr'>
+          <pose>1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_bl'>
+          <pose>-1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_br'>
+          <pose>1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+
+        <!-- Vigas Horizontais das Prateleiras (Nivel 1: 0.8m, Nivel 2: 1.8m, Nivel 3: 2.8m) -->
+        <visual name='prateleira_1'>
+          <pose>0 0 0.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_2'>
+          <pose>0 0 1.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_3'>
+          <pose>0 0 2.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas: Pallets de Madeira e Caixas de Papelao no Nivel 1 -->
+        <visual name='pallet_l1_a'>
+          <pose>-0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l1_a'>
+          <pose>-0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>0.95 0.70 0.60</size></box></geometry>
+          <material><ambient>0.78 0.58 0.38 1</ambient><diffuse>0.78 0.58 0.38 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l1_b'>
+          <pose>0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='container_l1_b'>
+          <pose>0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.70 0.55</size></box></geometry>
+          <material><ambient>0.10 0.40 0.75 1</ambient><diffuse>0.10 0.40 0.75 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas no Nivel 2 -->
+        <visual name='pallet_l2_a'>
+          <pose>-0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_a'>
+          <pose>-0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>0.90 0.65 0.60</size></box></geometry>
+          <material><ambient>0.72 0.52 0.32 1</ambient><diffuse>0.72 0.52 0.32 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l2_b'>
+          <pose>0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_b'>
+          <pose>0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.68 0.60</size></box></geometry>
+          <material><ambient>0.80 0.60 0.40 1</ambient><diffuse>0.80 0.60 0.40 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Gondola Industrial Porta-Paletes: gondola_setor_b_sul -->
+    <model name='gondola_setor_b_sul'>
+      <static>1</static>
+      <pose>2.1000 -1.5000 0.0 0 0 0.000000</pose>
+      <link name='link'>
+        <!-- Colisao da Base Estrutural para Evitar Colisoes do Robo -->
+        <collision name='col_base'>
+          <pose>0 0 1.60 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 3.20</size></box></geometry>
+        </collision>
+
+        <!-- Pilares Verticais Metalicos (Laranja Industrial) -->
+        <visual name='pilar_fl'>
+          <pose>-1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_fr'>
+          <pose>1.25 0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_bl'>
+          <pose>-1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+        <visual name='pilar_br'>
+          <pose>1.25 -0.40 1.60 0 0 0</pose>
+          <geometry><box><size>0.10 0.10 3.20</size></box></geometry>
+          <material><ambient>0.90 0.35 0.05 1</ambient><diffuse>0.90 0.35 0.05 1</diffuse></material>
+        </visual>
+
+        <!-- Vigas Horizontais das Prateleiras (Nivel 1: 0.8m, Nivel 2: 1.8m, Nivel 3: 2.8m) -->
+        <visual name='prateleira_1'>
+          <pose>0 0 0.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_2'>
+          <pose>0 0 1.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+        <visual name='prateleira_3'>
+          <pose>0 0 2.80 0 0 0</pose>
+          <geometry><box><size>2.60 0.90 0.06</size></box></geometry>
+          <material><ambient>0.22 0.28 0.33 1</ambient><diffuse>0.22 0.28 0.33 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas: Pallets de Madeira e Caixas de Papelao no Nivel 1 -->
+        <visual name='pallet_l1_a'>
+          <pose>-0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l1_a'>
+          <pose>-0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>0.95 0.70 0.60</size></box></geometry>
+          <material><ambient>0.78 0.58 0.38 1</ambient><diffuse>0.78 0.58 0.38 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l1_b'>
+          <pose>0.65 0 0.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='container_l1_b'>
+          <pose>0.65 0 1.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.70 0.55</size></box></geometry>
+          <material><ambient>0.10 0.40 0.75 1</ambient><diffuse>0.10 0.40 0.75 1</diffuse></material>
+        </visual>
+
+        <!-- Cargas no Nivel 2 -->
+        <visual name='pallet_l2_a'>
+          <pose>-0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_a'>
+          <pose>-0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>0.90 0.65 0.60</size></box></geometry>
+          <material><ambient>0.72 0.52 0.32 1</ambient><diffuse>0.72 0.52 0.32 1</diffuse></material>
+        </visual>
+
+        <visual name='pallet_l2_b'>
+          <pose>0.65 0 1.88 0 0 0</pose>
+          <geometry><box><size>1.10 0.75 0.12</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/WoodPallet</name></script></material>
+        </visual>
+        <visual name='caixa_l2_b'>
+          <pose>0.65 0 2.25 0 0 0</pose>
+          <geometry><box><size>1.00 0.68 0.60</size></box></geometry>
+          <material><ambient>0.80 0.60 0.40 1</ambient><diffuse>0.80 0.60 0.40 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Estacao 1: Doca de Entrada / Abastecimento (Spawn Inicial) -->
+    <model name='marker_estacao_1_verde'>
+      <static>1</static>
+      <pose>-2.4000 3.0000 0.002 0 0 0.000000</pose>
+      <link name='link'>
+        <visual name='visual_marker'>
+          <cast_shadows>0</cast_shadows>
+          <geometry><box><size>0.80 0.40 0.002</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Green</name>
+            </script>
+            <ambient>0.00 0.90 0.30 1</ambient>
+            <diffuse>0.00 0.90 0.30 1</diffuse>
+            <emissive>0.00 0.23 0.07 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Estacao 2: Corredor de Estoque A (Picking A) -->
+    <model name='marker_estacao_2_azul'>
+      <static>1</static>
+      <pose>4.2000 1.2000 0.002 0 0 -1.570796</pose>
+      <link name='link'>
+        <visual name='visual_marker'>
+          <cast_shadows>0</cast_shadows>
+          <geometry><box><size>0.80 0.40 0.002</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Blue</name>
+            </script>
+            <ambient>0.15 0.45 1.00 1</ambient>
+            <diffuse>0.15 0.45 1.00 1</diffuse>
+            <emissive>0.04 0.11 0.25 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Estacao 3: Intersecao Central / Bypass -->
+    <model name='marker_estacao_3_ciano'>
+      <static>1</static>
+      <pose>0.0000 0.0000 0.002 0 0 0.000000</pose>
+      <link name='link'>
+        <visual name='visual_marker'>
+          <cast_shadows>0</cast_shadows>
+          <geometry><box><size>0.80 0.40 0.002</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Turquoise</name>
+            </script>
+            <ambient>0.00 0.85 0.95 1</ambient>
+            <diffuse>0.00 0.85 0.95 1</diffuse>
+            <emissive>0.00 0.21 0.24 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Estacao 4: Corredor de Estoque B (Picking B) -->
+    <model name='marker_estacao_4_amarelo'>
+      <static>1</static>
+      <pose>0.0000 -3.0000 0.002 0 0 3.141593</pose>
+      <link name='link'>
+        <visual name='visual_marker'>
+          <cast_shadows>0</cast_shadows>
+          <geometry><box><size>0.80 0.40 0.002</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Yellow</name>
+            </script>
+            <ambient>1.00 0.90 0.00 1</ambient>
+            <diffuse>1.00 0.90 0.00 1</diffuse>
+            <emissive>0.25 0.23 0.00 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Estacao 5: Doca de Expedicao / Descarga Final -->
+    <model name='marker_estacao_5_vermelho'>
+      <static>1</static>
+      <pose>-4.2000 -0.6000 0.002 0 0 1.570796</pose>
+      <link name='link'>
+        <visual name='visual_marker'>
+          <cast_shadows>0</cast_shadows>
+          <geometry><box><size>0.80 0.40 0.002</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+            <ambient>1.00 0.10 0.15 1</ambient>
+            <diffuse>1.00 0.10 0.15 1</diffuse>
+            <emissive>0.25 0.03 0.04 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name='tile_norte_1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-3.6000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_norte_2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-2.4000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_norte_3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-1.2000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_norte_4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.0000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_norte_5'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>1.2000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_norte_6'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>2.4000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_curva_tr'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>3.6000 3.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_leste_1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>4.8000 2.4000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_leste_2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>4.8000 1.2000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_leste_3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>4.8000 0.0000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_leste_4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>4.8000 -1.2000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_curva_br'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>4.8000 -2.4000 0.0010 0.0000 0.0000 -1.570796</pose>
+    </model>
+
+    <model name='tile_sul_1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>3.6000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_sul_2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>2.4000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_sul_3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>1.2000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_sul_4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.0000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_sul_5'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-1.2000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_sul_6'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-2.4000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_curva_bl'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-3.6000 -3.6000 0.0010 0.0000 0.0000 3.141593</pose>
+    </model>
+
+    <model name='tile_oeste_1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-4.8000 -2.4000 0.0010 0.0000 0.0000 1.570796</pose>
+    </model>
+
+    <model name='tile_oeste_2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-4.8000 -1.2000 0.0010 0.0000 0.0000 1.570796</pose>
+    </model>
+
+    <model name='tile_oeste_3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-4.8000 0.0000 0.0010 0.0000 0.0000 1.570796</pose>
+    </model>
+
+    <model name='tile_oeste_4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-4.8000 1.2000 0.0010 0.0000 0.0000 1.570796</pose>
+    </model>
+
+    <model name='tile_curva_tl'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-curva/meshes/tile_curva.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-4.8000 2.4000 0.0010 0.0000 0.0000 1.570796</pose>
+    </model>
+
+    <model name='tile_centro_1'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-3.6000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_2'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-2.4000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_3'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>-1.2000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_4'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>0.0000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_5'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>1.2000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_6'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>2.4000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+    <model name='tile_centro_7'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>/workspace/tiles/tile-reta/meshes/tile_reta.dae</uri>
+              <scale>4.0 1 4.0</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1.20 1.20 0.003</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact><ode/></contact>
+            <friction>
+              <ode><mu>100</mu><mu2>50</mu2></ode>
+              <torsional><ode/></torsional>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <pose>3.6000 0.6000 0.0010 0.0000 0.0000 0.000000</pose>
+    </model>
+
+
+    <!-- Posicao Inicial da Camera do Operador no Gazebo (Vista Superior Isometrica) -->
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>0.0 -8.5 11.5 0 0.85 1.5708</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+  </world>
+</sdf>

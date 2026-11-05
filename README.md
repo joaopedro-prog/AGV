@@ -201,11 +201,30 @@ Os circuitos do Gazebo foram redimensionados para a escala **$4.0\times$** (tile
 
 | Mundo | Descrição | Destaques |
 | :--- | :--- | :--- |
-| **`pista_completa_plana.world`** | Pista 3D Multinível Completa | 32 tiles escalados ($1.20\text{ m}$), viaduto elevado a $0.50\text{ m}$ (com passagem inferior livre para o robô e Lidar), rampas suaves de $12^\circ$ e pilares de sustentação. |
+| **`armazem_logistico.world`** | ★ **Armazém Fabril / Estoque com Gôndolas** | Galpão industrial com paredes, docas de carga, 4 blocos de gôndolas porta-paletes (com pallets de madeira, caixas e containers), circuito cíclico de linha contínua e **5 marcações coloridas de estações** para fusão com odometria. |
+| **`pista_completa_plana.world`** | Pista Plana Completa com Bypass | 32 tiles escalados ($1.20\text{ m}$), curvas amplas ($R=0.60\text{ m}$), retas de alta velocidade e rotatória central. |
 | **`pista_oficial.world`** | Pista Oficial Modular | Circuito com retas de $1.20\text{ m}$, curvas amplas de $90^\circ$ ($R=0.60\text{ m}$) e pista de alta velocidade. |
 | **`pista_teste_8_tiles.world`** | Circuito Compacto de Teste | 8 tiles ($3.6\times 3.6\text{ m}$, $R=0.60\text{ m}$), ideal para validação ágil do algoritmo PID e testes de visão. |
 | **`pista_obstaculos.world`** | Pista com Obstáculos | Elementos estáticos na pista (cones e barris espaçados) para teste de parada e desvio autônomo. |
 | **`mundo_vazio.world`** | Mundo Vazio | Chão plano branco padrão para teleoperação e testes livres. |
+
+---
+
+
+
+### Estações e Marcadores de Cores no `armazem_logistico.world`
+O circuito possui 5 marcações transversais de alta visibilidade posicionadas diretamente sobre a linha preta:
+
+| Estação / Setor | Cor Gazebo | Código RGB | Coordenadas $(X, Y)$ | Ação e Significado no Processo |
+| :--- | :--- | :--- | :--- | :--- |
+| **Estação 1: Doca de Entrada** | `Gazebo/Green` | `#00E676` (Verde) | $(X = -2.40, Y = 3.00)$ | Ponto de partida (Spawn) e recebimento/abastecimento de carga |
+| **Estação 2: Picking Estoque A** | `Gazebo/Blue` | `#2979FF` (Azul) | $(X = 4.20, Y = 1.20)$ | Coleta de itens e insumos no bloco de gôndolas A |
+| **Estação 3: Interseção Central** | `Gazebo/Turquoise` | `#00E5FF` (Ciano) | $(X = 0.00, Y = 0.00)$ | Verificação de tráfego, decisão de rota e bypass |
+| **Estação 4: Picking Estoque B** | `Gazebo/Yellow` | `#FFEA00` (Amarelo) | $(X = 0.00, Y = -3.00)$ | Coleta de itens e insumos no bloco de gôndolas B |
+| **Estação 5: Doca de Expedição** | `Gazebo/Red` | `#FF1744` (Vermelho) | $(X = -4.20, Y = -0.60)$ | Descarga final de material expedido |
+
+> [!TIP]
+> **Fusão de Visão com Odometria:** A câmera inferior detecta a cor do chão no centro do quadro visual (`/camera/image_raw`), e o nó de localização valida simultaneamente se a odometria está no raio da coordenada esperada, garantindo 100% de precisão de parada sem depender de marcadores externos ou de iluminação variável.
 
 ---
 

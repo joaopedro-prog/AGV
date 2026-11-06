@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y \
     ros-humble-joint-state-publisher-gui \
     python3-opencv \
     python3-serial \
+    # Comunicação Web, Telemetria e Vídeo (Dashboard)
+    ros-humble-rosbridge-suite \
+    ros-humble-web-video-server \
     # Colcon é a ferramenta oficial para compilar workspaces ROS 2
     python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
@@ -52,3 +55,6 @@ WORKDIR /workspace
 
 # 5. Sourcing automático do ROS 2 no terminal do usuário
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+# 6. Portas para Dashboard Web, rosbridge e web_video_server
+EXPOSE 8080 9090 8081

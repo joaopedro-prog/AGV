@@ -13,7 +13,9 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
         (os.path.join('share', package_name, 'config'), glob(os.path.join('config', '*.yaml'))),
+        (os.path.join('share', package_name, 'web'), glob('agv_brain/web/*')),
     ],
+    package_data={'agv_brain': ['web/*']},
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Joao Pedro',
@@ -26,6 +28,7 @@ setup(
             'line_detector = agv_brain.line_detector_node:main',
             'line_follower = agv_brain.line_follower_node:main',
             'agv_cmd = agv_brain.agv_commander_node:main',
+            'web_dashboard = agv_brain.web_dashboard_node:main',
         ],
     },
 )

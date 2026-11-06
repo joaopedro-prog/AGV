@@ -17,10 +17,11 @@ Ambiente completo de desenvolvimento, simulação física de alta fidelidade e c
 9. [Posicionamento e Sensores (Câmera e Ultrassônico)](#9-posicionamento-e-sensores-câmera-e-ultrassônico)
 10. [Simulação vs Robô Real](#10-simulação-vs-robô-real)
 11. [Orquestração do Seguidor de Linha (START / STOP)](#11-orquestração-do-seguidor-de-linha-start--stop)
-12. [Teleoperação por Joystick USB (Simulação e Robô Real)](#12-teleoperação-por-joystick-usb-simulação-e-robô-real)
-13. [Checklist Quando o Robô Físico Chegar](#13-checklist-quando-o-robô-físico-chegar)
-14. [Configuração Inicial do Ambiente (PC / Notebook Novo)](#13-configuração-inicial-do-ambiente-pc--notebook-novo)
-15. [Solução de Problemas Comuns (Troubleshooting)](#14-solução-de-problemas-comuns-troubleshooting)
+12. [Dashboard Web no Navegador (Câmera, Missões e Telemetria)](#12-dashboard-web-no-navegador-câmera-missões-e-telemetria)
+13. [Teleoperação por Joystick USB (Simulação e Robô Real)](#13-teleoperação-por-joystick-usb-simulação-e-robô-real)
+14. [Checklist Quando o Robô Físico Chegar](#14-checklist-quando-o-robô-físico-chegar)
+15. [Configuração Inicial do Ambiente (PC / Notebook Novo)](#15-configuração-inicial-do-ambiente-pc--notebook-novo)
+16. [Solução de Problemas Comuns (Troubleshooting)](#16-solução-de-problemas-comuns-troubleshooting)
 
 ---
 
@@ -84,6 +85,7 @@ AGV/
 ├── .gitignore                    # Arquivos ignorados pelo Git (build, install, log, temporários)
 ├── dockerfile                    # Imagem ROS 2 Humble com todas as dependências instaladas
 ├── docker-compose.yml            # Orquestrador do container com repasse de GPU D3D12 e volumes
+├── dashboard_web.bat             # [NOVO] Atalho direto para abrir o Dashboard Web no navegador
 ├── iniciar.bat                   # [ATALHO PRINCIPAL] Menu interativo no Windows
 ├── README.md                     # Documentação completa do projeto
 │
@@ -100,6 +102,7 @@ AGV/
 │   ├── 5_agv_stop.bat            # Manda o AGV parar imediatamente (STOP)
 │   ├── 6_painel_interativo.bat   # Painel CLI de missões do AGV
 │   ├── 7_menu_gazebo.bat         # Menu de comandos rápidos do Gazebo em janela dedicada
+│   ├── 8_dashboard_web.bat       # Abre o Dashboard Web no navegador (HTTP porta 5000)
 │   ├── gazebo_cmd.py             # Script backend Python para hot-reload, iluminação e teleporte
 │   ├── subir_atualizacoes.bat    # Envia alterações locais para o GitHub (add + commit + push)
 │   ├── atualizar_projeto.bat     # Baixa atualizações do GitHub (git pull + docker + build)
@@ -121,9 +124,10 @@ AGV/
 │   │   └── launch/               # agv_complete.launch.py (Orquestrador Mestre Sim vs Real)
 │   │
 │   └── agv_brain/                # [PACOTE 3] Inteligência, Visão Computacional e PID
-│       ├── agv_brain/            # line_detector_node (OpenCV) e line_follower_node (PID)
+│       ├── agv_brain/            # line_detector, line_follower, agv_cmd e web_dashboard_node
+│       │   └── web/              # Interface Web moderna (HTML5, CSS3, JavaScript)
 │       ├── config/               # brain_params.yaml (ganhos PID, velocidades, cor da linha)
-│       └── launch/               # brain.launch.py (detecção + seguidor de linha)
+│       └── launch/               # brain.launch.py e dashboard.launch.py
 │
 ├── tiles/                        # Modelos 3D modulares de pista (tile-reta, curva, rampa)
 └── worlds/                       # Pasta espelhada de circuitos do Gazebo
@@ -151,6 +155,7 @@ O menu interativo será exibido:
   [5] Mandar o Robo SEGUIR A LINHA (START)
   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
   [7] Abrir Painel Interativo de Missoes (agv_cmd)
+  [W] Abrir DASHBOARD WEB no Navegador (Camera, Controle e Telemetria)
   [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
 
   -------------------------- FERRAMENTAS -----------------------------
@@ -315,9 +320,73 @@ Você pode enviar comandos de três formas:
 
 ---
 
+## 12. Dashboard Web no Navegador (Câmera, Missões e Telemetria)
+
+O projeto conta com um **Dashboard Web Completo** de nível industrial, permitindo monitorar e controlar o robô em tempo real diretamente pelo navegador (Google Chrome, Edge, Firefox ou pelo celular conectado ao Wi-Fi).
+
+```text
+               Navegador Web (PC / Celular / Tablet)
+                http://localhost:5000
+                         │
+        ┌────────────────┴────────────────┐
+        ▼ HTTP / REST                     ▼ MJPEG Video Stream
+  [ /api/command ]                  [ /api/stream/debug ]  (HUD OpenCV)
+  [ /api/teleop  ]                  [ /api/stream/raw   ]  (Câmera Bruta)
+  [ /api/telemetry ] (10 Hz)
+        │
+        ▼
+┌─────────────────────────────────────────────────────────┐
+│              agv_brain: web_dashboard_node             │
+│                                                         │
+│  - /agv/command          (START / STOP)                 │
+│  - /cmd_vel_joy          (Teleop manual prioridade 100) │
+│  - /camera/image_raw     (Frames de vídeo ao vivo)      │
+│  - /agv/line_error       (Régua de desvio lateral)      │
+│  - /agv/ultrasonic       (Radar de obstáculo)           │
+│  - /odom                 (Coordenadas X, Y, Yaw)        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Principais Recursos do Dashboard Web:
+1. **Transmissão de Vídeo em Tempo Real (MJPEG):**
+   * Alternância em 1 clique entre o **HUD de Detecção OpenCV** (mostrando contorno da linha, centróide e vetor de desvio) e a **Câmera Bruta**.
+   * Tela de standby inteligente com arte cibernética caso a câmera ou simulação ainda não tenham sido iniciadas.
+   * Contador de FPS ao vivo na tela.
+2. **Guia e Régua Visual de Linha:**
+   * Barra gráfica dinâmica mostrando o erro lateral normalizado $[-1.0 \dots +1.0]$, desvio em pixels e indicação direcional (`CENTRALIZADO`, `DESVIO DIREITA`, `DESVIO ESQUERDA`).
+3. **Controle de Missão (START / STOP / E-STOP):**
+   * Botão **INICIAR MISSÃO (START)**: Ativa o controlador PID autônomo seguidor de linha.
+   * Botão **PARAR ROBÔ (STOP)**: Transita para o modo seguro de espera (`IDLE`).
+   * Botão **PARADA DE EMERGÊNCIA (E-STOP)**: Bloqueio instantâneo e imediato de motores no topo da página.
+4. **Telemetria Completa de Sensores:**
+   * Velocidade Linear ($m/s$) e Angular ($rad/s$).
+   * Distância do sensor ultrassônico com barra de alerta de colisão colorida.
+   * Coordenadas de Odometria em tempo real ($X$, $Y$ e ângulo $\text{Yaw}^\circ$).
+   * Tensão da bateria do robô.
+5. **Teleoperação Manual pelo Navegador (Virtual D-Pad & Teclado):**
+   * Pilote o AGV com toque na tela, cliques no mouse ou teclas do teclado:
+     * **`W`** ou **Seta Cima**: Frente
+     * **`S`** ou **Seta Baixo**: Ré
+     * **`A`** ou **Seta Esquerda**: Girar Esquerda
+     * **`D`** ou **Seta Direita**: Girar Direita
+     * **`Espaço`**: Parar
+   * Ajuste fino de velocidade manual de $0.05\text{ m/s}$ a $0.60\text{ m/s}$.
+   * Publicação com **prioridade máxima 100** em `/cmd_vel_joy`, assumindo controle instantâneo mesmo no modo autônomo.
+6. **Console de Atividades em Tempo Real:**
+   * Log rolável com registros cronológicos de todos os eventos e comandos do sistema.
+
+### Como Abrir o Dashboard Web:
+* **Pelo Menu Principal:** Digite **`[W]`** no menu `iniciar.bat`.
+* **Pelo Atalho Direto no Windows:** Dê dois cliques em **`dashboard_web.bat`** na raiz do projeto (ou `scripts/8_dashboard_web.bat`).
+* **Pelo Terminal ROS 2:**
+  ```bash
+  ros2 run agv_brain web_dashboard
+  ```
+* O navegador abrirá automaticamente em **`http://localhost:5000`**.
+
 ---
 
-## 12. Teleoperação por Joystick USB (Simulação e Robô Real)
+## 13. Teleoperação por Joystick USB (Simulação e Robô Real)
 
 O sistema conta com suporte completo para controle manual por **Joystick / Gamepad USB** (Xbox 360/One/Series, PlayStation DualShock/DualSense ou controles genéricos USB).
 
@@ -326,9 +395,9 @@ O sistema conta com suporte completo para controle manual por **Joystick / Gamep
 * **Sem Janela Atrapalhando a Visão:** O script oferece a opção de **minimizar a janela automaticamente**, permitindo que você acompanhe a visão em tela cheia do Gazebo, RViz 2 ou da câmera sem nenhuma janela de terminal na frente.
 * **Resposta em Segundo Plano (SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS):** Mesmo com o terminal minimizado ou atrás das janelas gráficas, o controle responde instantaneamente aos comandos dos botões e analógicos.
 * **Controle Duplo (Simulado ou Real):**
-  * **Simulação Local (Gazebo / Docker):** Transmissão com latência sub-milissegundo via pipe direto para o nó 	eleop_joy_receiver.py dentro do container.
+  * **Simulação Local (Gazebo / Docker):** Transmissão com latência sub-milissegundo via pipe direto para o nó `teleop_joy_receiver.py` dentro do container.
   * **Robô Físico Real:** Envio de pacotes via socket UDP (porta 9876) diretamente para o IP da Raspberry Pi 5 pela rede local Wi-Fi.
-* **Prioridade Absoluta via 	wist_mux:** Os comandos manuais do joystick são publicados em /cmd_vel_joy com **prioridade máxima (100)**, assumindo o controle instantâneo do robô mesmo se ele estiver no modo autônomo de seguidor de linha.
+* **Prioridade Absoluta via `twist_mux`:** Os comandos manuais do joystick são publicados em `/cmd_vel_joy` com **prioridade máxima (100)**, assumindo o controle instantâneo do robô mesmo se ele estiver no modo autônomo de seguidor de linha.
 
 ### Mapeamento dos Controles:
 | Comando / Botão | Ação no AGV |
@@ -336,18 +405,20 @@ O sistema conta com suporte completo para controle manual por **Joystick / Gamep
 | **Alavanca Esquerda (Vertical)** | Movimento para frente / marcha a ré suave com curva exponencial |
 | **Alavanca Esquerda / Direita (Horizontal)** | Rotação / curva (esterçamento para esquerda ou direita) |
 | **D-Pad (Setas direcionais)** | Ajuste fino e alinhamento milimétrico passo a passo |
-| **Gatilho Direito (RT / RB)** | **Modo TURBO:** Eleva a velocidade linear máxima para .85\text{ m/s}$ e angular para .80\text{ rad/s}$ |
-| **Gatilho Esquerdo (LT / LB)** | **Modo LENTO / PRECISÃO:** Reduz a velocidade para .15\text{ m/s}$ para manobras delicadas |
+| **Gatilho Direito (RT / RB)** | **Modo TURBO:** Eleva a velocidade linear máxima para $0.85\text{ m/s}$ e angular para $1.80\text{ rad/s}$ |
+| **Gatilho Esquerdo (LT / LB)** | **Modo LENTO / PRECISÃO:** Reduz a velocidade para $0.15\text{ m/s}$ para manobras delicadas |
 | **Botão B (Círculo)** | **PARADA DE EMERGÊNCIA:** Trava os motores imediatamente e bloqueia novos comandos |
 | **Botão A (Cruz)** | **Liberar Emergência:** Desbloqueia o robô e retoma a teleoperação normal |
 | **Botão Back / Select** | Encerra o script com parada suave de segurança do robô |
 
 ### Como Usar:
 1. Conecte o controle USB no computador.
-2. No menu principal iniciar.bat, digite **[J]** (ou dê duplo clique em controlar_joystick.bat).
+2. No menu principal `iniciar.bat`, digite **`[J]`** (ou dê duplo clique em `controlar_joystick.bat`).
 3. Confirme a detecção automática com ENTER e aproveite a pilotagem!
 
-## 13. Checklist Quando o Robô Físico Chegar
+---
+
+## 14. Checklist Quando o Robô Físico Chegar
 
 Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** onde estão as marcações `[ALTERAR]`:
 
@@ -372,7 +443,7 @@ Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** 
 
 ---
 
-## 14. Configuração Inicial do Ambiente (PC / Notebook Novo)
+## 15. Configuração Inicial do Ambiente (PC / Notebook Novo)
 
 ### Pré-requisitos
 1. Windows 10 (versão 21H2+) ou Windows 11 com virtualização ativada na BIOS.
@@ -399,7 +470,7 @@ Dê dois cliques no arquivo **[`scripts/atualizar_projeto.bat`](scripts/atualiza
 
 ---
 
-## 15. Solução de Problemas Comuns (Troubleshooting)
+## 16. Solução de Problemas Comuns (Troubleshooting)
 
 ### Erro: `The command 'docker' could not be found in this WSL 2 distro`
 * **Solução:** No Docker Desktop, abra **Settings** $\rightarrow$ **Resources** $\rightarrow$ **WSL integration**, ligue a chave do **Ubuntu-24.04** e clique em **Apply & restart**.

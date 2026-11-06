@@ -18,6 +18,7 @@ echo   -------------------------- COMANDOS DO AGV -------------------------
 echo   [5] Mandar o Robo SEGUIR A LINHA (START)
 echo   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
 echo   [7] Abrir Painel Interativo de Missoes (agv_cmd)
+echo   [W] Abrir DASHBOARD WEB no Navegador (Camera, Controle e Telemetria)
 echo   [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
 echo.
 echo   -------------------------- FERRAMENTAS -----------------------------
@@ -28,9 +29,10 @@ echo   [G] Testar e Verificar Aceleracao da GPU (AMD / D3D12)
 echo   [Z] Comandos Rapidos do Gazebo (Janela Externa: Hot-Reload, Luz, Teleporte)
 echo   [0] Sair
 echo ======================================================================
-choice /C 123456789GZUJ0 /N /M "Digite a opcao: "
+choice /C 123456789GZUJW0 /N /M "Digite a opcao: "
 
-if errorlevel 14 goto SAIR
+if errorlevel 15 goto SAIR
+if errorlevel 14 goto CMD_WEB
 if errorlevel 13 goto CMD_JOYSTICK
 if errorlevel 12 goto CMD_PUSH
 if errorlevel 11 goto CMD_GAZEBO
@@ -72,6 +74,10 @@ goto MENU
 
 :CMD_PANEL
 call 6_painel_interativo.bat
+goto MENU
+
+:CMD_WEB
+call 8_dashboard_web.bat
 goto MENU
 
 :CMD_JOYSTICK

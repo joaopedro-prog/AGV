@@ -10,6 +10,7 @@ Caso 'enable_gpio' esteja true na Raspberry Pi, lê:
 
 import rclpy
 from rclpy.node import Node
+from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, String
 
 try:
@@ -37,6 +38,7 @@ class RpiSensorsNode(Node):
 
         self.cmd_pub = self.create_publisher(String, '/agv/command', 10)
         self.obstacle_pub = self.create_publisher(Bool, '/agv/obstacle_detected', 10)
+        self.emergency_pub = self.create_publisher(Twist, '/cmd_vel_emergency', 10)
 
         self.gpio_active = False
         if self.enable_gpio:
@@ -70,11 +72,14 @@ class RpiSensorsNode(Node):
         start_pressed = (GPIO.input(self.start_pin) == 0)
         obstacle_active = (GPIO.input(self.obstacle_pin) == 0)
 
-        if stop_pressed and not self.prev_stop_pressed:
-            msg = String()
-            msg.data = 'STOP'
-            self.cmd_pub.publish(msg)
-            self.get_logger().warn('Botão físico de PARADA pressionado!')
+        if stop_pressed:
+            estop_twist = Twist()
+            self.emergency_pub.publish(estop_twist)
+            if not self.prev_stop_pressed:
+                msg = String()
+                msg.data = 'STOP'
+                self.cmd_pub.publish(msg)
+                self.get_logger().warn('Botão físico de PARADA DE EMERGÊNCIA pressionado! Publicando em /cmd_vel_emergency')
 
         if start_pressed and not self.prev_start_pressed and not stop_pressed:
             msg = String()

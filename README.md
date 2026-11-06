@@ -87,9 +87,15 @@ AGV/
 ├── iniciar.bat                   # [ATALHO PRINCIPAL] Menu interativo no Windows
 ├── README.md                     # Documentação completa do projeto
 │
+├── docs/                         # Contratos Formais de Interface e Arquitetura
+│   └── contracts/
+│       ├── protocolo_serial_esp32_rpi.md          # Framing, CRC16-CCITT, Watchdog 200ms
+│       ├── catalogo_topicos_e_servicos_ros2.md    # Tópicos, QoS e Prioridades do twist_mux
+│       └── maquina_estados_seguranca.md           # 3 Níveis de Parada e Procedimento de Rearme
+│
 ├── firmware/                     # Firmware do Microcontrolador
 │   └── agv_mcu_firmware/
-│       └── agv_mcu_firmware.ino  # Código C++ para Arduino / ESP32 / STM32
+│       └── agv_mcu_firmware.ino  # Firmware C++ ESP32 com CRC16, Watchdog e PID de Velocidade
 │
 ├── scripts/                      # Scripts de automação e atalhos Windows (.bat) e Linux (.sh)
 │   ├── menu_agv.bat              # Menu interativo do AGV
@@ -100,6 +106,7 @@ AGV/
 │   ├── 5_agv_stop.bat            # Manda o AGV parar imediatamente (STOP)
 │   ├── 6_painel_interativo.bat   # Painel CLI de missões do AGV
 │   ├── 7_menu_gazebo.bat         # Menu de comandos rápidos do Gazebo em janela dedicada
+│   ├── 8_abrir_dashboard.bat     # Abre o Cockpit Web HMI em http://localhost:8080
 │   ├── gazebo_cmd.py             # Script backend Python para hot-reload, iluminação e teleporte
 │   ├── subir_atualizacoes.bat    # Envia alterações locais para o GitHub (add + commit + push)
 │   ├── atualizar_projeto.bat     # Baixa atualizações do GitHub (git pull + docker + build)
@@ -108,7 +115,7 @@ AGV/
 │   ├── entrar_container.bat      # Abre um terminal bash direto dentro do container
 │   └── ros_exec.sh               # Intermediador oficial Linux para carregar o ambiente ROS 2
 │
-├── src/                          # Código-fonte ROS 2 (3 Pacotes Principais)
+├── src/                          # Código-fonte ROS 2 (4 Pacotes Principais)
 │   ├── articubot_one/            # [PACOTE 1] Modelagem 3D CAD, URDF/Xacro e Mundos Gazebo
 │   │   ├── description/          # Arquivos Xacro (robot_core, camera, ultrasonic, etc.)
 │   │   ├── meshes/               # 16 malhas STL reais do robô exportadas do Fusion 360
@@ -120,10 +127,15 @@ AGV/
 │   │   ├── config/               # hardware_params.yaml (portas USB, medidas físicas, encoders)
 │   │   └── launch/               # agv_complete.launch.py (Orquestrador Mestre Sim vs Real)
 │   │
-│   └── agv_brain/                # [PACOTE 3] Inteligência, Visão Computacional e PID
+│   ├── agv_brain/                # [PACOTE 3] Inteligência, Visão Computacional e PID
 │       ├── agv_brain/            # line_detector_node (OpenCV) e line_follower_node (PID)
 │       ├── config/               # brain_params.yaml (ganhos PID, velocidades, cor da linha)
 │       └── launch/               # brain.launch.py (detecção + seguidor de linha)
+│   │
+│   └── agv_dashboard/            # [PACOTE 4] Dashboard Web, HMI e Telemetria em Tempo Real
+│       ├── agv_dashboard/        # dashboard_node.py (Servidor HTTP + Bridge de Telemetria)
+│       ├── static/               # index.html (Cockpit Industrial Responsivo)
+│       └── launch/               # dashboard.launch.py (Launch do Servidor Web na porta 8080)
 │
 ├── tiles/                        # Modelos 3D modulares de pista (tile-reta, curva, rampa)
 └── worlds/                       # Pasta espelhada de circuitos do Gazebo
@@ -152,6 +164,7 @@ O menu interativo será exibido:
   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
   [7] Abrir Painel Interativo de Missoes (agv_cmd)
   [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
+  [W] Abrir DASHBOARD WEB no Navegador (Telemetria, HMI e Video)
 
   -------------------------- FERRAMENTAS -----------------------------
   [8] Recompilar o Workspace (colcon build)
@@ -347,7 +360,27 @@ O sistema conta com suporte completo para controle manual por **Joystick / Gamep
 2. No menu principal iniciar.bat, digite **[J]** (ou dê duplo clique em controlar_joystick.bat).
 3. Confirme a detecção automática com ENTER e aproveite a pilotagem!
 
-## 13. Checklist Quando o Robô Físico Chegar
+---
+
+## 13. Dashboard Web Cockpit (Telemetria, HMI e os 3 Níveis de Parada)
+
+O AGV conta com um painel de controle industrial responsivo em navegador web (HTML5 / WebSocket / REST), acessível em:
+**`http://localhost:8080`** (ou via IP da máquina na rede local Wi-Fi).
+
+### Como Iniciar:
+* No menu `iniciar.bat`, escolha **`[W]`** (ou dê duplo clique em `scripts/8_abrir_dashboard.bat`).
+
+### Destaques e Funcionalidades:
+* **Banner de Status Unificado (3 Níveis de Parada):**
+  * 🟡 **`REMOTE_STOP_REQUESTED` (Amarelo pulsante):** Parada remota solicitada pelo operador; robô aplicando rampa suave de desaceleração.
+  * 🔵 **`STOP_CONFIRMED` (Azul estável):** Encoders com velocidade zero comprovada e confirmação eletrônica do ESP32; robô imobilizado em standby.
+  * 🔴 **`HARDWARE_ESTOP_ACTIVE` (Vermelho piscante com alarme):** Emergência física acionada (botão cogumelo mecânico ou watchdog de 200 ms). **Corte físico imediato de potência dos motores**. Bloqueio total até realização do procedimento formal de rearme em 5 passos.
+* **Telemetria ao Vivo:** Tensão da bateria (V), velocidade linear e angular real, odometria acumulada (X, Y), indicador dinâmico de desvio da linha e integridade de link serial (erros CRC16).
+* **Controles Operacionais e D-Pad Virtual:** Botões START, STOP, PARADA DE EMERGÊNCIA (prioridade 255 no `twist_mux`), REARMAR SISTEMA e D-pad tátil para pilotagem remota.
+
+---
+
+## 14. Checklist Quando o Robô Físico Chegar
 
 Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** onde estão as marcações `[ALTERAR]`:
 
@@ -372,7 +405,7 @@ Quando o hardware físico chegar, você precisará editar **apenas 4 arquivos** 
 
 ---
 
-## 14. Configuração Inicial do Ambiente (PC / Notebook Novo)
+## 15. Configuração Inicial do Ambiente (PC / Notebook Novo)
 
 ### Pré-requisitos
 1. Windows 10 (versão 21H2+) ou Windows 11 com virtualização ativada na BIOS.
@@ -399,7 +432,7 @@ Dê dois cliques no arquivo **[`scripts/atualizar_projeto.bat`](scripts/atualiza
 
 ---
 
-## 15. Solução de Problemas Comuns (Troubleshooting)
+## 16. Solução de Problemas Comuns (Troubleshooting)
 
 ### Erro: `The command 'docker' could not be found in this WSL 2 distro`
 * **Solução:** No Docker Desktop, abra **Settings** $\rightarrow$ **Resources** $\rightarrow$ **WSL integration**, ligue a chave do **Ubuntu-24.04** e clique em **Apply & restart**.

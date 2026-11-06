@@ -30,12 +30,12 @@ TILE_SIZE = 0.30 * SCALE  # 1.20m
 def create_world_header():
     return """<sdf version='1.7'>
   <world name='default'>
-    <!-- Iluminacao Industrial Zenital Suave (Sem Sombras Duras para Visao Computacional) -->
+    <!-- Iluminacao Industrial Suave e Equilibrada -->
     <light name='sun_industrial' type='directional'>
       <cast_shadows>0</cast_shadows>
       <pose>0 0 25 0 0 0</pose>
-      <diffuse>0.95 0.95 0.95 1</diffuse>
-      <specular>0.08 0.08 0.08 1</specular>
+      <diffuse>0.55 0.55 0.55 1</diffuse>
+      <specular>0.02 0.02 0.02 1</specular>
       <attenuation>
         <range>1000</range>
         <constant>0.9</constant>
@@ -45,51 +45,51 @@ def create_world_header():
       <direction>0.05 0.05 -1</direction>
     </light>
 
-    <!-- Luminarias Industriais Distribuidas (Luzes High-Bay) -->
+    <!-- Luminarias Industriais Distribuidas (Luzes High-Bay Suaves) -->
     <light name='bay_light_1' type='point'>
       <cast_shadows>0</cast_shadows>
       <pose>-3.5 2.5 4.5 0 0 0</pose>
-      <diffuse>0.88 0.90 0.95 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
+      <diffuse>0.38 0.40 0.42 1</diffuse>
+      <specular>0.05 0.05 0.05 1</specular>
       <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
     </light>
 
     <light name='bay_light_2' type='point'>
       <cast_shadows>0</cast_shadows>
       <pose>3.5 2.5 4.5 0 0 0</pose>
-      <diffuse>0.88 0.90 0.95 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
+      <diffuse>0.38 0.40 0.42 1</diffuse>
+      <specular>0.05 0.05 0.05 1</specular>
       <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
     </light>
 
     <light name='bay_light_3' type='point'>
       <cast_shadows>0</cast_shadows>
       <pose>-3.5 -2.5 4.5 0 0 0</pose>
-      <diffuse>0.88 0.90 0.95 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
+      <diffuse>0.38 0.40 0.42 1</diffuse>
+      <specular>0.05 0.05 0.05 1</specular>
       <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
     </light>
 
     <light name='bay_light_4' type='point'>
       <cast_shadows>0</cast_shadows>
       <pose>3.5 -2.5 4.5 0 0 0</pose>
-      <diffuse>0.88 0.90 0.95 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
+      <diffuse>0.38 0.40 0.42 1</diffuse>
+      <specular>0.05 0.05 0.05 1</specular>
       <attenuation><range>25</range><constant>0.8</constant><linear>0.02</linear><quadratic>0.005</quadratic></attenuation>
     </light>
 
     <light name='bay_light_center' type='point'>
       <cast_shadows>0</cast_shadows>
       <pose>0.0 0.0 5.0 0 0 0</pose>
-      <diffuse>0.92 0.92 0.95 1</diffuse>
-      <specular>0.1 0.1 0.1 1</specular>
+      <diffuse>0.42 0.42 0.45 1</diffuse>
+      <specular>0.05 0.05 0.05 1</specular>
       <attenuation><range>30</range><constant>0.8</constant><linear>0.015</linear><quadratic>0.003</quadratic></attenuation>
     </light>
 
-    <!-- Ambiente Global do Armazem -->
+    <!-- Ambiente Global do Armazem (Contraste Confortavel) -->
     <scene>
-      <ambient>0.92 0.92 0.94 1</ambient>
-      <background>0.95 0.95 0.98 1</background>
+      <ambient>0.45 0.45 0.48 1</ambient>
+      <background>0.68 0.70 0.74 1</background>
       <shadows>0</shadows>
       <grid>0</grid>
     </scene>
@@ -125,11 +125,11 @@ def create_world_header():
           <material>
             <script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/White</name>
+              <name>Gazebo/Grey</name>
             </script>
-            <ambient>0.98 0.98 0.98 1</ambient>
-            <diffuse>0.98 0.98 0.98 1</diffuse>
-            <specular>0.05 0.05 0.05 1</specular>
+            <ambient>0.80 0.82 0.84 1</ambient>
+            <diffuse>0.80 0.82 0.84 1</diffuse>
+            <specular>0.03 0.03 0.03 1</specular>
           </material>
         </visual>
       </link>

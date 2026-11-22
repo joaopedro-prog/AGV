@@ -1,0 +1,42 @@
+# ==============================================================================
+# docker-compose.rpi.yml — Produção Embarcada na Raspberry Pi 3B (Sem Simulação)
+# ==============================================================================
+# Subir no robô físico:
+#   docker compose -f docker-compose.rpi.yml up -d --build
+# Ver logs ao vivo:
+#   docker compose -f docker-compose.rpi.yml logs -f
+# ==============================================================================
+
+services:
+  agv_rpi:
+    build:
+      context: .
+      dockerfile: Dockerfile.rpi
+    image: agv-eletron-rpi:latest
+    container_name: agv_eletron_real
+    restart: unless-stopped
+
+    # network_mode: host expõe diretamente na rede Wi-Fi do robô:
+    #   - Dashboard Web HMI: http://<IP_DA_RPI>:8080
+    #   - Joystick Teleop UDP: <IP_DA_RPI>:9876
+    #   - Descoberta DDS ROS 2 local
+    network_mode: host
+    ipc: host
+
+    # Acesso direto a /dev/agv_esp32, /dev/agv_lidar, /dev/video0, /dev/gpiomem, /dev/i2c-1
+    privileged: true
+
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - ENABLE_CAMERA=${ENABLE_CAMERA:-true}
+      - ENABLE_LIDAR=${ENABLE_LIDAR:-false}
+      - LIDAR_PORT=${LIDAR_PORT:-/dev/agv_lidar}
+      - ENABLE_DASHBOARD=${ENABLE_DASHBOARD:-true}
+      - WEB_PORT=${WEB_PORT:-8080}
+      - AUTO_START=${AUTO_START:-false}
+
+    volumes:
+      # Montagem das pastas de calibração permite editar PID/portas sem rebuild da imagem
+      - ./src/agv_hardware/config:/workspace/src/agv_hardware/config
+      - ./src/agv_brain/config:/workspace/src/agv_brain/config
+      - /dev:/dev

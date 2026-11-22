@@ -1,68 +1,91 @@
 # ==============================================================================
-# CONFIGURAÇÕES FÍSICAS E DE PORTAS DO AGV (ROBÔ REAL - RASPBERRY PI)
+# CONFIGURAÇÕES FÍSICAS E DE PORTAS DO AGV ELETRON (ROBÔ REAL - RASPBERRY PI 3B)
 # ==============================================================================
-# Quando o robô físico chegar, altere APENAS os valores marcados com [ALTERAR]
+# Alinhado ao Esquemático KiCad Rev 2.0 (SENAI - Projeto AGV)
 # ==============================================================================
 
 serial_bridge:
   ros__parameters:
     # --------------------------------------------------------------------------
-    # 1. PORTA SERIAL DO MICROCONTROLADOR (Arduino / ESP32 / STM32 / Pico)
+    # 1. PORTA SERIAL DO MICROCONTROLADOR (ESP32 DevKit V1)
     # --------------------------------------------------------------------------
-    # Dica: rode 'ls /dev/ttyUSB* /dev/ttyACM*' na Raspberry para descobrir a porta
-    serial_port: "/dev/ttyUSB0"          # [ALTERAR] Porta USB Serial do microcontrolador
-    baud_rate: 115200                    # [ALTERAR] Taxa de comunicação (deve ser igual ao código do MCU)
-    serial_timeout: 0.05                 # Timeout de leitura em segundos
-    auto_reconnect: true                 # Tenta reconectar automaticamente se o cabo USB oscilar
-    mock_serial_if_disconnected: true    # Se true, não trava o nó caso teste sem o Arduino plugado
+    # Opções comuns na Raspberry Pi 3B:
+    #   - "/dev/agv_esp32" : Link simbólico persistente criado por scripts/rpi/99-agv-devices.rules
+    #   - "/dev/serial0"   : UART física GPIO (Pinos 8/10 da RPi <-> GPIO 16/17 do ESP32 no KiCad)
+    #   - "/dev/ttyUSB0"   : Cabo USB direto no ESP32
+    serial_port: "/dev/agv_esp32"
+    baud_rate: 115200
+    serial_timeout: 0.02
+    auto_reconnect: true
+    mock_serial_if_disconnected: false   # Produção real: nunca simular odometria sem MCU
 
     # --------------------------------------------------------------------------
-    # 2. CONSTANTES FÍSICAS DO ROBÔ (MEDIDAS EM METROS E PULSOS)
+    # 2. CONSTANTES FÍSICAS DO ROBÔ (FUSION 360 + KY-040 20:1)
     # --------------------------------------------------------------------------
-    wheel_radius: 0.0762                  # [ALTERAR] Raio da roda em metros (ex: 0.033 = 3.3 cm)
-    wheel_separation: 0.468              # [ALTERAR] Distância entre o centro da roda esq e dir (metros)
-    encoder_ticks_per_rev: 3436          # [ALTERAR] Pulsos de encoder por 1 volta completa da roda
-    max_wheel_speed_rad_s: 15.0          # [ALTERAR] Velocidade máxima da roda (rad/s)
+    wheel_radius: 0.0762                 # Raio da roda motriz de PU (152.4 mm diâmetro)
+    wheel_separation: 0.468              # Distância entre centros das rodas motrizes (m)
+    encoder_ticks_per_rev: 800           # KY-040 (20 PPR x 2 bordas CHANGE) x redução 20:1 = 800
+    max_wheel_speed_rad_s: 15.0          # Velocidade angular máxima (rad/s)
 
-    # Inversão de sentido caso algum motor/encoder gire para trás ao mandar ir pra frente
-    invert_left_motor: false             # [ALTERAR] Mude para true se o motor esquerdo girar invertido
-    invert_right_motor: false            # [ALTERAR] Mude para true se o motor direito girar invertido
-    invert_left_encoder: false           # [ALTERAR] Mude para true se o encoder esquerdo contar negativo pra frente
-    invert_right_encoder: false          # [ALTERAR] Mude para true se o encoder direito contar negativo pra frente
+    # Inversão de sentido caso algum motor/encoder gire invertido no teste em cavalete
+    invert_left_motor: false
+    invert_right_motor: false
+    invert_left_encoder: false
+    invert_right_encoder: false
 
     # --------------------------------------------------------------------------
     # 3. PROTOCOLO SERIAL E SEGURANÇA
     # --------------------------------------------------------------------------
-    # Formato enviado pela Raspberry -> Microcontrolador:
-    #   "wheel_rad_s": envia "CMD,<vel_esq_rad_s>,<vel_dir_rad_s>\n"
-    #   "wheel_m_s"  : envia "CMD,<vel_esq_m_s>,<vel_dir_m_s>\n"
-    #   "twist"      : envia "V:<linear_x>,W:<angular_z>\n"
     command_format: "wheel_rad_s"
-    cmd_vel_timeout_sec: 0.5             # Para os motores se não receber comando em 0.5s (Watchdog)
-    publish_odom_tf: true                # Publica a transformada TF (odom -> base_link)
+    cmd_vel_timeout_sec: 0.5             # Watchdog de software (ESP32 corta hardware em 200ms)
+    publish_odom_tf: true
     odom_frame_id: "odom"
     base_frame_id: "base_link"
-    obstacle_stop_distance_m: 0.25       # [ALTERAR] Distância mínima de segurança do sensor ultrassônico/IR (metros)
+    obstacle_stop_distance_m: 0.25       # Distância de parada dos 2x HC-SR04 (metros)
 
 
 rpi_sensors:
   ros__parameters:
     # --------------------------------------------------------------------------
-    # 4. SENSORES CONECTADOS DIRETO NA GPIO DA RASPBERRY PI (OPCIONAL)
+    # 4. GPIO DA RASPBERRY PI 3B (RELÉS K1/K2) E IMU MPU6050 I2C (KiCad Rev 2.0)
     # --------------------------------------------------------------------------
-    enable_gpio: false                   # [ALTERAR] Mude para true na Raspberry Pi se usar sensores nos pinos GPIO
+    enable_gpio: true                    # Ativa controle GPIO na RPi 3B (fallback seguro no PC)
     poll_rate_hz: 20.0
-    emergency_button_pin: 17             # [ALTERAR] Pino BCM do botão físico de emergência (se houver)
-    start_button_pin: 27                 # [ALTERAR] Pino BCM de um botão físico para dar START na linha
-    obstacle_sensor_pin: 22              # [ALTERAR] Pino BCM de sensor infravermelho/obstáculo digital
+    fan_relay_pin: 17                    # BCM 17 (Pino 11) -> CTRL_FAN -> Relé K1 Ventoinhas 12V
+    led_relay_pin: 27                    # BCM 27 (Pino 13) -> CTRL_LED -> Relé K2 Fita LED 5050 12V
+    auto_fan_enable: true                # Liga ventoinhas automaticamente quando ROS 2 sobe
+
+    # Entradas opcionais extras (-1 = desativado; E-Stop físico está no GPIO 33 do ESP32)
+    emergency_button_pin: -1
+    start_button_pin: -1
+    obstacle_sensor_pin: -1
+
+    # IMU MPU6050 ligada em I2C BCM 2 (SDA) / BCM 3 (SCL) -> /dev/i2c-1
+    enable_imu: true
+    i2c_bus: 1
+    imu_address: 104                     # 0x68 em decimal
+    imu_frame_id: "base_link"
 
 
-v4l2_camera:
+/camera/v4l2_camera:
   ros__parameters:
     # --------------------------------------------------------------------------
-    # 5. CÂMERA USB CONECTADA NA RASPBERRY PI
+    # 5. CÂMERA CSI (bcm2835-v4l2) OU USB OTIMIZADA PARA RASPBERRY PI 3B
     # --------------------------------------------------------------------------
-    video_device: "/dev/video0"          # [ALTERAR] Porta da câmera USB (rode 'ls /dev/video*')
-    image_size: [640, 480]               # Resolução [largura, altura]
-    time_per_frame: [1, 30]              # [1, 30] = 30 FPS
+    video_device: "/dev/video0"          # /dev/video0 (CSI via v4l2 ou /dev/agv_cam USB)
+    image_size: [320, 240]               # Resolução enxuta conforme contrato (baixa latência RPi 3B)
+    time_per_frame: [1, 15]              # 15 FPS estável para processamento OpenCV < 20ms
     camera_frame_id: "camera_link_optical"
+
+
+rplidar_composition:
+  ros__parameters:
+    # --------------------------------------------------------------------------
+    # 6. SENSOR LIDAR 360° (RPLIDAR A1)
+    # --------------------------------------------------------------------------
+    serial_port: "/dev/agv_lidar"        # Link udev persistente (ou "/dev/ttyUSB1")
+    serial_baudrate: 115200
+    frame_id: "laser_frame"
+    inverted: false
+    angle_compensate: true
+    scan_mode: "Standard"

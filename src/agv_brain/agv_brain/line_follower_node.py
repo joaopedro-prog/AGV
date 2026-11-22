@@ -14,6 +14,7 @@ Comportamento:
 4. Controle PID suave com compensação de curvas para tração diferencial.
 """
 
+import json
 import math
 import rclpy
 from rclpy.node import Node
@@ -57,6 +58,7 @@ class LineFollowerNode(Node):
 
         self.obstacle_detected = False
         self.lidar_emergency = False
+        self.hw_safety_state = 'INIT'
         self.decel_target_speed = 0.0
         self.current_cmd_speed = 0.0
 
@@ -81,6 +83,9 @@ class LineFollowerNode(Node):
         )
         self.scan_sub = self.create_subscription(
             LaserScan, '/scan', self.scan_callback, 10
+        )
+        self.hw_status_sub = self.create_subscription(
+            String, '/agv/hardware_status', self.hw_status_callback, 10
         )
 
         # Service
@@ -131,6 +136,31 @@ class LineFollowerNode(Node):
     def obstacle_callback(self, msg: Bool):
         self.obstacle_detected = bool(msg.data)
 
+    def hw_status_callback(self, msg: String):
+        """Sincroniza FSM com estado de segurança do ESP32/serial_bridge (NR-12)."""
+        try:
+            data = json.loads(msg.data)
+            safety = str(data.get('safety_state', 'UNKNOWN')).upper()
+        except Exception:
+            return
+
+        self.hw_safety_state = safety
+
+        if safety in ('HARDWARE_ESTOP_ACTIVE', 'WATCHDOG_TIMEOUT', 'DRIVER_FAULT'):
+            if self.state != 'HARDWARE_ESTOP_ACTIVE':
+                self.get_logger().warn(f'Emergência de hardware detectada ({safety})! Cortando movimento.')
+            self.active = False
+            self.current_cmd_speed = 0.0
+            self.state = 'HARDWARE_ESTOP_ACTIVE'
+        elif safety == 'ESTOP_CLEARED_PENDING_RESET':
+            self.active = False
+            self.current_cmd_speed = 0.0
+            self.state = 'RECOVERY_PENDING'
+        elif safety == 'OK':
+            if self.state in ('HARDWARE_ESTOP_ACTIVE', 'RECOVERY_PENDING'):
+                self.state = 'IDLE'
+                self.get_logger().info('Rearme confirmado pelo hardware! AGV em estado IDLE.')
+
     def command_callback(self, msg: String):
         cmd = msg.data.strip().upper()
         if cmd in ('START', 'GO', 'RUN'):
@@ -150,6 +180,9 @@ class LineFollowerNode(Node):
         return response
 
     def _request_start(self):
+        if self.hw_safety_state in ('HARDWARE_ESTOP_ACTIVE', 'ESTOP_CLEARED_PENDING_RESET', 'WATCHDOG_TIMEOUT', 'DRIVER_FAULT'):
+            self.get_logger().warn(f'Comando START recusado: segurança hardware={self.hw_safety_state} (execute rearme!).')
+            return
         if self.lidar_emergency or self.obstacle_detected:
             self.get_logger().warn('Comando START recusado: obstáculo na zona de segurança!')
             return
@@ -182,10 +215,16 @@ class LineFollowerNode(Node):
         s_msg.data = self.state
         self.state_pub.publish(s_msg)
 
+        # 0. Respeita intertravamento físico de hardware / recuperação NR-12
+        if self.state in ('HARDWARE_ESTOP_ACTIVE', 'RECOVERY_PENDING') and self.hw_safety_state not in ('INIT', 'OK'):
+            self._publish_zero()
+            return
+
         # 1. Trata Emergência de Obstáculo (LiDAR ou Ultrassom)
         if self.lidar_emergency or self.obstacle_detected:
             self._publish_zero()
-            self.state = 'HARDWARE_ESTOP_ACTIVE'
+            if self.state != 'RECOVERY_PENDING':
+                self.state = 'HARDWARE_ESTOP_ACTIVE'
             return
 
         # 2. Trata Parada Solicitada (Rampa de Desaceleração)

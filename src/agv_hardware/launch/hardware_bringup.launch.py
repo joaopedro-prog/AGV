@@ -98,7 +98,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'enable_lidar',
-            default_value='false',
+            default_value='true',
             description='Se true, inicia o driver rplidar_ros no robo fisico',
         ),
         DeclareLaunchArgument(

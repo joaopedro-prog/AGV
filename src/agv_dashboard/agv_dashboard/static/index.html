@@ -3,37 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGV Industrial Cockpit — Telemetria & Controle</title>
+  <title>ELETRON AGV Cockpit — Telemetria, Sensores &amp; Controle Wi-Fi</title>
   <style>
     :root {
-      --bg-color: #0f141c;
-      --card-bg: #1a2230;
-      --border-color: #2c3a50;
-      --text-main: #f0f4f8;
-      --text-muted: #8ca0b8;
+      --bg-color: #0b1018;
+      --card-bg: #151d2b;
+      --border-color: #273549;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
       --color-idle: #3b82f6;
       --color-run: #10b981;
       --color-warn: #f59e0b;
       --color-danger: #ef4444;
       --color-orange: #f97316;
+      --color-cyan: #06b6d4;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 20px; }
-    
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; }
-    .brand h1 { font-size: 1.5rem; color: #fff; display: flex; align-items: center; gap: 10px; }
-    .brand span { font-size: 0.85rem; color: var(--text-muted); background: #131922; padding: 4px 8px; border-radius: 4px; }
-    
-    /* Banner dos 3 Níveis de Parada */
+    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 18px; }
+
+    header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; }
+    .brand h1 { font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .brand span { font-size: 0.78rem; color: #38bdf8; background: #0c192c; border: 1px solid #1e3a5f; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
+    .header-status { display: flex; align-items: center; gap: 14px; font-size: 0.9rem; font-weight: bold; }
+
+    /* Banner dos Níveis de Parada */
     #status-banner {
-      padding: 16px 20px; border-radius: 8px; font-weight: bold; font-size: 1.1rem;
-      text-align: center; margin-bottom: 20px; transition: all 0.3s ease; text-transform: uppercase;
-      letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 12px;
+      padding: 14px 20px; border-radius: 8px; font-weight: bold; font-size: 1.05rem;
+      text-align: center; margin-bottom: 18px; transition: all 0.25s ease; text-transform: uppercase;
+      letter-spacing: 0.8px; display: flex; justify-content: center; align-items: center; gap: 12px;
     }
-    .state-idle { background: #1e3a8a; color: #93c5fd; border: 2px solid #3b82f6; }
+    .state-idle { background: #1e3a8a; color: #bfdbfe; border: 2px solid #3b82f6; }
     .state-run { background: #064e3b; color: #6ee7b7; border: 2px solid #10b981; }
     .state-req-stop { background: #78350f; color: #fde68a; border: 2px solid #f59e0b; animation: pulse-yellow 1.5s infinite; }
-    .state-conf-stop { background: #1e293b; color: #94a3b8; border: 2px solid #64748b; }
+    .state-conf-stop { background: #1e293b; color: #cbd5e1; border: 2px solid #64748b; }
     .state-estop { background: #7f1d1d; color: #fecaca; border: 2px solid #ef4444; animation: blink-red 0.8s infinite; }
     .state-recovery { background: #7c2d12; color: #ffedd5; border: 2px solid #f97316; }
 
@@ -41,61 +43,85 @@
     @keyframes blink-red { 0%, 100% { background: #7f1d1d; } 50% { background: #dc2626; } }
 
     /* Layout do Painel */
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; }
-    .card h2 { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 14px; }
+    .card-header h2 { font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+    .pill { font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; }
+    .pill-on { background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .pill-off { background: rgba(239, 68, 68, 0.14); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
 
-    /* Telemetria Cards */
-    .metric-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95rem; }
-    .metric-value { font-size: 1.25rem; font-weight: bold; color: #fff; }
-    
+    /* Telemetria */
+    .metric-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.92rem; color: var(--text-muted); }
+    .metric-value { font-size: 1.05rem; font-weight: 700; color: #fff; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
     /* Indicador Visual de Linha */
-    .line-gauge-container { margin-top: 15px; background: #0c1017; padding: 10px; border-radius: 6px; }
-    .line-track { height: 16px; background: #242f40; border-radius: 8px; position: relative; overflow: hidden; }
-    .line-center-mark { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #ffea00; }
-    .line-cursor { position: absolute; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #10b981; transform: translateX(-50%); transition: left 0.1s linear; }
+    .line-gauge-container { margin-top: auto; background: #0b1018; padding: 10px; border-radius: 6px; border: 1px solid #1e293b; }
+    .line-track { height: 14px; background: #242f40; border-radius: 8px; position: relative; overflow: hidden; }
+    .line-center-mark { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #facc15; }
+    .line-cursor { position: absolute; top: 1px; width: 12px; height: 12px; border-radius: 50%; background: #10b981; transform: translateX(-50%); transition: left 0.08s linear; }
 
     /* Botões de Ação */
-    .control-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-    .btn { padding: 14px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; text-align: center; }
+    .control-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 0.92rem; cursor: pointer; transition: 0.15s; text-align: center; }
     .btn-start { background: #059669; color: #fff; }
     .btn-start:hover { background: #10b981; }
     .btn-stop { background: #d97706; color: #fff; }
     .btn-stop:hover { background: #f59e0b; }
-    .btn-estop { background: #dc2626; color: #fff; grid-column: span 2; font-size: 1.2rem; padding: 18px; text-transform: uppercase; box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
+    .btn-estop { background: #dc2626; color: #fff; grid-column: span 2; font-size: 1.08rem; padding: 15px; text-transform: uppercase; box-shadow: 0 0 15px rgba(220, 38, 38, 0.35); }
     .btn-estop:hover { background: #ef4444; }
     .btn-reset { background: #ea580c; color: #fff; grid-column: span 2; }
     .btn-reset:hover { background: #f97316; }
+    .btn-mini { padding: 4px 10px; font-size: 0.75rem; border-radius: 5px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; cursor: pointer; font-weight: 600; }
+    .btn-mini.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
 
     /* Virtual D-pad */
-    .dpad-container { display: grid; grid-template-columns: 60px 60px 60px; grid-template-rows: 60px 60px 60px; gap: 8px; justify-content: center; margin-top: 15px; }
-    .dpad-btn { background: #263347; color: #fff; border: 1px solid #3c4f6b; border-radius: 8px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
+    .dpad-container { display: grid; grid-template-columns: 58px 58px 58px; grid-template-rows: 54px 54px 54px; gap: 8px; justify-content: center; margin-top: 8px; }
+    .dpad-btn { background: #222e42; color: #fff; border: 1px solid #3c4f6b; border-radius: 8px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; touch-action: manipulation; }
     .dpad-btn:active { background: #3b82f6; }
 
     /* Câmera Stream */
-    .camera-feed { width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border-color); }
+    .camera-feed { width: 100%; aspect-ratio: 4/3; background: #05080f; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
     .camera-feed img { width: 100%; height: 100%; object-fit: contain; }
+    .camera-toolbar { display: flex; gap: 6px; margin-top: 10px; justify-content: space-between; align-items: center; }
+
+    /* Sub-bloco IMU */
+    .imu-box { background: #0b1018; border: 1px solid #1e293b; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .imu-title { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 8px; }
+    .imu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+    .imu-cell { background: #111827; border-radius: 5px; padding: 6px 4px; }
+    .imu-cell span { display: block; font-size: 0.72rem; color: var(--text-muted); }
+    .imu-cell strong { font-size: 0.88rem; color: #38bdf8; font-family: ui-monospace, monospace; }
+
+    /* Radar LiDAR 360 */
+    .lidar-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    #lidar-canvas { background: #070b12; border-radius: 50%; border: 1px solid #1e3a5f; box-shadow: inset 0 0 24px rgba(14, 165, 233, 0.12); max-width: 100%; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="brand">
-      <h1>🤖 AGV INDUSTRIAL COCKPIT <span>ROS 2 HUMBLE</span></h1>
+      <h1>🤖 ELETRON AGV COCKPIT <span>ROS 2 HUMBLE • WI-FI HMI</span></h1>
     </div>
-    <div id="conn-badge" style="color: var(--color-danger); font-weight: bold;">● CONECTANDO...</div>
+    <div class="header-status">
+      <div id="conn-badge" style="color: var(--color-danger);">● CONECTANDO...</div>
+    </div>
   </header>
 
-  <!-- Banner dos 3 Níveis de Parada e Segurança -->
+  <!-- Banner dos Níveis de Parada e Segurança -->
   <div id="status-banner" class="state-idle">
     Carregando status do AGV...
   </div>
 
   <div class="dashboard-grid">
 
-    <!-- Card 1: Comandos Principais e Operação -->
+    <!-- Card 1: Comandos Principais e Teleoperação -->
     <div class="card">
-      <h2>Controles Operacionais</h2>
+      <div class="card-header">
+        <h2>Controles Operacionais</h2>
+        <span class="pill pill-on" id="hw-safety-pill">SAFETY: INIT</span>
+      </div>
       <div class="control-actions">
         <button class="btn btn-start" onclick="sendCommand('start')">▶ INICIAR (START)</button>
         <button class="btn btn-stop" onclick="sendCommand('stop')">⏹ PARAR (STOP)</button>
@@ -103,57 +129,55 @@
         <button class="btn btn-reset" id="btn-reset" onclick="sendCommand('reset')">🔄 REARMAR SISTEMA (RESET)</button>
       </div>
 
-      <h2>Teleoperação Manual</h2>
+      <div class="card-header" style="margin-top: 6px; margin-bottom: 8px;">
+        <h2>Teleoperação Manual</h2>
+      </div>
       <div class="dpad-container">
         <div></div>
-        <button class="dpad-btn" onmousedown="startTeleop(0.2, 0)" onmouseup="stopTeleop()">▲</button>
+        <button class="dpad-btn" onmousedown="startTeleop(0.25, 0)" onmouseup="stopTeleop()" onmouseleave="stopTeleop()" ontouchstart="startTeleop(0.25, 0); event.preventDefault();" ontouchend="stopTeleop()">▲</button>
         <div></div>
-        <button class="dpad-btn" onmousedown="startTeleop(0, 0.8)" onmouseup="stopTeleop()">◀</button>
+        <button class="dpad-btn" onmousedown="startTeleop(0, 0.9)" onmouseup="stopTeleop()" onmouseleave="stopTeleop()" ontouchstart="startTeleop(0, 0.9); event.preventDefault();" ontouchend="stopTeleop()">◀</button>
         <button class="dpad-btn" onclick="stopTeleop()">⏹</button>
-        <button class="dpad-btn" onmousedown="startTeleop(0, -0.8)" onmouseup="stopTeleop()">▶</button>
+        <button class="dpad-btn" onmousedown="startTeleop(0, -0.9)" onmouseup="stopTeleop()" onmouseleave="stopTeleop()" ontouchstart="startTeleop(0, -0.9); event.preventDefault();" ontouchend="stopTeleop()">▶</button>
         <div></div>
-        <button class="dpad-btn" onmousedown="startTeleop(-0.2, 0)" onmouseup="stopTeleop()">▼</button>
+        <button class="dpad-btn" onmousedown="startTeleop(-0.25, 0)" onmouseup="stopTeleop()" onmouseleave="stopTeleop()" ontouchstart="startTeleop(-0.25, 0); event.preventDefault();" ontouchend="stopTeleop()">▼</button>
         <div></div>
       </div>
     </div>
 
-    <!-- Card 2: Telemetria e Diagnóstico -->
+    <!-- Card 2: Telemetria, Odometria, Serial ESP32 e IMU MPU6050 -->
     <div class="card">
-      <h2>Telemetria em Tempo Real</h2>
-      <div class="metric-row">
-        <span>Bateria:</span>
-        <span class="metric-value" id="val-bat">-- V</span>
+      <div class="card-header">
+        <h2>Telemetria &amp; IMU MPU6050</h2>
+        <span class="pill pill-off" id="badge-serial">ESP32 OFFLINE</span>
       </div>
-      <div class="metric-row">
-        <span>Velocidade Linear:</span>
-        <span class="metric-value" id="val-vlin">0.00 m/s</span>
-      </div>
-      <div class="metric-row">
-        <span>Velocidade Angular:</span>
-        <span class="metric-value" id="val-vang">0.00 rad/s</span>
-      </div>
-      <div class="metric-row">
-        <span>Odometria (X, Y):</span>
-        <span class="metric-value" id="val-odom">X: 0.00 | Y: 0.00 m</span>
-      </div>
-      <div class="metric-row">
-        <span>Link Serial ESP32:</span>
-        <span class="metric-value" id="val-serial">--</span>
-      </div>
-      <div class="metric-row">
-        <span>Erros CRC16:</span>
-        <span class="metric-value" id="val-crc">0</span>
-      </div>
-      <div class="metric-row">
-        <span>Sensor de Obstáculo:</span>
-        <span class="metric-value" id="val-obs">DESOBSTRUÍDO</span>
+      <div class="metric-row"><span>Bateria:</span><span class="metric-value" id="val-bat">-- V</span></div>
+      <div class="metric-row"><span>Velocidade Linear / Ang.:</span><span class="metric-value" id="val-vel">0.00 m/s | 0.00 rad/s</span></div>
+      <div class="metric-row"><span>Odometria (X, Y):</span><span class="metric-value" id="val-odom">X: 0.00 | Y: 0.00 m</span></div>
+      <div class="metric-row"><span>Erros CRC16:</span><span class="metric-value" id="val-crc">0</span></div>
+      <div class="metric-row"><span>Ultrassônico (HC-SR04):</span><span class="metric-value" id="val-obs">DESOBSTRUÍDO</span></div>
+
+      <!-- Bloco IMU MPU6050 -->
+      <div class="imu-box">
+        <div class="imu-title">
+          <span>🧭 IMU MPU6050 (/imu/data_raw)</span>
+          <span class="pill pill-off" id="badge-imu">OFFLINE</span>
+        </div>
+        <div class="imu-grid">
+          <div class="imu-cell"><span>Accel X (m/s²)</span><strong id="imu-ax">0.00</strong></div>
+          <div class="imu-cell"><span>Accel Y (m/s²)</span><strong id="imu-ay">0.00</strong></div>
+          <div class="imu-cell"><span>Accel Z (m/s²)</span><strong id="imu-az">0.00</strong></div>
+          <div class="imu-cell"><span>Gyro X (rad/s)</span><strong id="imu-gx">0.000</strong></div>
+          <div class="imu-cell"><span>Gyro Y (rad/s)</span><strong id="imu-gy">0.000</strong></div>
+          <div class="imu-cell"><span>Yaw Rate (°/s)</span><strong id="imu-gz-deg">0.0°/s</strong></div>
+        </div>
       </div>
 
       <div class="line-gauge-container">
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px;">
-          <span>Esquerda (-1.0)</span>
-          <span id="line-err-text">Erro: 0.00</span>
-          <span>Direita (+1.0)</span>
+        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 5px; color: var(--text-muted);">
+          <span>Esq (-1.0)</span>
+          <span id="line-err-text" style="color: #fff; font-weight: 600;">Erro: 0.00</span>
+          <span>Dir (+1.0)</span>
         </div>
         <div class="line-track">
           <div class="line-center-mark"></div>
@@ -162,11 +186,43 @@
       </div>
     </div>
 
-    <!-- Card 3: Câmera de Linha e Visão -->
+    <!-- Card 3: Câmera ao Vivo (Stream MJPEG Porta 8080) -->
     <div class="card">
-      <h2>Câmera Inferior / HUD Visão</h2>
+      <div class="card-header">
+        <h2>Câmera &amp; HUD Visão</h2>
+        <span class="pill pill-off" id="badge-cam">AGUARDANDO...</span>
+      </div>
       <div class="camera-feed" id="camera-box">
-        <img id="cam-stream" src="/camera_placeholder.png" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\'><rect fill=\'%23111827\' width=\'100%25\' height=\'100%25\'/><text fill=\'%236b7280\' x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\'>Stream da Câmera (web_video_server)</text></svg>'">
+        <img id="cam-stream" src="/api/camera_stream" alt="Stream Câmera AGV"
+             onerror="this.style.opacity='0.35';">
+      </div>
+      <div class="camera-toolbar">
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-mini active" id="btn-cam-debug" onclick="setCameraMode(false)">HUD Linha (/agv/line_debug_image)</button>
+          <button class="btn-mini" id="btn-cam-raw" onclick="setCameraMode(true)">Câmera Crua</button>
+        </div>
+        <button class="btn-mini" onclick="refreshCameraStream()">↻ Reconectar</button>
+      </div>
+    </div>
+
+    <!-- Card 4: Radar LiDAR 360° (/scan) -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Radar LiDAR 360° (/scan)</h2>
+        <span class="pill pill-off" id="badge-lidar">OFFLINE</span>
+      </div>
+      <div class="lidar-wrapper">
+        <canvas id="lidar-canvas" width="260" height="260"></canvas>
+      </div>
+      <div style="margin-top: 12px;">
+        <div class="metric-row">
+          <span>Distância Mínima Frontal (±30°):</span>
+          <span class="metric-value" id="val-lidar-front">-- m</span>
+        </div>
+        <div class="metric-row" style="margin-bottom: 0;">
+          <span>Menor Obstáculo Global (360°):</span>
+          <span class="metric-value" id="val-lidar-min">-- m</span>
+        </div>
       </div>
     </div>
 
@@ -174,24 +230,109 @@
 
   <script>
     let teleopTimer = null;
+    let camPreferRaw = false;
+
+    function setCameraMode(raw) {
+      camPreferRaw = raw;
+      document.getElementById('btn-cam-debug').classList.toggle('active', !raw);
+      document.getElementById('btn-cam-raw').classList.toggle('active', raw);
+      refreshCameraStream();
+    }
+
+    function refreshCameraStream() {
+      const img = document.getElementById('cam-stream');
+      img.style.opacity = '1.0';
+      const suffix = camPreferRaw ? '?raw=1&t=' : '?t=';
+      img.src = '/api/camera_stream' + suffix + Date.now();
+    }
+
+    function drawLidarRadar(sectors, active) {
+      const canvas = document.getElementById('lidar-canvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const maxRangeM = 4.0;
+      const radiusPx = (Math.min(w, h) / 2) - 12;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Anéis de distância (1m, 2m, 3m, 4m)
+      [1, 2, 3, 4].forEach(m => {
+        const r = (m / maxRangeM) * radiusPx;
+        ctx.strokeStyle = (m === 4) ? 'rgba(56, 189, 248, 0.35)' : 'rgba(56, 189, 248, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.65)';
+        ctx.font = '10px monospace';
+        ctx.fillText(m + 'm', cx + 3, cy - r + 10);
+      });
+
+      // Eixos cruzados
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - radiusPx); ctx.lineTo(cx, cy + radiusPx);
+      ctx.moveTo(cx - radiusPx, cy); ctx.lineTo(cx + radiusPx, cy);
+      ctx.stroke();
+
+      // Cone de segurança frontal (±30°)
+      ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, radiusPx, -Math.PI / 2 - (Math.PI / 6), -Math.PI / 2 + (Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      // Pontos do /scan (REP-103: 0° frente = topo)
+      if (active && Array.isArray(sectors)) {
+        for (let i = 0; i < sectors.length; i++) {
+          const angDeg = sectors[i][0];
+          const dist = Math.min(maxRangeM, sectors[i][1]);
+          const rPx = (dist / maxRangeM) * radiusPx;
+          const theta = (-angDeg * Math.PI) / 180.0;
+          const px = cx + rPx * Math.sin(theta);
+          const py = cy - rPx * Math.cos(theta);
+
+          const isClose = (dist < 0.45 && Math.abs(angDeg) <= 30.0);
+          ctx.fillStyle = isClose ? '#ef4444' : '#38bdf8';
+          ctx.beginPath();
+          ctx.arc(px, py, isClose ? 3.2 : 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Ícone central do robô AGV
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(cx - 5, cy - 7, 10, 14);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cx - 2, cy - 8, 4, 3);
+    }
 
     async function updateTelemetry() {
       try {
-        const res = await fetch('/api/status');
+        const res = await fetch('/api/status', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
 
-        // 1. Atualiza Badge de Conexão
-        document.getElementById('conn-badge').innerHTML = '● ONLINE';
+        document.getElementById('conn-badge').innerHTML = '● WI-FI ONLINE';
         document.getElementById('conn-badge').style.color = 'var(--color-run)';
 
-        // 2. Banner de Segurança dos 3 Níveis de Parada
+        // Banner de Segurança
         const banner = document.getElementById('status-banner');
         const state = data.state || 'IDLE';
+        const hwSafety = data.safety_state || 'INIT';
+        document.getElementById('hw-safety-pill').innerText = 'ESP32: ' + hwSafety;
 
         if (state === 'HARDWARE_ESTOP_ACTIVE') {
           banner.className = 'state-estop';
-          banner.innerHTML = '🚨 EMERGÊNCIA FÍSICA ACIONADA — POTÊNCIA CORTADA';
+          banner.innerHTML = '🚨 EMERGÊNCIA ATIVA — POTÊNCIA CORTADA';
+        } else if (state === 'RECOVERY_PENDING' || state === 'ESTOP_CLEARED_PENDING_RESET') {
+          banner.className = 'state-recovery';
+          banner.innerHTML = '🟠 CIRCUITO SEGURO — CLIQUE EM REARMAR (RESET)';
         } else if (state === 'REMOTE_STOP_REQUESTED') {
           banner.className = 'state-req-stop';
           banner.innerHTML = '🟡 PARADA REMOTA SOLICITADA — DESACELERANDO';
@@ -201,28 +342,26 @@
         } else if (state === 'EM_MOVIMENTO') {
           banner.className = 'state-run';
           banner.innerHTML = '🟢 AGV EM MOVIMENTO — SEGUINDO LINHA';
-        } else if (state === 'ESTOP_CLEARED_PENDING_RESET') {
-          banner.className = 'state-recovery';
-          banner.innerHTML = '🟠 CIRCUITO SEGURO — PRONTO PARA REARMAR';
         } else {
           banner.className = 'state-idle';
           banner.innerHTML = '🔵 AGV EM STANDBY (IDLE)';
         }
 
-        // 3. Atualiza Métricas
-        document.getElementById('val-bat').innerText = data.battery_v + ' V';
-        document.getElementById('val-vlin').innerText = data.speed_lin.toFixed(2) + ' m/s';
-        document.getElementById('val-vang').innerText = data.speed_ang.toFixed(2) + ' rad/s';
-        document.getElementById('val-odom').innerText = `X: ${data.odom_x.toFixed(2)} | Y: ${data.odom_y.toFixed(2)} m`;
+        // Métricas ESP32 & Odometria
+        document.getElementById('val-bat').innerText = (data.battery_v || 0).toFixed(2) + ' V';
+        document.getElementById('val-vel').innerText =
+          (data.speed_lin || 0).toFixed(2) + ' m/s | ' + (data.speed_ang || 0).toFixed(2) + ' rad/s';
+        document.getElementById('val-odom').innerText =
+          `X: ${(data.odom_x || 0).toFixed(2)} | Y: ${(data.odom_y || 0).toFixed(2)} m`;
         document.getElementById('val-crc').innerText = data.crc_errors || 0;
 
-        const serialBadge = document.getElementById('val-serial');
+        const serialBadge = document.getElementById('badge-serial');
         if (data.serial_connected) {
-          serialBadge.innerText = 'CONECTADO (30Hz)';
-          serialBadge.style.color = 'var(--color-run)';
+          serialBadge.className = 'pill pill-on';
+          serialBadge.innerText = 'ESP32 CONECTADO (30Hz)';
         } else {
-          serialBadge.innerText = 'DESCONECTADO';
-          serialBadge.style.color = 'var(--color-danger)';
+          serialBadge.className = 'pill pill-off';
+          serialBadge.innerText = 'ESP32 DESCONECTADO';
         }
 
         const obsBadge = document.getElementById('val-obs');
@@ -234,11 +373,56 @@
           obsBadge.style.color = 'var(--color-run)';
         }
 
-        // 4. Medidor de Desvio da Linha
+        // IMU MPU6050
+        const imuBadge = document.getElementById('badge-imu');
+        if (data.imu_active) {
+          imuBadge.className = 'pill pill-on';
+          imuBadge.innerText = 'ONLINE';
+        } else {
+          imuBadge.className = 'pill pill-off';
+          imuBadge.innerText = 'OFFLINE';
+        }
+        document.getElementById('imu-ax').innerText = (data.imu_ax || 0).toFixed(2);
+        document.getElementById('imu-ay').innerText = (data.imu_ay || 0).toFixed(2);
+        document.getElementById('imu-az').innerText = (data.imu_az || 0).toFixed(2);
+        document.getElementById('imu-gx').innerText = (data.imu_gx || 0).toFixed(3);
+        document.getElementById('imu-gy').innerText = (data.imu_gy || 0).toFixed(3);
+        document.getElementById('imu-gz-deg').innerText = (data.imu_yaw_rate_deg || 0).toFixed(1) + '°/s';
+
+        // Câmera Status
+        const camBadge = document.getElementById('badge-cam');
+        if (data.debug_cam_active || data.camera_active) {
+          camBadge.className = 'pill pill-on';
+          camBadge.innerText = data.debug_cam_active && !camPreferRaw ? 'ONLINE (HUD)' : 'ONLINE (RAW)';
+          document.getElementById('cam-stream').style.opacity = '1.0';
+        } else {
+          camBadge.className = 'pill pill-off';
+          camBadge.innerText = 'SEM SINAL';
+        }
+
+        // LiDAR 360°
+        const lidarBadge = document.getElementById('badge-lidar');
+        if (data.lidar_active) {
+          lidarBadge.className = 'pill pill-on';
+          lidarBadge.innerText = 'ONLINE (10Hz)';
+        } else {
+          lidarBadge.className = 'pill pill-off';
+          lidarBadge.innerText = 'OFFLINE';
+        }
+        document.getElementById('val-lidar-front').innerText =
+          (data.lidar_front_dist !== null && data.lidar_front_dist !== undefined)
+            ? data.lidar_front_dist.toFixed(2) + ' m' : '-- m';
+        document.getElementById('val-lidar-min').innerText =
+          (data.lidar_min_dist !== null && data.lidar_min_dist !== undefined)
+            ? data.lidar_min_dist.toFixed(2) + ' m' : '-- m';
+        drawLidarRadar(data.lidar_sectors, data.lidar_active);
+
+        // Medidor de Desvio da Linha
         const norm = Math.max(-1.0, Math.min(1.0, data.line_error || 0.0));
         const pct = ((norm + 1.0) / 2.0) * 100.0;
         document.getElementById('line-cursor').style.left = pct + '%';
-        document.getElementById('line-err-text').innerText = 'Erro: ' + (data.line_visible ? norm.toFixed(2) : 'PERDIDA');
+        document.getElementById('line-err-text').innerText =
+          'Erro: ' + (data.line_visible ? norm.toFixed(2) : 'PERDIDA');
 
       } catch (err) {
         document.getElementById('conn-badge').innerHTML = '● DESCONECTADO';
@@ -283,6 +467,7 @@
       } catch (e) {}
     }
 
+    drawLidarRadar([], false);
     setInterval(updateTelemetry, 150);
     updateTelemetry();
   </script>

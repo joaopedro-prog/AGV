@@ -16,7 +16,7 @@
 | **GPIO 39 (VN) / 36 (VP)** | `ENC2_CLK / DT` | Encoder `KY-040 #2` (Direito) | Redução 20:1 $\rightarrow$ `800 ticks/volta` da roda (`CHANGE`) |
 | **GPIO 33** | `E_STOP_D33` | Botão Emergência `BTN_E_STOP` | `INPUT_PULLUP` ao GND |
 | **GPIO 27** | `TRIG_SHARED` | Trigger `HC-SR04 #1` e `#2` | Pulso 10 µs não-bloqueante a 10 Hz |
-| **GPIO 26 / 25** | `ECHO1_3V3 / ECHO2_3V3` | Eco Frontal e Traseiro | Obrigatório divisor resistivo **1k / 2k** ($5\text{V} \rightarrow 3{,}3\text{V}$) |
+| **GPIO 26 / 25** | `ECHO1_3V3 / ECHO2_3V3` | Eco Frontal Esquerdo (`US1`) e Direito (`US2`) | Obrigatório divisor resistivo **1k / 2k** ($5\text{V} \rightarrow 3{,}3\text{V}$) |
 | **GPIO 16 / 17** | `RX2 / TX2` | RPi UART (`Pinos 8 e 10`) | Espelhada em paralelo com a USB Serial (`115200 bps`) |
 
 ### 1.2 Raspberry Pi 3 Model B (`src/agv_hardware/`)
@@ -45,23 +45,22 @@
 ## 3. Preparação da Raspberry Pi 3B (Sem Simulação)
 
 1. Instale no cartão microSD o **Ubuntu Server 22.04 LTS (64-bit ARM64)** ou **Raspberry Pi OS Lite (64-bit)** (sem interface desktop).
-2. Clone o repositório na Raspberry Pi e mude para a branch atual:
+2. Clone o repositório na Raspberry Pi na branch `develop`:
    ```bash
-   git clone https://github.com/joaopedro-prog/AGV.git
+   git clone -b develop https://github.com/joaopedro-prog/AGV.git
    cd AGV
    ```
-3. Se conectar ESP32 e RPLIDAR A1 via USB simultaneamente:
-   - Rode `udevadm info -a -n /dev/ttyUSB0 | grep serial` em cada dispositivo e ajuste [`scripts/rpi/99-agv-devices.rules`](file:///c:/Users/João%20Pedro/Documents/AGV/scripts/rpi/99-agv-devices.rules).
-   - Se conectar o ESP32 pelos pinos GPIO 8/10 (`Serial2`), defina `serial_port: "/dev/serial0"` em [`src/agv_hardware/config/hardware_params.yaml`](file:///c:/Users/João%20Pedro/Documents/AGV/src/agv_hardware/config/hardware_params.yaml).
+3. Confira a porta serial de conexão com o ESP32 em [`src/agv_hardware/config/hardware_params.yaml`](file:///c:/Users/João%20Pedro/Documents/AGV/src/agv_hardware/config/hardware_params.yaml):
+   - Se conectar o ESP32 via **USB**: deixe `serial_port: "/dev/agv_esp32"` (regra udev automática) ou `"/dev/ttyUSB0"`.
+   - Se conectar o ESP32 pelos **pinos GPIO 8 e 10 (`Serial2`)**: defina `serial_port: "/dev/serial0"`.
 4. Execute o script automático de provisionamento:
    ```bash
    sudo bash scripts/rpi/setup_rpi.sh
    sudo reboot
    ```
 5. Após reiniciar, o container **`agv_eletron_real`** inicia automaticamente no boot (`restart: unless-stopped`):
-   - **Dashboard Web HMI:** `http://<IP_DA_RPI>:8080`
+   - **Dashboard Web HMI (Câmera MJPEG + 2× Ultrassônicos + IMU + Telemetria):** `http://<IP_DA_RPI>:8080`
    - **Teleoperação Joystick Wi-Fi:** no notebook Windows, rode `controlar_joystick.bat` apontando para o IP da RPi na porta UDP `9876`.
-   - **Para habilitar o RPLIDAR A1:** defina `ENABLE_LIDAR=true` no ambiente ou edite `docker-compose.rpi.yml`.
 
 ---
 

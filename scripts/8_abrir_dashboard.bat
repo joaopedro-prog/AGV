@@ -13,7 +13,7 @@ docker exec meu_container_ros pkill -f "dashboard_server" >nul 2>&1
 docker exec meu_container_ros pkill -f "dashboard.launch.py" >nul 2>&1
 
 REM Inicia ponte TCP na porta 8080 do Windows -> 172.17.0.1:8085 do container principal
-echo Iniciando ponte HTTP/MJPEG (http://localhost:8080 -> container:8085)...
+echo Iniciando ponte HTTP/MJPEG (http://localhost:8080 para container:8085)...
 docker run -d --rm --name agv_web_proxy -p 8080:8080 -v "%~dp0tcp_proxy.py:/tmp/tcp_proxy.py:ro" meu-agv:latest python3 /tmp/tcp_proxy.py 8080 172.17.0.1 8085 >nul
 
 echo Abrindo o navegador em: http://localhost:8080

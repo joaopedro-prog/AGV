@@ -299,11 +299,15 @@ class DashboardNode(Node):
             return {'status': 'ok', 'message': 'EMERGÊNCIA 255 acionada'}
 
         elif action == 'reset':
-            if self.cli_reset.wait_for_service(timeout_sec=1.0):
+            if self.cli_reset.wait_for_service(timeout_sec=0.4):
                 req = Trigger.Request()
                 self.cli_reset.call_async(req)
-                return {'status': 'ok', 'message': 'Solicitação de rearme transmitida'}
-            return {'status': 'error', 'message': 'Serviço de rearme não disponível'}
+                return {'status': 'ok', 'message': 'Solicitação de rearme transmitida ao ESP32'}
+            # Fallback para simulação (sem serial_bridge): envia RESET via /agv/command
+            s = String()
+            s.data = 'RESET'
+            self.pub_cmd.publish(s)
+            return {'status': 'ok', 'message': 'Rearme enviado ao supervisor (modo simulação)'}
 
         elif action == 'teleop':
             v = float(params.get('linear', 0.0))
@@ -336,6 +340,7 @@ class DashboardNode(Node):
                     payload = json.dumps(node_ref.get_status_snapshot()).encode('utf-8')
                     self.send_response(200)
                     self.send_header('Content-Type', 'application/json')
+                    self.send_header('Content-Length', str(len(payload)))
                     self.send_header('Cache-Control', 'no-store')
                     self.send_header('Access-Control-Allow-Origin', '*')
                     self.end_headers()
@@ -389,11 +394,13 @@ class DashboardNode(Node):
                         data = json.loads(body)
                         action = data.get('action', '')
                         res = node_ref.handle_user_command(action, data)
+                        payload = json.dumps(res).encode('utf-8')
                         self.send_response(200)
                         self.send_header('Content-Type', 'application/json')
+                        self.send_header('Content-Length', str(len(payload)))
                         self.send_header('Access-Control-Allow-Origin', '*')
                         self.end_headers()
-                        self.wfile.write(json.dumps(res).encode('utf-8'))
+                        self.wfile.write(payload)
                     except Exception as e:
                         self.send_response(400)
                         self.end_headers()

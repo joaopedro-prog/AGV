@@ -5,14 +5,15 @@
       ==========================================================================
       SENSOR LIDAR 360 (LASER SCAN) DO AGV
       ==========================================================================
-      Montado sobre o teto do chassi de alumínio (z = 0.180m, logo acima do teto
-      em z = 0.160m), garantindo varredura de 360° limpa e sem obstruções.
+      Montado sobre o teto do chassi de alumínio (z = 0.220m, acima do teto e
+      da folga de oscilação dos rodízios), garantindo varredura 360° sem
+      atingir a própria borda do chassi (0.24m).
       ==========================================================================
     -->
     <joint name="laser_joint" type="fixed">
         <parent link="chassis"/>
         <child link="laser_frame"/>
-        <origin xyz="0.100 0 0.180" rpy="0 0 0"/>
+        <origin xyz="0.100 0 0.220" rpy="0 0 0"/>
     </joint>
 
     <link name="laser_frame">

@@ -167,6 +167,8 @@ class LineFollowerNode(Node):
             self._request_start()
         elif cmd in ('STOP', 'IDLE', 'PAUSE'):
             self._request_stop()
+        elif cmd in ('RESET', 'REARM'):
+            self._request_reset()
 
     def set_following_callback(self, request: SetBool.Request, response: SetBool.Response):
         if request.data:
@@ -198,6 +200,17 @@ class LineFollowerNode(Node):
         self.state = 'REMOTE_STOP_REQUESTED'
         self.get_logger().info('>>> PARADA REMOTA SOLICITADA (Desacelerando...) <<<')
 
+    def _request_reset(self):
+        if self.hw_safety_state in ('HARDWARE_ESTOP_ACTIVE', 'ESTOP_CLEARED_PENDING_RESET', 'WATCHDOG_TIMEOUT', 'DRIVER_FAULT'):
+            self.get_logger().warn(f'Rearme local ignorado: aguardando /agv/reset_emergency do ESP32 (hw={self.hw_safety_state}).')
+            return
+        self.active = False
+        self.current_cmd_speed = 0.0
+        self.lidar_emergency = False
+        self.obstacle_detected = False
+        self.state = 'IDLE'
+        self.get_logger().info('>>> SISTEMA REARMADO PARA STANDBY (IDLE) <<<')
+
     def _publish_zero(self):
         t = Twist()
         self.cmd_pub.publish(t)
@@ -226,6 +239,9 @@ class LineFollowerNode(Node):
             if self.state != 'RECOVERY_PENDING':
                 self.state = 'HARDWARE_ESTOP_ACTIVE'
             return
+        elif self.state == 'HARDWARE_ESTOP_ACTIVE' and self.hw_safety_state in ('INIT', 'OK'):
+            # Obstáculo saiu da frente na simulação / sem trava física do ESP32
+            self.state = 'IDLE'
 
         # 2. Trata Parada Solicitada (Rampa de Desaceleração)
         if self.state == 'REMOTE_STOP_REQUESTED':

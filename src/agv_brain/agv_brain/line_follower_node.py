@@ -18,6 +18,7 @@ Comportamento:
 
 import json
 import math
+import struct
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Vector3
@@ -87,10 +88,10 @@ class LineFollowerNode(Node):
             Bool, '/agv/obstacle_detected', self.obstacle_callback, 10
         )
         self.us_left_sub = self.create_subscription(
-            Range, '/agv/ultrasonic_left', self.us_left_callback, 10
+            Range, '/agv/ultrasonic_left', self.us_left_callback, 10, raw=True
         )
         self.us_right_sub = self.create_subscription(
-            Range, '/agv/ultrasonic_right', self.us_right_callback, 10
+            Range, '/agv/ultrasonic_right', self.us_right_callback, 10, raw=True
         )
         self.hw_status_sub = self.create_subscription(
             String, '/agv/hardware_status', self.hw_status_callback, 10
@@ -109,11 +110,28 @@ class LineFollowerNode(Node):
             f'Ultrassônicos 2x HC-SR04 (corte={self.us_stop_dist:.2f}m, ativo={self.stop_on_obstacle})'
         )
 
-    def us_left_callback(self, msg: Range):
-        self.us_left_dist = float(msg.range) if not math.isnan(msg.range) else float('inf')
+    @staticmethod
+    def _parse_raw_range(raw_msg) -> float:
+        try:
+            if isinstance(raw_msg, (bytes, bytearray, memoryview)):
+                if len(raw_msg) < 16:
+                    return float('inf')
+                _, min_r, max_r, r = struct.unpack('<4f', bytes(raw_msg[-16:]))
+            else:
+                r = float(raw_msg.range)
+                min_r = float(raw_msg.min_range)
+                max_r = float(raw_msg.max_range)
+            if math.isnan(r) or math.isinf(r) or r < min_r or r > max_r:
+                return float('inf')
+            return r
+        except Exception:
+            return float('inf')
 
-    def us_right_callback(self, msg: Range):
-        self.us_right_dist = float(msg.range) if not math.isnan(msg.range) else float('inf')
+    def us_left_callback(self, msg):
+        self.us_left_dist = self._parse_raw_range(msg)
+
+    def us_right_callback(self, msg):
+        self.us_right_dist = self._parse_raw_range(msg)
 
     def _is_ultrasonic_blocked(self) -> bool:
         if not self.stop_on_obstacle:

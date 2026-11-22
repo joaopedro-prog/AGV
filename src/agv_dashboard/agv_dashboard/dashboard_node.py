@@ -27,6 +27,7 @@ import json
 import math
 import os
 import socketserver
+import struct
 import threading
 import time
 import urllib.parse
@@ -115,8 +116,8 @@ class DashboardNode(Node):
         self.sub_cam_raw = self.create_subscription(Image, '/camera/image_raw', self._cam_raw_cb, 5)
         self.sub_cam_dbg = self.create_subscription(Image, '/agv/line_debug_image', self._cam_dbg_cb, 5)
         self.sub_imu = self.create_subscription(Imu, '/imu/data_raw', self._imu_cb, 10)
-        self.sub_us_left = self.create_subscription(Range, '/agv/ultrasonic_left', self._us_left_cb, 10)
-        self.sub_us_right = self.create_subscription(Range, '/agv/ultrasonic_right', self._us_right_cb, 10)
+        self.sub_us_left = self.create_subscription(Range, '/agv/ultrasonic_left', self._us_left_cb, 10, raw=True)
+        self.sub_us_right = self.create_subscription(Range, '/agv/ultrasonic_right', self._us_right_cb, 10, raw=True)
 
         # Publishers
         self.pub_cmd = self.create_publisher(String, '/agv/command', 10)
@@ -218,11 +219,21 @@ class DashboardNode(Node):
             self.telemetry['imu_gz'] = round(msg.angular_velocity.z, 3)
             self.telemetry['imu_yaw_rate_deg'] = round(math.degrees(msg.angular_velocity.z), 1)
 
-    def _parse_range_m(self, msg: Range) -> Optional[float]:
-        r = float(msg.range)
-        if math.isnan(r) or math.isinf(r) or r < msg.min_range or r > msg.max_range:
+    def _parse_range_m(self, raw_msg) -> Optional[float]:
+        try:
+            if isinstance(raw_msg, (bytes, bytearray, memoryview)):
+                if len(raw_msg) < 16:
+                    return None
+                _, min_r, max_r, r = struct.unpack('<4f', bytes(raw_msg[-16:]))
+            else:
+                r = float(raw_msg.range)
+                min_r = float(raw_msg.min_range)
+                max_r = float(raw_msg.max_range)
+            if math.isnan(r) or math.isinf(r) or r < min_r or r > max_r:
+                return None
+            return round(r, 2)
+        except Exception:
             return None
-        return round(r, 2)
 
     def _us_left_cb(self, msg: Range):
         val = self._parse_range_m(msg)

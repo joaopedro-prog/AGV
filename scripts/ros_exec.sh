@@ -39,5 +39,8 @@ fi
 export GAZEBO_MODEL_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_MODEL_PATH}
 export GAZEBO_RESOURCE_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_RESOURCE_PATH}
 
+# Desativa asserts de debug do rosidl_generator_py (corrige Range FLT_MAX do Gazebo)
+export PYTHONOPTIMIZE=1
+
 # Executa o comando passado como argumento
 exec "$@"

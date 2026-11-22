@@ -1,7 +1,7 @@
 @echo off
 setlocal
 echo ======================================================================
-echo          INICIANDO DASHBOARD WEB DO AGV (HMI & TELEMETRIA)
+echo          INICIANDO DASHBOARD WEB DO AGV (HMI E TELEMETRIA)
 echo ======================================================================
 
 REM Garante que o container principal esteja ativo

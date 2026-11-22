@@ -49,10 +49,10 @@ const int PIN_ESTOP_HW = 33;  // D33 com INPUT_PULLUP
 // Se usar contato NF ligado ao GND (cabo rompido/pressionado = HIGH), troque para HIGH.
 const int ESTOP_TRIGGER_LEVEL = LOW;
 
-// Sensores Ultrassônicos 2x HC-SR04 (ECHO com divisor resistivo 1k/2k -> 3.3V)
+// Sensores Ultrassônicos 2x HC-SR04 Frontais (ECHO com divisor resistivo 1k/2k -> 3.3V)
 const int PIN_TRIG_SHARED = 27; // D27 -> TRIG_SHARED
-const int PIN_ECHO_FRONT  = 26; // D26 -> ECHO1_3V3 (US1 Frontal)
-const int PIN_ECHO_REAR   = 25; // D25 -> ECHO2_3V3 (US2 Traseiro)
+const int PIN_ECHO_LEFT   = 26; // D26 -> ECHO1_3V3 (US1 Frontal Esquerdo)
+const int PIN_ECHO_RIGHT  = 25; // D25 -> ECHO2_3V3 (US2 Frontal Direito)
 
 // UART2 hardware espelhando Serial USB <-> Raspberry Pi 3B GPIO (Pinos 8 e 10)
 const int PIN_UART2_RX = 16; // RX2 (GPIO 16) <- RPi_TX_UART
@@ -93,14 +93,14 @@ volatile long enc_ticks_right = 0;
 volatile int prev_clk_l = HIGH;
 volatile int prev_clk_r = HIGH;
 
-// Medição não-bloqueante dos 2 sensores ultrassônicos
-volatile unsigned long echo_front_start_us = 0;
-volatile unsigned long echo_front_dur_us   = 0;
-volatile unsigned long echo_front_rx_ms    = 0;
+// Medição não-bloqueante dos 2 sensores ultrassônicos frontais
+volatile unsigned long echo_left_start_us  = 0;
+volatile unsigned long echo_left_dur_us    = 0;
+volatile unsigned long echo_left_rx_ms     = 0;
 
-volatile unsigned long echo_rear_start_us  = 0;
-volatile unsigned long echo_rear_dur_us    = 0;
-volatile unsigned long echo_rear_rx_ms     = 0;
+volatile unsigned long echo_right_start_us = 0;
+volatile unsigned long echo_right_dur_us   = 0;
+volatile unsigned long echo_right_rx_ms    = 0;
 
 long prev_ticks_left  = 0;
 long prev_ticks_right = 0;
@@ -176,28 +176,28 @@ void IRAM_ATTR isr_enc_right() {
 }
 
 // ==================== INTERRUPÇÕES NÃO-BLOQUEANTES HC-SR04 ==================
-void IRAM_ATTR isr_echo_front() {
+void IRAM_ATTR isr_echo_left() {
   unsigned long now_us = micros();
-  if (digitalRead(PIN_ECHO_FRONT) == HIGH) {
-    echo_front_start_us = now_us;
+  if (digitalRead(PIN_ECHO_LEFT) == HIGH) {
+    echo_left_start_us = now_us;
   } else {
-    unsigned long dur = now_us - echo_front_start_us;
+    unsigned long dur = now_us - echo_left_start_us;
     if (dur >= 120 && dur <= 25000) {
-      echo_front_dur_us = dur;
-      echo_front_rx_ms = millis();
+      echo_left_dur_us = dur;
+      echo_left_rx_ms = millis();
     }
   }
 }
 
-void IRAM_ATTR isr_echo_rear() {
+void IRAM_ATTR isr_echo_right() {
   unsigned long now_us = micros();
-  if (digitalRead(PIN_ECHO_REAR) == HIGH) {
-    echo_rear_start_us = now_us;
+  if (digitalRead(PIN_ECHO_RIGHT) == HIGH) {
+    echo_right_start_us = now_us;
   } else {
-    unsigned long dur = now_us - echo_rear_start_us;
+    unsigned long dur = now_us - echo_right_start_us;
     if (dur >= 120 && dur <= 25000) {
-      echo_rear_dur_us = dur;
-      echo_rear_rx_ms = millis();
+      echo_right_dur_us = dur;
+      echo_right_rx_ms = millis();
     }
   }
 }
@@ -402,24 +402,23 @@ void trigger_ultrasonic_nonblocking() {
   digitalWrite(PIN_TRIG_SHARED, LOW);
 }
 
-int get_min_ultrasonic_cm(unsigned long now_ms) {
+void get_ultrasonics_cm(unsigned long now_ms, int &cm_left, int &cm_right) {
   noInterrupts();
-  unsigned long dur_f = echo_front_dur_us;
-  unsigned long rx_f  = echo_front_rx_ms;
-  unsigned long dur_r = echo_rear_dur_us;
-  unsigned long rx_r  = echo_rear_rx_ms;
+  unsigned long dur_l = echo_left_dur_us;
+  unsigned long rx_l  = echo_left_rx_ms;
+  unsigned long dur_r = echo_right_dur_us;
+  unsigned long rx_r  = echo_right_rx_ms;
   interrupts();
 
-  int cm_front = 999;
-  int cm_rear  = 999;
+  cm_left  = 999;
+  cm_right = 999;
 
-  if (rx_f > 0 && (now_ms - rx_f) < 300) {
-    cm_front = (int)((dur_f * 0.0343f) * 0.5f);
+  if (rx_l > 0 && (now_ms - rx_l) < 300) {
+    cm_left = (int)((dur_l * 0.0343f) * 0.5f);
   }
   if (rx_r > 0 && (now_ms - rx_r) < 300) {
-    cm_rear = (int)((dur_r * 0.0343f) * 0.5f);
+    cm_right = (int)((dur_r * 0.0343f) * 0.5f);
   }
-  return (cm_front < cm_rear) ? cm_front : cm_rear;
 }
 
 int read_battery_millivolts() {
@@ -463,10 +462,10 @@ void setup() {
   // Sensores ultrassônicos não-bloqueantes
   pinMode(PIN_TRIG_SHARED, OUTPUT);
   digitalWrite(PIN_TRIG_SHARED, LOW);
-  pinMode(PIN_ECHO_FRONT, INPUT);
-  pinMode(PIN_ECHO_REAR,  INPUT);
-  attachInterrupt(digitalPinToInterrupt(PIN_ECHO_FRONT), isr_echo_front, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(PIN_ECHO_REAR),  isr_echo_rear,  CHANGE);
+  pinMode(PIN_ECHO_LEFT,  INPUT);
+  pinMode(PIN_ECHO_RIGHT, INPUT);
+  attachInterrupt(digitalPinToInterrupt(PIN_ECHO_LEFT),  isr_echo_left,  CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_ECHO_RIGHT), isr_echo_right, CHANGE);
 
   cut_motor_power();
   unsigned long boot_ms = millis();
@@ -547,16 +546,18 @@ void loop() {
     long t_right = enc_ticks_right;
     interrupts();
 
-    int dist_cm = get_min_ultrasonic_cm(now);
+    int us_left_cm = 999, us_right_cm = 999;
+    get_ultrasonics_cm(now, us_left_cm, us_right_cm);
+    int dist_cm = (us_left_cm < us_right_cm) ? us_left_cm : us_right_cm;
     int vbat_mv = read_battery_millivolts();
 
-    // Payload: TELEM,<seq>,<tL>,<tR>,<wL>,<wR>,<vbat>,<us_dist>,<status>
-    char payload_buf[110];
+    // Payload: TELEM,<seq>,<tL>,<tR>,<wL>,<wR>,<vbat>,<min_us_cm>,<status>,<usL_cm>,<usR_cm>
+    char payload_buf[128];
     snprintf(payload_buf, sizeof(payload_buf),
-             "TELEM,%u,%ld,%ld,%.2f,%.2f,%d,%d,%u",
+             "TELEM,%u,%ld,%ld,%.2f,%.2f,%d,%d,%u,%d,%d",
              tx_seq, t_left, t_right,
              current_speed_l_rad_s, current_speed_r_rad_s,
-             vbat_mv, dist_cm, current_safety_state);
+             vbat_mv, dist_cm, current_safety_state, us_left_cm, us_right_cm);
 
     send_packet(String(payload_buf));
   }

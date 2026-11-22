@@ -98,8 +98,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'enable_lidar',
-            default_value='true',
-            description='Se true, inicia o driver rplidar_ros no robo fisico',
+            default_value='false',
+            description='Desativado por padrao: modelo fisico usa 2x HC-SR04 frontais sem LiDAR',
         ),
         DeclareLaunchArgument(
             'lidar_port',

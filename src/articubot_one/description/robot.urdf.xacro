@@ -14,7 +14,7 @@
     </xacro:unless>
 
     <xacro:include filename="camera.xacro" />
-    <xacro:include filename="lidar.xacro" />
+    <!-- Modelo físico atual utiliza 2x HC-SR04 frontais (sem LiDAR) -->
     <xacro:include filename="ultrasonic.xacro" />
 
 </robot>

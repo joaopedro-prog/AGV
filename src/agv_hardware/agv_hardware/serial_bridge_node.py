@@ -22,7 +22,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, TransformStamped
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import JointState
+from sensor_msgs.msg import JointState, Range
 from std_msgs.msg import Bool, Float32, Float32MultiArray, String
 from std_srvs.srv import Trigger
 from tf2_ros import TransformBroadcaster
@@ -151,6 +151,8 @@ class SerialBridgeNode(Node):
         self.obstacle_pub = self.create_publisher(Bool, '/agv/obstacle_detected', 10)
         self.hw_status_pub = self.create_publisher(String, '/agv/hardware_status', 10)
         self.emergency_pub = self.create_publisher(Twist, '/cmd_vel_emergency', 10)
+        self.us_left_pub = self.create_publisher(Range, '/agv/ultrasonic_left', 10)
+        self.us_right_pub = self.create_publisher(Range, '/agv/ultrasonic_right', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
 
         # Subscribers
@@ -367,6 +369,8 @@ class SerialBridgeNode(Node):
             vbat_mv = int(parts[6])
             dist_cm = int(parts[7])
             safety_code = int(parts[8])
+            us_left_cm = int(parts[9]) if len(parts) >= 11 else dist_cm
+            us_right_cm = int(parts[10]) if len(parts) >= 11 else dist_cm
         except ValueError:
             return
 
@@ -390,14 +394,32 @@ class SerialBridgeNode(Node):
         bat_msg.data = float(vbat_mv) / 1000.0
         self.battery_pub.publish(bat_msg)
 
-        # Obstáculo
-        is_blocked = (0 < dist_cm < int(self.obstacle_stop_dist * 100))
+        # Obstáculo + publicação dos 2x HC-SR04 frontais (sensor_msgs/Range)
+        self._publish_range(self.us_left_pub, 'ultrasonic_left_frame', us_left_cm, now)
+        self._publish_range(self.us_right_pub, 'ultrasonic_right_frame', us_right_cm, now)
+
+        min_cm = min(us_left_cm, us_right_cm)
+        is_blocked = (0 < min_cm < int(self.obstacle_stop_dist * 100))
         obs_msg = Bool()
         obs_msg.data = bool(is_blocked)
         self.obstacle_pub.publish(obs_msg)
 
         # Odometria real
         self._update_odometry(t_left, t_right, w_left, w_right, now)
+
+    def _publish_range(self, pub, frame_id: str, dist_cm: int, now):
+        r_msg = Range()
+        r_msg.header.stamp = now.to_msg()
+        r_msg.header.frame_id = frame_id
+        r_msg.radiation_type = Range.ULTRASOUND
+        r_msg.field_of_view = 0.28
+        r_msg.min_range = 0.03
+        r_msg.max_range = 3.0
+        if 0 < dist_cm <= 300:
+            r_msg.range = float(dist_cm) / 100.0
+        else:
+            r_msg.range = float('inf')
+        pub.publish(r_msg)
 
     def _update_odometry(self, ticks_left: int, ticks_right: int,
                          w_left: float, w_right: float, now):

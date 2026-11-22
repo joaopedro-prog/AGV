@@ -104,8 +104,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'enable_lidar',
-            default_value='true',
-            description='No modo real (sim_mode:=false), ativa o driver rplidar_ros',
+            default_value='false',
+            description='Desativado por padrao: modelo fisico usa 2x HC-SR04 frontais sem LiDAR',
         ),
         DeclareLaunchArgument(
             'lidar_port',

@@ -93,9 +93,9 @@
     .imu-cell span { display: block; font-size: 0.72rem; color: var(--text-muted); }
     .imu-cell strong { font-size: 0.88rem; color: #38bdf8; font-family: ui-monospace, monospace; }
 
-    /* Radar LiDAR 360 */
-    .lidar-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-    #lidar-canvas { background: #070b12; border-radius: 50%; border: 1px solid #1e3a5f; box-shadow: inset 0 0 24px rgba(14, 165, 233, 0.12); max-width: 100%; }
+    /* Radar Ultrassônico Dual Frontal */
+    .sonar-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    #ultrasonic-canvas { background: #070b12; border-radius: 10px; border: 1px solid #1e3a5f; box-shadow: inset 0 0 24px rgba(14, 165, 233, 0.12); width: 100%; max-width: 310px; height: auto; }
   </style>
 </head>
 <body>
@@ -205,23 +205,23 @@
       </div>
     </div>
 
-    <!-- Card 4: Radar LiDAR 360° (/scan) -->
+    <!-- Card 4: Visão dos 2x Sensores Ultrassônicos Frontais (HC-SR04) -->
     <div class="card">
       <div class="card-header">
-        <h2>Radar LiDAR 360° (/scan)</h2>
-        <span class="pill pill-off" id="badge-lidar">OFFLINE</span>
+        <h2>Sensores Ultrassônicos Frontais</h2>
+        <span class="pill pill-off" id="badge-us">OFFLINE</span>
       </div>
-      <div class="lidar-wrapper">
-        <canvas id="lidar-canvas" width="260" height="260"></canvas>
+      <div class="sonar-wrapper">
+        <canvas id="ultrasonic-canvas" width="310" height="235"></canvas>
       </div>
       <div style="margin-top: 12px;">
         <div class="metric-row">
-          <span>Distância Mínima Frontal (±30°):</span>
-          <span class="metric-value" id="val-lidar-front">-- m</span>
+          <span>US1 Frontal Esquerdo (GPIO 26):</span>
+          <span class="metric-value" id="val-us-left">LIVRE (&gt;3m)</span>
         </div>
         <div class="metric-row" style="margin-bottom: 0;">
-          <span>Menor Obstáculo Global (360°):</span>
-          <span class="metric-value" id="val-lidar-min">-- m</span>
+          <span>US2 Frontal Direito (GPIO 25):</span>
+          <span class="metric-value" id="val-us-right">LIVRE (&gt;3m)</span>
         </div>
       </div>
     </div>
@@ -246,70 +246,100 @@
       img.src = '/api/camera_stream' + suffix + Date.now();
     }
 
-    function drawLidarRadar(sectors, active) {
-      const canvas = document.getElementById('lidar-canvas');
+    function drawUltrasonicView(leftM, rightM, active) {
+      const canvas = document.getElementById('ultrasonic-canvas');
       const ctx = canvas.getContext('2d');
       const w = canvas.width;
       const h = canvas.height;
-      const cx = w / 2;
-      const cy = h / 2;
-      const maxRangeM = 4.0;
-      const radiusPx = (Math.min(w, h) / 2) - 12;
+      const maxRange = 3.0;
+      const bumperY = h - 38;
+      const topPad = 18;
+      const usableH = bumperY - topPad;
 
       ctx.clearRect(0, 0, w, h);
 
-      // Anéis de distância (1m, 2m, 3m, 4m)
-      [1, 2, 3, 4].forEach(m => {
-        const r = (m / maxRangeM) * radiusPx;
-        ctx.strokeStyle = (m === 4) ? 'rgba(56, 189, 248, 0.35)' : 'rgba(56, 189, 248, 0.16)';
-        ctx.lineWidth = 1;
+      // Arcos de distância (0.25m alerta, 1.0m, 2.0m, 3.0m)
+      [0.25, 1.0, 2.0, 3.0].forEach(d => {
+        const y = bumperY - (d / maxRange) * usableH;
+        ctx.strokeStyle = (d === 0.25) ? 'rgba(239, 68, 68, 0.55)' : 'rgba(56, 189, 248, 0.16)';
+        ctx.setLineDash(d === 0.25 ? [5, 4] : []);
         ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.moveTo(16, y);
+        ctx.lineTo(w - 16, y);
         ctx.stroke();
+        ctx.setLineDash([]);
 
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.65)';
+        ctx.fillStyle = (d === 0.25) ? '#f87171' : 'rgba(148, 163, 184, 0.7)';
         ctx.font = '10px monospace';
-        ctx.fillText(m + 'm', cx + 3, cy - r + 10);
+        ctx.fillText(d.toFixed(2) + 'm', 18, y - 3);
       });
 
-      // Eixos cruzados
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - radiusPx); ctx.lineTo(cx, cy + radiusPx);
-      ctx.moveTo(cx - radiusPx, cy); ctx.lineTo(cx + radiusPx, cy);
-      ctx.stroke();
+      function drawCone(cx, distM, label) {
+        const halfSpreadRad = 0.22;
+        const clamped = (distM !== null && distM !== undefined) ? Math.min(maxRange, Math.max(0.03, distM)) : maxRange;
+        const rPx = (clamped / maxRange) * usableH;
+        const hasHit = active && (distM !== null && distM !== undefined);
 
-      // Cone de segurança frontal (±30°)
-      ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, radiusPx, -Math.PI / 2 - (Math.PI / 6), -Math.PI / 2 + (Math.PI / 6));
-      ctx.closePath();
-      ctx.fill();
-
-      // Pontos do /scan (REP-103: 0° frente = topo)
-      if (active && Array.isArray(sectors)) {
-        for (let i = 0; i < sectors.length; i++) {
-          const angDeg = sectors[i][0];
-          const dist = Math.min(maxRangeM, sectors[i][1]);
-          const rPx = (dist / maxRangeM) * radiusPx;
-          const theta = (-angDeg * Math.PI) / 180.0;
-          const px = cx + rPx * Math.sin(theta);
-          const py = cy - rPx * Math.cos(theta);
-
-          const isClose = (dist < 0.45 && Math.abs(angDeg) <= 30.0);
-          ctx.fillStyle = isClose ? '#ef4444' : '#38bdf8';
-          ctx.beginPath();
-          ctx.arc(px, py, isClose ? 3.2 : 2.2, 0, Math.PI * 2);
-          ctx.fill();
+        let color = 'rgba(16, 185, 129, 0.22)';
+        let stroke = '#10b981';
+        if (hasHit && distM < 0.25) {
+          color = 'rgba(239, 68, 68, 0.36)';
+          stroke = '#ef4444';
+        } else if (hasHit && distM < 0.70) {
+          color = 'rgba(245, 158, 11, 0.28)';
+          stroke = '#f59e0b';
+        } else if (!active) {
+          color = 'rgba(100, 116, 139, 0.12)';
+          stroke = '#475569';
         }
+
+        ctx.fillStyle = color;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, bumperY);
+        ctx.arc(cx, bumperY, rPx, -Math.PI / 2 - halfSpreadRad, -Math.PI / 2 + halfSpreadRad);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Arco sólido do obstáculo detectado
+        if (hasHit) {
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(cx, bumperY, rPx, -Math.PI / 2 - halfSpreadRad, -Math.PI / 2 + halfSpreadRad);
+          ctx.stroke();
+
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = 'bold 12px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(distM.toFixed(2) + ' m', cx, bumperY - rPx - 8);
+        } else {
+          ctx.fillStyle = active ? '#34d399' : '#64748b';
+          ctx.font = 'bold 11px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(active ? 'LIVRE' : 'OFF', cx, topPad + 16);
+        }
+
+        // Rótulo do transdutor no para-choque
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, cx, bumperY + 22);
       }
 
-      // Ícone central do robô AGV
-      ctx.fillStyle = '#10b981';
-      ctx.fillRect(cx - 5, cy - 7, 10, 14);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(cx - 2, cy - 8, 4, 3);
+      // Desenha para-choque dianteiro do robô AGV
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(58, bumperY, w - 116, 28, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      drawCone(w * 0.34, leftM, 'US1 ESQ');
+      drawCone(w * 0.66, rightM, 'US2 DIR');
     }
 
     async function updateTelemetry() {
@@ -400,22 +430,19 @@
           camBadge.innerText = 'SEM SINAL';
         }
 
-        // LiDAR 360°
-        const lidarBadge = document.getElementById('badge-lidar');
-        if (data.lidar_active) {
-          lidarBadge.className = 'pill pill-on';
-          lidarBadge.innerText = 'ONLINE (10Hz)';
+        // 2x Sensores Ultrassônicos Frontais
+        const usBadge = document.getElementById('badge-us');
+        if (data.us_active) {
+          usBadge.className = 'pill pill-on';
+          usBadge.innerText = 'ONLINE (20Hz)';
         } else {
-          lidarBadge.className = 'pill pill-off';
-          lidarBadge.innerText = 'OFFLINE';
+          usBadge.className = 'pill pill-off';
+          usBadge.innerText = 'OFFLINE';
         }
-        document.getElementById('val-lidar-front').innerText =
-          (data.lidar_front_dist !== null && data.lidar_front_dist !== undefined)
-            ? data.lidar_front_dist.toFixed(2) + ' m' : '-- m';
-        document.getElementById('val-lidar-min').innerText =
-          (data.lidar_min_dist !== null && data.lidar_min_dist !== undefined)
-            ? data.lidar_min_dist.toFixed(2) + ' m' : '-- m';
-        drawLidarRadar(data.lidar_sectors, data.lidar_active);
+        const fmtUs = (v) => (v !== null && v !== undefined) ? `${v.toFixed(2)} m (${Math.round(v * 100)} cm)` : 'LIVRE (>3.0m)';
+        document.getElementById('val-us-left').innerText = data.us_active ? fmtUs(data.us_left_m) : '--';
+        document.getElementById('val-us-right').innerText = data.us_active ? fmtUs(data.us_right_m) : '--';
+        drawUltrasonicView(data.us_left_m, data.us_right_m, data.us_active);
 
         // Medidor de Desvio da Linha
         const norm = Math.max(-1.0, Math.min(1.0, data.line_error || 0.0));
@@ -467,7 +494,7 @@
       } catch (e) {}
     }
 
-    drawLidarRadar([], false);
+    drawUltrasonicView(null, null, false);
     setInterval(updateTelemetry, 150);
     updateTelemetry();
   </script>

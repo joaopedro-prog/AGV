@@ -7,7 +7,7 @@ if [ -f /workspace/install/setup.bash ]; then
 fi
 
 ENABLE_CAMERA="${ENABLE_CAMERA:-true}"
-ENABLE_LIDAR="${ENABLE_LIDAR:-true}"
+ENABLE_LIDAR="${ENABLE_LIDAR:-false}"
 LIDAR_PORT="${LIDAR_PORT:-/dev/agv_lidar}"
 ENABLE_DASHBOARD="${ENABLE_DASHBOARD:-true}"
 WEB_PORT="${WEB_PORT:-8080}"

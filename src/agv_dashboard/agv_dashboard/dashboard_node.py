@@ -12,7 +12,7 @@ Responsabilidades:
    - /agv/hardware_status (Link serial, CRC16 e segurança ESP32)
    - /agv/obstacle_detected (Alerta de obstáculo)
    - /imu/data_raw (Acelerômetro + Giroscópio MPU6050 I2C)
-   - /scan (Radar 360° RPLIDAR A1 / Gazebo)
+   - /agv/ultrasonic_left e /agv/ultrasonic_right (2x HC-SR04 Frontais)
    - /agv/line_debug_image e /camera/image_raw (Stream MJPEG ao vivo na porta 8080)
 2. Publica comandos do operador:
    - /agv/command: START / STOP
@@ -36,7 +36,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Vector3
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image, Imu, LaserScan
+from sensor_msgs.msg import Image, Imu, Range
 from std_msgs.msg import Bool, Float32, String
 from std_srvs.srv import Trigger
 
@@ -64,7 +64,8 @@ class DashboardNode(Node):
         self.last_cam_time = 0.0
         self.last_debug_cam_time = 0.0
         self.last_imu_time = 0.0
-        self.last_lidar_time = 0.0
+        self.last_us_left_time = 0.0
+        self.last_us_right_time = 0.0
 
         self.latest_raw_jpeg: Optional[bytes] = None
         self.latest_debug_jpeg: Optional[bytes] = None
@@ -96,11 +97,10 @@ class DashboardNode(Node):
             'imu_gy': 0.0,
             'imu_gz': 0.0,
             'imu_yaw_rate_deg': 0.0,
-            # LiDAR 360°
-            'lidar_active': False,
-            'lidar_min_dist': None,
-            'lidar_front_dist': None,
-            'lidar_sectors': [],
+            # 2x Sensores Ultrassônicos Frontais (HC-SR04)
+            'us_active': False,
+            'us_left_m': None,
+            'us_right_m': None,
         }
 
         # Subscribers básicos
@@ -111,11 +111,12 @@ class DashboardNode(Node):
         self.sub_odom = self.create_subscription(Odometry, '/odom', self._odom_cb, 10)
         self.sub_hw = self.create_subscription(String, '/agv/hardware_status', self._hw_cb, 10)
 
-        # Subscribers de Sensores Ricos (Câmera, IMU e LiDAR)
+        # Subscribers de Sensores Ricos (Câmera, IMU e 2x Ultrassônicos Frontais)
         self.sub_cam_raw = self.create_subscription(Image, '/camera/image_raw', self._cam_raw_cb, 5)
         self.sub_cam_dbg = self.create_subscription(Image, '/agv/line_debug_image', self._cam_dbg_cb, 5)
         self.sub_imu = self.create_subscription(Imu, '/imu/data_raw', self._imu_cb, 10)
-        self.sub_scan = self.create_subscription(LaserScan, '/scan', self._scan_cb, 5)
+        self.sub_us_left = self.create_subscription(Range, '/agv/ultrasonic_left', self._us_left_cb, 10)
+        self.sub_us_right = self.create_subscription(Range, '/agv/ultrasonic_right', self._us_right_cb, 10)
 
         # Publishers
         self.pub_cmd = self.create_publisher(String, '/agv/command', 10)
@@ -130,7 +131,7 @@ class DashboardNode(Node):
 
         self.get_logger().info(
             f'Dashboard Web Completo AGV iniciado na porta {self.port} '
-            f'(API REST + MJPEG + IMU + LiDAR 360° | OpenCV={HAS_CV2})!'
+            f'(API REST + MJPEG + IMU + 2x Ultrassônicos | OpenCV={HAS_CV2})!'
         )
 
     def _state_cb(self, msg: String):
@@ -217,45 +218,32 @@ class DashboardNode(Node):
             self.telemetry['imu_gz'] = round(msg.angular_velocity.z, 3)
             self.telemetry['imu_yaw_rate_deg'] = round(math.degrees(msg.angular_velocity.z), 1)
 
-    def _scan_cb(self, msg: LaserScan):
-        now = time.monotonic()
-        if (now - self.last_lidar_time) < 0.08:
-            # Limita atualização JSON para ~12 Hz (leve na RPi 3B)
-            return
+    def _parse_range_m(self, msg: Range) -> Optional[float]:
+        r = float(msg.range)
+        if math.isnan(r) or math.isinf(r) or r < msg.min_range or r > msg.max_range:
+            return None
+        return round(r, 2)
 
-        sectors: Dict[int, float] = {}
-        min_global: Optional[float] = None
-        min_front: Optional[float] = None
-
-        for i, r in enumerate(msg.ranges):
-            if math.isinf(r) or math.isnan(r) or r < msg.range_min or r > msg.range_max:
-                continue
-
-            angle_rad = msg.angle_min + i * msg.angle_increment
-            angle_rad = (angle_rad + math.pi) % (2.0 * math.pi) - math.pi
-            angle_deg = math.degrees(angle_rad)
-
-            if min_global is None or r < min_global:
-                min_global = r
-            if -30.0 <= angle_deg <= 30.0:
-                if min_front is None or r < min_front:
-                    min_front = r
-
-            # Agrupa em 72 setores de 5 graus (-180..+175)
-            bin_deg = int(math.floor((angle_deg + 180.0) / 5.0)) * 5 - 180
-            if bin_deg >= 180:
-                bin_deg = -180
-            prev = sectors.get(bin_deg)
-            if prev is None or r < prev:
-                sectors[bin_deg] = r
-
-        sector_list = [[ang, round(dist, 2)] for ang, dist in sorted(sectors.items())]
-
+    def _us_left_cb(self, msg: Range):
+        val = self._parse_range_m(msg)
         with self._lock:
-            self.last_lidar_time = now
-            self.telemetry['lidar_min_dist'] = round(min_global, 2) if min_global is not None else None
-            self.telemetry['lidar_front_dist'] = round(min_front, 2) if min_front is not None else None
-            self.telemetry['lidar_sectors'] = sector_list
+            self.last_us_left_time = time.monotonic()
+            self.telemetry['us_left_m'] = val
+            self._refresh_us_obstacle()
+
+    def _us_right_cb(self, msg: Range):
+        val = self._parse_range_m(msg)
+        with self._lock:
+            self.last_us_right_time = time.monotonic()
+            self.telemetry['us_right_m'] = val
+            self._refresh_us_obstacle()
+
+    def _refresh_us_obstacle(self):
+        l_val = self.telemetry['us_left_m']
+        r_val = self.telemetry['us_right_m']
+        l_blk = (l_val is not None and l_val < 0.25)
+        r_blk = (r_val is not None and r_val < 0.25)
+        self.telemetry['obstacle'] = bool(l_blk or r_blk)
 
     def get_status_snapshot(self) -> Dict[str, Any]:
         now = time.monotonic()
@@ -264,7 +252,10 @@ class DashboardNode(Node):
             snap['camera_active'] = (now - self.last_cam_time) < 2.5
             snap['debug_cam_active'] = (now - self.last_debug_cam_time) < 2.5
             snap['imu_active'] = (now - self.last_imu_time) < 2.5
-            snap['lidar_active'] = (now - self.last_lidar_time) < 2.5
+            snap['us_active'] = (
+                (now - self.last_us_left_time) < 2.5
+                or (now - self.last_us_right_time) < 2.5
+            )
             return snap
 
     def get_camera_jpeg(self, prefer_raw: bool = False) -> Optional[bytes]:

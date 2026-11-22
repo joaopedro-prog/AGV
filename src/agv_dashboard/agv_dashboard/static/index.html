@@ -75,6 +75,24 @@
     .btn-mini { padding: 4px 10px; font-size: 0.75rem; border-radius: 5px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; cursor: pointer; font-weight: 600; }
     .btn-mini.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
 
+    /* Controles de Relés GPIO RPi (K1 Ventoinha / K2 Fita LED 12V) */
+    .relay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .relay-btn {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+      padding: 10px 12px; border-radius: 8px; border: 1px solid #334155;
+      background: #111827; color: #e2e8f0; cursor: pointer; transition: 0.15s; text-align: left;
+    }
+    .relay-btn:hover { filter: brightness(1.12); }
+    .relay-btn .relay-title { font-size: 0.86rem; font-weight: 700; display: flex; flex-direction: column; gap: 2px; }
+    .relay-btn .relay-title small { font-size: 0.70rem; font-weight: 500; color: var(--text-muted); }
+    .relay-btn .relay-badge { font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.4px; }
+    .relay-btn.relay-on-fan { border-color: rgba(6, 182, 212, 0.65); background: rgba(6, 182, 212, 0.14); }
+    .relay-btn.relay-on-fan .relay-badge { background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5); }
+    .relay-btn.relay-on-led { border-color: rgba(250, 204, 21, 0.65); background: rgba(250, 204, 21, 0.12); }
+    .relay-btn.relay-on-led .relay-badge { background: rgba(250, 204, 21, 0.22); color: #fde047; border: 1px solid rgba(250, 204, 21, 0.5); }
+    .relay-btn.relay-off { border-color: #334155; background: #0f172a; opacity: 0.82; }
+    .relay-btn.relay-off .relay-badge { background: rgba(100, 116, 139, 0.22); color: #94a3b8; border: 1px solid #475569; }
+
     /* Virtual D-pad */
     .dpad-container { display: grid; grid-template-columns: 58px 58px 58px; grid-template-rows: 54px 54px 54px; gap: 8px; justify-content: center; margin-top: 8px; }
     .dpad-btn { background: #222e42; color: #fff; border: 1px solid #3c4f6b; border-radius: 8px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; touch-action: manipulation; }
@@ -96,6 +114,79 @@
     /* Radar Ultrassônico Dual Frontal */
     .sonar-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
     #ultrasonic-canvas { background: #070b12; border-radius: 10px; border: 1px solid #1e3a5f; box-shadow: inset 0 0 24px rgba(14, 165, 233, 0.12); width: 100%; max-width: 310px; height: auto; }
+
+    /* Sistema de Abas Principais */
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+    .tab-btn {
+      padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border-color);
+      background: #111827; color: var(--text-muted); font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .tab-btn:hover { color: #fff; border-color: #38bdf8; }
+    .tab-btn.active { background: #0c2444; color: #38bdf8; border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.18); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Aba Osciloscópio & Telemetria por Node */
+    .scope-toolbar {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .scope-toolbar-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    .toolbar-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .toolbar-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+    .btn-preset {
+      padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid #2b3b52;
+      background: #0f172a; color: #cbd5e1; cursor: pointer; font-weight: 600; transition: 0.15s;
+    }
+    .btn-preset:hover { border-color: #38bdf8; color: #fff; }
+    .btn-preset.active { background: #0369a1; border-color: #38bdf8; color: #fff; }
+
+    .scopes-container { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
+    .scope-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; }
+    .scope-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .scope-title-group { display: flex; align-items: center; gap: 10px; }
+    .scope-title-group h3 { font-size: 0.92rem; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .scope-readout { font-size: 0.78rem; font-family: ui-monospace, monospace; color: #38bdf8; background: #0b1018; padding: 3px 9px; border-radius: 5px; border: 1px solid #1e293b; }
+    .scope-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 24px; }
+    .signal-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px;
+      background: #0b1018; border: 1px solid #334155; font-size: 0.75rem; font-weight: 600; color: #e2e8f0;
+    }
+    .signal-chip .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .signal-chip button { background: none; border: none; color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 0.85rem; line-height: 1; padding-left: 2px; }
+    .signal-chip button:hover { color: #f87171; }
+    .scope-canvas-wrap { width: 100%; height: 290px; position: relative; background: #060a10; border-radius: 8px; border: 1px solid #1e293b; overflow: hidden; }
+    .scope-canvas-wrap canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+
+    /* Tabela de Métricas do Escopo */
+    .metrics-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 16px; overflow-x: auto; }
+    .metrics-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .metrics-table th { text-align: left; color: var(--text-muted); font-weight: 700; padding: 7px 8px; border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 0.72rem; }
+    .metrics-table td { padding: 7px 8px; border-bottom: 1px solid #1e293b; font-family: ui-monospace, monospace; color: #e2e8f0; white-space: nowrap; }
+    .metrics-table td.label-col { font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+
+    /* Catálogo por Node ROS 2 */
+    .node-catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
+    .node-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .node-signal-list { display: flex; flex-direction: column; gap: 6px; }
+    .node-signal-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      padding: 7px 9px; border-radius: 6px; background: #0b1018; border: 1px solid #1e293b;
+      transition: 0.12s;
+    }
+    .node-signal-row:hover { border-color: #334155; }
+    .node-signal-info { display: flex; flex-direction: column; min-width: 0; }
+    .node-signal-name { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; display: flex; align-items: center; gap: 6px; }
+    .node-signal-topic { font-size: 0.70rem; font-family: ui-monospace, monospace; color: #64748b; }
+    .node-signal-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .node-signal-val { font-family: ui-monospace, monospace; font-size: 0.82rem; font-weight: 700; color: #38bdf8; min-width: 78px; text-align: right; }
+    .scope-assign-btns { display: flex; gap: 4px; }
+    .assign-btn {
+      padding: 3px 7px; font-size: 0.70rem; font-weight: 800; border-radius: 4px;
+      border: 1px solid #334155; background: #1e293b; color: #94a3b8; cursor: pointer;
+    }
+    .assign-btn.active { color: #06121e; border-color: transparent; }
   </style>
 </head>
 <body>
@@ -105,9 +196,18 @@
       <h1>🤖 ELETRON AGV COCKPIT <span>ROS 2 HUMBLE • WI-FI HMI</span></h1>
     </div>
     <div class="header-status">
+      <span class="pill pill-on" id="header-state-pill">STATE: IDLE</span>
       <div id="conn-badge" style="color: var(--color-danger);">● CONECTANDO...</div>
     </div>
   </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchTab('cockpit')">🕹️ Cockpit &amp; Operação</button>
+    <button class="tab-btn" id="tab-btn-scope" onclick="switchTab('scope')">📈 Osciloscópio &amp; Telemetria por Node</button>
+  </nav>
+
+  <!-- ABA 1: COCKPIT & OPERAÇÃO -->
+  <div id="tab-cockpit" class="tab-pane active">
 
   <!-- Banner dos Níveis de Parada e Segurança -->
   <div id="status-banner" class="state-idle">
@@ -127,6 +227,20 @@
         <button class="btn btn-stop" onclick="sendCommand('stop')">⏹ PARAR (STOP)</button>
         <button class="btn btn-estop" onclick="sendCommand('emergency')">🚨 EMERGÊNCIA (E-STOP)</button>
         <button class="btn btn-reset" id="btn-reset" onclick="sendCommand('reset')">🔄 REARMAR SISTEMA (RESET)</button>
+      </div>
+
+      <div class="card-header" style="margin-top: 2px; margin-bottom: 10px;">
+        <h2>Relés 12V da Raspberry Pi (GPIO)</h2>
+      </div>
+      <div class="relay-actions">
+        <button class="relay-btn relay-on-fan" id="btn-relay-fan" onclick="toggleRelay('fan')">
+          <span class="relay-title">🌀 Ventoinha <small>Relé K1 • GPIO 17</small></span>
+          <span class="relay-badge" id="badge-relay-fan">LIGADA</span>
+        </button>
+        <button class="relay-btn relay-on-led" id="btn-relay-led" onclick="toggleRelay('led')">
+          <span class="relay-title">💡 Fita LED 12V <small>Relé K2 • GPIO 27</small></span>
+          <span class="relay-badge" id="badge-relay-led">LIGADO</span>
+        </button>
       </div>
 
       <div class="card-header" style="margin-top: 6px; margin-bottom: 8px;">
@@ -227,10 +341,158 @@
     </div>
 
   </div>
+  </div> <!-- fim #tab-cockpit -->
+
+  <!-- ABA 2: OSCILOSCÓPIO & TELEMETRIA POR NODE -->
+  <div id="tab-scope" class="tab-pane">
+
+    <div class="scope-toolbar">
+      <div class="scope-toolbar-row">
+        <div class="toolbar-group">
+          <span class="toolbar-label">Modo:</span>
+          <button class="btn-mini active" id="btn-mode-1" onclick="setScopeMode(1)">1 Escopo (Unificado)</button>
+          <button class="btn-mini" id="btn-mode-2" onclick="setScopeMode(2)">2 Escopos (A + B)</button>
+        </div>
+
+        <div class="toolbar-group" id="target-scope-group" style="display: none;">
+          <span class="toolbar-label">Alvo:</span>
+          <button class="btn-mini active" id="btn-target-a" onclick="setActiveTargetScope('A')">Escopo A</button>
+          <button class="btn-mini" id="btn-target-b" onclick="setActiveTargetScope('B')">Escopo B</button>
+        </div>
+
+        <div class="toolbar-group">
+          <span class="toolbar-label">Janela:</span>
+          <button class="btn-mini" id="btn-win-15" onclick="setScopeWindow(15)">15s</button>
+          <button class="btn-mini active" id="btn-win-30" onclick="setScopeWindow(30)">30s</button>
+          <button class="btn-mini" id="btn-win-60" onclick="setScopeWindow(60)">60s</button>
+          <button class="btn-mini" id="btn-win-120" onclick="setScopeWindow(120)">120s</button>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="btn-mini" id="btn-scope-pause" onclick="toggleScopePause()">⏸ Pausar</button>
+          <button class="btn-mini" onclick="clearScopeHistory()">🗑 Limpar</button>
+          <button class="btn-mini" onclick="exportScopeCSV()">⬇ Exportar CSV</button>
+        </div>
+      </div>
+
+      <div class="scope-toolbar-row">
+        <div class="toolbar-group">
+          <span class="toolbar-label">Presets:</span>
+          <button class="btn-preset active" id="preset-motor_vel" onclick="applyPreset('motor_vel')">⚡ Motor: Vel. Comandada vs Real</button>
+          <button class="btn-preset" id="preset-wheels" onclick="applyPreset('wheels')">🛞 Rodas Esq/Dir (rad/s)</button>
+          <button class="btn-preset" id="preset-pid_line" onclick="applyPreset('pid_line')">🎯 Malha PID Linha</button>
+          <button class="btn-preset" id="preset-ultrasonics" onclick="applyPreset('ultrasonics')">📡 Ultrassônicos (m)</button>
+          <button class="btn-preset" id="preset-imu" onclick="applyPreset('imu')">🧭 IMU MPU6050</button>
+          <button class="btn-preset" id="preset-power_relays" onclick="applyPreset('power_relays')">🔌 Energia &amp; Relés</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scopes-container" id="scopes-container">
+      <div class="scope-card" id="scope-card-a">
+        <div class="scope-header">
+          <div class="scope-title-group">
+            <h3>Escopo A — Evolução Temporal</h3>
+            <span class="pill pill-on" id="scope-rate-pill">LIVE</span>
+          </div>
+          <div class="scope-readout" id="scope-readout-a">Passe o mouse no gráfico para inspecionar</div>
+        </div>
+        <div class="scope-chips" id="scope-chips-a"></div>
+        <div class="scope-canvas-wrap">
+          <canvas id="scope-canvas-a"></canvas>
+        </div>
+      </div>
+
+      <div class="scope-card" id="scope-card-b" style="display: none;">
+        <div class="scope-header">
+          <div class="scope-title-group">
+            <h3>Escopo B — Evolução Temporal</h3>
+          </div>
+          <div class="scope-readout" id="scope-readout-b">Passe o mouse no gráfico para inspecionar</div>
+        </div>
+        <div class="scope-chips" id="scope-chips-b"></div>
+        <div class="scope-canvas-wrap">
+          <canvas id="scope-canvas-b"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-card">
+      <div class="card-header" style="margin-bottom: 8px;">
+        <h2>Estatísticas da Janela Ativa</h2>
+        <span class="pill pill-on" id="scope-samples-pill">0 AMOSTRAS</span>
+      </div>
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Escopo</th>
+            <th>Sinal</th>
+            <th>Node ROS 2</th>
+            <th>Tópico</th>
+            <th>Atual</th>
+            <th>Mínimo</th>
+            <th>Máximo</th>
+            <th>Média</th>
+          </tr>
+        </thead>
+        <tbody id="scope-metrics-body">
+          <tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum sinal selecionado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-header" style="margin-bottom: 12px;">
+      <h2>Catálogo de Telemetria por Node ROS 2 (Clique em A ou B para plotar)</h2>
+    </div>
+    <div class="node-catalog-grid" id="node-catalog-grid"></div>
+
+  </div> <!-- fim #tab-scope -->
 
   <script>
     let teleopTimer = null;
     let camPreferRaw = false;
+    let relayState = { fan: true, led: true };
+    let lastRelayClickAt = 0;
+
+    function renderRelayButtons() {
+      const fanBtn = document.getElementById('btn-relay-fan');
+      const fanBadge = document.getElementById('badge-relay-fan');
+      if (relayState.fan) {
+        fanBtn.className = 'relay-btn relay-on-fan';
+        fanBadge.innerText = 'LIGADA';
+      } else {
+        fanBtn.className = 'relay-btn relay-off';
+        fanBadge.innerText = 'DESLIGADA';
+      }
+
+      const ledBtn = document.getElementById('btn-relay-led');
+      const ledBadge = document.getElementById('badge-relay-led');
+      if (relayState.led) {
+        ledBtn.className = 'relay-btn relay-on-led';
+        ledBadge.innerText = 'LIGADO';
+      } else {
+        ledBtn.className = 'relay-btn relay-off';
+        ledBadge.innerText = 'DESLIGADO';
+      }
+    }
+
+    async function toggleRelay(target) {
+      const nextState = !relayState[target];
+      relayState[target] = nextState;
+      lastRelayClickAt = Date.now();
+      renderRelayButtons();
+      try {
+        await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'relay', target: target, state: nextState })
+        });
+        lastRelayClickAt = 0;
+        updateTelemetry();
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
     function setCameraMode(raw) {
       camPreferRaw = raw;
@@ -356,6 +618,9 @@
         const state = data.state || 'IDLE';
         const hwSafety = data.safety_state || 'INIT';
         document.getElementById('hw-safety-pill').innerText = 'ESP32: ' + hwSafety;
+        const headerStatePill = document.getElementById('header-state-pill');
+        headerStatePill.innerText = 'STATE: ' + state;
+        headerStatePill.className = (state === 'HARDWARE_ESTOP_ACTIVE' || state === 'RECOVERY_PENDING') ? 'pill pill-off' : 'pill pill-on';
 
         if (state === 'HARDWARE_ESTOP_ACTIVE') {
           banner.className = 'state-estop';
@@ -451,6 +716,16 @@
         document.getElementById('line-err-text').innerText =
           'Erro: ' + (data.line_visible ? norm.toFixed(2) : 'PERDIDA');
 
+        // Estado dos Relés K1 (Ventoinha) e K2 (Fita LED 12V)
+        if (Date.now() - lastRelayClickAt > 400) {
+          if (typeof data.fan_on === 'boolean') relayState.fan = data.fan_on;
+          if (typeof data.led_on === 'boolean') relayState.led = data.led_on;
+          renderRelayButtons();
+        }
+
+        // Alimenta Osciloscópio & Catálogo por Node
+        ingestTelemetrySample(data);
+
       } catch (err) {
         document.getElementById('conn-badge').innerHTML = '● DESCONECTADO';
         document.getElementById('conn-badge').style.color = 'var(--color-danger)';
@@ -494,7 +769,783 @@
       } catch (e) {}
     }
 
+    // =========================================================================
+    // OSCILOSCÓPIO EM TEMPO REAL & TELEMETRIA POR NODE ROS 2
+    // =========================================================================
+    const NODE_CATALOG = [
+      {
+        id: 'twist_mux',
+        title: '/twist_mux & Motores (Comandado vs Real)',
+        activeKey: 'twist_mux',
+        fallbackKey: 'odom',
+        signals: [
+          { key: 'cmd_mux_lin', name: 'Vel. Linear Comandada (Motor)', topic: '/cmd_vel', unit: 'm/s', color: '#38bdf8' },
+          { key: 'speed_lin', name: 'Vel. Linear Real (AGV)', topic: '/odom', unit: 'm/s', color: '#10b981' },
+          { key: 'cmd_mux_ang', name: 'Vel. Angular Comandada (Motor)', topic: '/cmd_vel', unit: 'rad/s', color: '#f59e0b' },
+          { key: 'speed_ang', name: 'Vel. Angular Real (AGV)', topic: '/odom', unit: 'rad/s', color: '#ec4899' },
+          { key: 'vel_error_lin', name: 'Erro Vel. Linear (Cmd - Real)', topic: 'cinemática', unit: 'm/s', color: '#ef4444' },
+          { key: 'vel_error_ang', name: 'Erro Vel. Angular (Cmd - Real)', topic: 'cinemática', unit: 'rad/s', color: '#f97316' },
+          { key: 'cmd_wheel_left_rad_s', name: 'Roda Esq. Comandada', topic: '/cmd_vel', unit: 'rad/s', color: '#60a5fa' },
+          { key: 'real_wheel_left_rad_s', name: 'Roda Esq. Real', topic: '/joint_states', unit: 'rad/s', color: '#34d399' },
+          { key: 'cmd_wheel_right_rad_s', name: 'Roda Dir. Comandada', topic: '/cmd_vel', unit: 'rad/s', color: '#c084fc' },
+          { key: 'real_wheel_right_rad_s', name: 'Roda Dir. Real', topic: '/joint_states', unit: 'rad/s', color: '#facc15' },
+        ]
+      },
+      {
+        id: 'line_follower',
+        title: '/line_follower (Controlador PID & FSM)',
+        activeKey: 'line_follower',
+        signals: [
+          { key: 'cmd_line_lin', name: 'Cmd Linear PID', topic: '/cmd_vel_line', unit: 'm/s', color: '#22d3ee' },
+          { key: 'cmd_line_ang', name: 'Cmd Angular PID', topic: '/cmd_vel_line', unit: 'rad/s', color: '#fb923c' },
+        ]
+      },
+      {
+        id: 'line_detector',
+        title: '/line_detector (Visão OpenCV)',
+        activeKey: 'line_detector',
+        signals: [
+          { key: 'line_error', name: 'Erro Lateral da Linha', topic: '/agv/line_error', unit: 'norm', color: '#facc15' },
+          { key: 'line_cy', name: 'Posição Vertical Linha (cy)', topic: '/agv/line_error', unit: 'px', color: '#a78bfa' },
+          { key: 'line_visible', name: 'Linha Visível (0/1)', topic: '/agv/line_error', unit: 'bool', color: '#4ade80' },
+        ]
+      },
+      {
+        id: 'serial_odom',
+        title: '/serial_bridge & /odom (Odometria, Bateria & HC-SR04)',
+        activeKey: 'odom',
+        fallbackKey: 'serial_bridge',
+        signals: [
+          { key: 'odom_x', name: 'Posição Odometria X', topic: '/odom', unit: 'm', color: '#38bdf8' },
+          { key: 'odom_y', name: 'Posição Odometria Y', topic: '/odom', unit: 'm', color: '#818cf8' },
+          { key: 'odom_yaw_deg', name: 'Orientação Yaw', topic: '/odom', unit: '°', color: '#f472b6' },
+          { key: 'battery_v', name: 'Tensão da Bateria', topic: '/agv/battery_voltage', unit: 'V', color: '#facc15' },
+          { key: 'crc_errors', name: 'Erros CRC16 Serial', topic: '/agv/hardware_status', unit: 'cnt', color: '#ef4444' },
+          { key: 'us_left_m', name: 'Ultrassônico Esq. (US1)', topic: '/agv/ultrasonic_left', unit: 'm', color: '#2dd4bf' },
+          { key: 'us_right_m', name: 'Ultrassônico Dir. (US2)', topic: '/agv/ultrasonic_right', unit: 'm', color: '#fbbf24' },
+          { key: 'obstacle', name: 'Flag Obstáculo (<0.25m)', topic: '/agv/obstacle_detected', unit: 'bool', color: '#f87171' },
+        ]
+      },
+      {
+        id: 'rpi_sensors',
+        title: '/rpi_sensors (IMU MPU6050 & Relés GPIO 12V)',
+        activeKey: 'rpi_sensors',
+        signals: [
+          { key: 'imu_ax', name: 'IMU Accel X', topic: '/imu/data_raw', unit: 'm/s²', color: '#38bdf8' },
+          { key: 'imu_ay', name: 'IMU Accel Y', topic: '/imu/data_raw', unit: 'm/s²', color: '#34d399' },
+          { key: 'imu_az', name: 'IMU Accel Z', topic: '/imu/data_raw', unit: 'm/s²', color: '#a78bfa' },
+          { key: 'imu_gx', name: 'IMU Gyro X', topic: '/imu/data_raw', unit: 'rad/s', color: '#fb923c' },
+          { key: 'imu_gy', name: 'IMU Gyro Y', topic: '/imu/data_raw', unit: 'rad/s', color: '#f472b6' },
+          { key: 'imu_gz', name: 'IMU Gyro Z', topic: '/imu/data_raw', unit: 'rad/s', color: '#facc15' },
+          { key: 'imu_yaw_rate_deg', name: 'IMU Yaw Rate', topic: '/imu/data_raw', unit: '°/s', color: '#22d3ee' },
+          { key: 'fan_on', name: 'Relé K1 Ventoinha (GPIO 17)', topic: '/agv/relay_status', unit: '0/1', color: '#06b6d4' },
+          { key: 'led_on', name: 'Relé K2 Fita LED (GPIO 27)', topic: '/agv/relay_status', unit: '0/1', color: '#eab308' },
+        ]
+      },
+      {
+        id: 'agv_dashboard_node',
+        title: '/agv_dashboard_node (Teleoperação Manual)',
+        activeKey: 'always',
+        signals: [
+          { key: 'cmd_joy_lin', name: 'Teleop Joystick Linear', topic: '/cmd_vel_joy', unit: 'm/s', color: '#60a5fa' },
+          { key: 'cmd_joy_ang', name: 'Teleop Joystick Angular', topic: '/cmd_vel_joy', unit: 'rad/s', color: '#c084fc' },
+        ]
+      }
+    ];
+
+    const SIGNAL_MAP = {};
+    NODE_CATALOG.forEach(grp => {
+      grp.signals.forEach(sig => {
+        SIGNAL_MAP[sig.key] = { ...sig, nodeTitle: grp.title.split(' ')[0] };
+      });
+    });
+
+    const SCOPE_PRESETS = {
+      motor_vel: {
+        A: ['cmd_mux_lin', 'speed_lin', 'cmd_mux_ang', 'speed_ang'],
+        B: ['vel_error_lin', 'vel_error_ang'],
+      },
+      wheels: {
+        A: ['cmd_wheel_left_rad_s', 'real_wheel_left_rad_s', 'cmd_wheel_right_rad_s', 'real_wheel_right_rad_s'],
+        B: ['cmd_mux_lin', 'speed_lin'],
+      },
+      pid_line: {
+        A: ['line_error', 'cmd_line_lin', 'speed_lin', 'cmd_line_ang'],
+        B: ['cmd_mux_ang', 'speed_ang'],
+      },
+      ultrasonics: {
+        A: ['us_left_m', 'us_right_m', 'obstacle'],
+        B: ['speed_lin', 'cmd_mux_lin'],
+      },
+      imu: {
+        A: ['imu_ax', 'imu_ay', 'imu_az', 'imu_gz'],
+        B: ['imu_yaw_rate_deg', 'speed_ang'],
+      },
+      power_relays: {
+        A: ['battery_v', 'fan_on', 'led_on'],
+        B: ['crc_errors', 'speed_lin'],
+      },
+    };
+
+    let activeTab = 'cockpit';
+    let scopeMode = 1; // 1 ou 2 escopos
+    let activeTargetScope = 'A';
+    let scopeWindowSec = 30;
+    let scopePaused = false;
+    let scopeSamples = [];
+    let selectedSignalsA = [...SCOPE_PRESETS.motor_vel.A];
+    let selectedSignalsB = [...SCOPE_PRESETS.motor_vel.B];
+    let scopeHoverX = { A: null, B: null };
+    let lastStatusSnapshot = null;
+    const clientStartMs = Date.now();
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById('tab-btn-cockpit').classList.toggle('active', tab === 'cockpit');
+      document.getElementById('tab-btn-scope').classList.toggle('active', tab === 'scope');
+      document.getElementById('tab-cockpit').classList.toggle('active', tab === 'cockpit');
+      document.getElementById('tab-scope').classList.toggle('active', tab === 'scope');
+      if (tab === 'scope') {
+        requestAnimationFrame(() => renderScopeView());
+      }
+    }
+
+    function setScopeMode(mode) {
+      scopeMode = mode;
+      document.getElementById('btn-mode-1').classList.toggle('active', mode === 1);
+      document.getElementById('btn-mode-2').classList.toggle('active', mode === 2);
+      document.getElementById('target-scope-group').style.display = (mode === 2) ? 'flex' : 'none';
+      document.getElementById('scope-card-b').style.display = (mode === 2) ? 'block' : 'none';
+      if (mode === 1) activeTargetScope = 'A';
+      renderNodeCatalog();
+      renderScopeView();
+    }
+
+    function setActiveTargetScope(target) {
+      activeTargetScope = target;
+      document.getElementById('btn-target-a').classList.toggle('active', target === 'A');
+      document.getElementById('btn-target-b').classList.toggle('active', target === 'B');
+    }
+
+    function setScopeWindow(sec) {
+      scopeWindowSec = sec;
+      [15, 30, 60, 120].forEach(w => {
+        document.getElementById('btn-win-' + w).classList.toggle('active', w === sec);
+      });
+      renderScopeView();
+    }
+
+    function toggleScopePause() {
+      scopePaused = !scopePaused;
+      const btn = document.getElementById('btn-scope-pause');
+      const pill = document.getElementById('scope-rate-pill');
+      if (scopePaused) {
+        btn.innerText = '▶ Continuar';
+        btn.classList.add('active');
+        pill.innerText = 'PAUSADO';
+        pill.className = 'pill pill-off';
+      } else {
+        btn.innerText = '⏸ Pausar';
+        btn.classList.remove('active');
+        pill.innerText = 'LIVE';
+        pill.className = 'pill pill-on';
+      }
+    }
+
+    function clearScopeHistory() {
+      scopeSamples = [];
+      renderScopeView();
+    }
+
+    function clearPresetHighlight() {
+      document.querySelectorAll('.btn-preset').forEach(el => el.classList.remove('active'));
+    }
+
+    function applyPreset(presetKey) {
+      const preset = SCOPE_PRESETS[presetKey];
+      if (!preset) return;
+      selectedSignalsA = [...preset.A];
+      selectedSignalsB = [...preset.B];
+      clearPresetHighlight();
+      const btn = document.getElementById('preset-' + presetKey);
+      if (btn) btn.classList.add('active');
+      renderNodeCatalog();
+      renderScopeView();
+    }
+
+    function toggleSignalInScope(signalKey, targetScope) {
+      const target = targetScope || activeTargetScope;
+      const list = (target === 'B') ? selectedSignalsB : selectedSignalsA;
+      const idx = list.indexOf(signalKey);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+      } else {
+        list.push(signalKey);
+      }
+      clearPresetHighlight();
+      renderNodeCatalog();
+      renderScopeView();
+    }
+
+    function formatSignalVal(val, unit) {
+      if (val === null || val === undefined || Number.isNaN(val)) return '--';
+      if (unit === 'cnt') return String(Math.round(val));
+      if (unit === 'bool' || unit === '0/1') return val >= 0.5 ? '1 (ON)' : '0 (OFF)';
+      if (unit === 'px' || unit === '°') return val.toFixed(1) + ' ' + unit;
+      return val.toFixed(3) + ' ' + unit;
+    }
+
+    function buildNodeCatalogDOM() {
+      const grid = document.getElementById('node-catalog-grid');
+      grid.innerHTML = '';
+      NODE_CATALOG.forEach(grp => {
+        const card = document.createElement('div');
+        card.className = 'node-card';
+        card.innerHTML = `
+          <div class="card-header" style="margin-bottom: 4px;">
+            <h2 style="font-size: 0.84rem; text-transform: none;">${grp.title}</h2>
+            <span class="pill pill-off" id="node-pill-${grp.id}">IDLE</span>
+          </div>
+          <div class="node-signal-list" id="node-list-${grp.id}"></div>
+        `;
+        const listEl = card.querySelector(`#node-list-${grp.id}`);
+        grp.signals.forEach(sig => {
+          const row = document.createElement('div');
+          row.className = 'node-signal-row';
+          row.innerHTML = `
+            <div class="node-signal-info" style="cursor: pointer;" onclick="toggleSignalInScope('${sig.key}')">
+              <div class="node-signal-name">
+                <span style="width: 9px; height: 9px; border-radius: 50%; background: ${sig.color}; display: inline-block; flex-shrink: 0;"></span>
+                <span>${sig.name}</span>
+              </div>
+              <span class="node-signal-topic">${sig.topic} • ${sig.unit}</span>
+            </div>
+            <div class="node-signal-right">
+              <span class="node-signal-val" id="cat-val-${sig.key}">--</span>
+              <div class="scope-assign-btns">
+                <button class="assign-btn" id="assign-a-${sig.key}" onclick="toggleSignalInScope('${sig.key}', 'A')">A</button>
+                <button class="assign-btn assign-b-only" id="assign-b-${sig.key}" onclick="toggleSignalInScope('${sig.key}', 'B')" style="display: none;">B</button>
+              </div>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    function renderNodeCatalog() {
+      const showB = (scopeMode === 2);
+      document.querySelectorAll('.assign-b-only').forEach(el => {
+        el.style.display = showB ? 'inline-block' : 'none';
+      });
+      Object.values(SIGNAL_MAP).forEach(sig => {
+        const btnA = document.getElementById('assign-a-' + sig.key);
+        const btnB = document.getElementById('assign-b-' + sig.key);
+        if (btnA) {
+          const inA = selectedSignalsA.includes(sig.key);
+          btnA.classList.toggle('active', inA);
+          btnA.style.background = inA ? sig.color : '';
+        }
+        if (btnB) {
+          const inB = selectedSignalsB.includes(sig.key);
+          btnB.classList.toggle('active', inB);
+          btnB.style.background = inB ? sig.color : '';
+        }
+      });
+
+      if (lastStatusSnapshot) {
+        const nodesActive = lastStatusSnapshot.nodes_active || {};
+        NODE_CATALOG.forEach(grp => {
+          const pill = document.getElementById('node-pill-' + grp.id);
+          if (!pill) return;
+          const isOnline = (grp.activeKey === 'always')
+            || Boolean(nodesActive[grp.activeKey])
+            || (grp.fallbackKey && Boolean(nodesActive[grp.fallbackKey]));
+          pill.className = isOnline ? 'pill pill-on' : 'pill pill-off';
+          pill.innerText = isOnline ? 'ATIVO' : 'IDLE';
+        });
+        Object.values(SIGNAL_MAP).forEach(sig => {
+          const el = document.getElementById('cat-val-' + sig.key);
+          if (!el) return;
+          let rawVal = lastStatusSnapshot[sig.key];
+          if (typeof rawVal === 'boolean') rawVal = rawVal ? 1 : 0;
+          el.innerText = formatSignalVal(rawVal, sig.unit);
+        });
+      }
+    }
+
+    function normalizeTelemetrySample(d) {
+      const num = (v, fallback = 0.0) => (typeof v === 'number' && Number.isFinite(v)) ? v : fallback;
+      const optNum = (v) => (typeof v === 'number' && Number.isFinite(v)) ? v : null;
+      const flag = (v) => (v === true || v === 1) ? 1 : 0;
+      const tVal = (typeof d.server_time_s === 'number' && Number.isFinite(d.server_time_s))
+        ? d.server_time_s
+        : (typeof d.t === 'number' && Number.isFinite(d.t))
+          ? d.t
+          : ((Date.now() - clientStartMs) / 1000.0);
+
+      return {
+        t: tVal,
+        cmd_mux_lin: num(d.cmd_mux_lin),
+        cmd_mux_ang: num(d.cmd_mux_ang),
+        speed_lin: num(d.speed_lin),
+        speed_ang: num(d.speed_ang),
+        vel_error_lin: num(d.vel_error_lin),
+        vel_error_ang: num(d.vel_error_ang),
+        cmd_wheel_left_rad_s: num(d.cmd_wheel_left_rad_s),
+        cmd_wheel_right_rad_s: num(d.cmd_wheel_right_rad_s),
+        real_wheel_left_rad_s: num(d.real_wheel_left_rad_s),
+        real_wheel_right_rad_s: num(d.real_wheel_right_rad_s),
+        cmd_wheel_left_m_s: num(d.cmd_wheel_left_m_s),
+        cmd_wheel_right_m_s: num(d.cmd_wheel_right_m_s),
+        real_wheel_left_m_s: num(d.real_wheel_left_m_s),
+        real_wheel_right_m_s: num(d.real_wheel_right_m_s),
+        cmd_line_lin: num(d.cmd_line_lin),
+        cmd_line_ang: num(d.cmd_line_ang),
+        cmd_joy_lin: num(d.cmd_joy_lin),
+        cmd_joy_ang: num(d.cmd_joy_ang),
+        line_error: num(d.line_error),
+        line_cy: num(d.line_cy),
+        line_visible: flag(d.line_visible),
+        odom_x: num(d.odom_x),
+        odom_y: num(d.odom_y),
+        odom_yaw_deg: num(d.odom_yaw_deg),
+        battery_v: num(d.battery_v),
+        crc_errors: num(d.crc_errors),
+        obstacle: flag(d.obstacle),
+        us_left_m: optNum(d.us_left_m),
+        us_right_m: optNum(d.us_right_m),
+        imu_ax: num(d.imu_ax),
+        imu_ay: num(d.imu_ay),
+        imu_az: num(d.imu_az),
+        imu_gx: num(d.imu_gx),
+        imu_gy: num(d.imu_gy),
+        imu_gz: num(d.imu_gz),
+        imu_yaw_rate_deg: num(d.imu_yaw_rate_deg),
+        fan_on: flag(d.fan_on),
+        led_on: flag(d.led_on),
+      };
+    }
+
+    function ingestTelemetrySample(data) {
+      lastStatusSnapshot = data;
+      if (!scopePaused) {
+        const sample = normalizeTelemetrySample(data);
+        const last = scopeSamples.length > 0 ? scopeSamples[scopeSamples.length - 1] : null;
+        if (!last || sample.t > last.t) {
+          scopeSamples.push(sample);
+          const cutoff = sample.t - 180.0;
+          while (scopeSamples.length > 0 && scopeSamples[0].t < cutoff) {
+            scopeSamples.shift();
+          }
+        }
+      }
+      if (activeTab === 'scope') {
+        renderScopeView();
+      }
+    }
+
+    async function bootstrapTelemetryHistory() {
+      try {
+        const res = await fetch('/api/telemetry_history', { cache: 'no-store' });
+        if (!res.ok) return;
+        const payload = await res.json();
+        const items = Array.isArray(payload.samples) ? payload.samples : [];
+        if (items.length > 0) {
+          scopeSamples = items.map(normalizeTelemetrySample);
+          if (activeTab === 'scope') renderScopeView();
+        }
+      } catch (e) {
+        console.warn('Histórico inicial indisponível:', e);
+      }
+    }
+
+    function renderScopeChips(scopeId, keys) {
+      const container = document.getElementById('scope-chips-' + scopeId.toLowerCase());
+      if (!container) return;
+      if (keys.length === 0) {
+        container.innerHTML = '<span style="font-size:0.78rem;color:#64748b;">Nenhum sinal selecionado. Clique nos sinais do catálogo abaixo para adicionar.</span>';
+        return;
+      }
+      container.innerHTML = keys.map(k => {
+        const sig = SIGNAL_MAP[k];
+        if (!sig) return '';
+        return `<span class="signal-chip">
+          <span class="dot" style="background:${sig.color}"></span>
+          <span>${sig.name} (${sig.unit})</span>
+          <button onclick="toggleSignalInScope('${k}', '${scopeId}')" title="Remover">×</button>
+        </span>`;
+      }).join('');
+    }
+
+    function drawScopeCanvas(scopeId, signalKeys) {
+      const canvas = document.getElementById('scope-canvas-' + scopeId.toLowerCase());
+      const readoutEl = document.getElementById('scope-readout-' + scopeId.toLowerCase());
+      if (!canvas) return [];
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return [];
+
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.round(rect.width * dpr);
+      const targetH = Math.round(rect.height * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = 58;
+      const padR = 16;
+      const padT = 16;
+      const padB = 28;
+      const plotW = Math.max(20, w - padL - padR);
+      const plotH = Math.max(20, h - padT - padB);
+
+      const tMax = scopeSamples.length > 0 ? scopeSamples[scopeSamples.length - 1].t : 0.0;
+      const tMin = tMax - scopeWindowSec;
+      const vis = scopeSamples.filter(s => s.t >= tMin);
+
+      // Faixa vertical automática com margem
+      let minVal = Infinity;
+      let maxVal = -Infinity;
+      signalKeys.forEach(k => {
+        vis.forEach(s => {
+          const v = s[k];
+          if (v !== null && v !== undefined && Number.isFinite(v)) {
+            if (v < minVal) minVal = v;
+            if (v > maxVal) maxVal = v;
+          }
+        });
+      });
+
+      if (!Number.isFinite(minVal) || !Number.isFinite(maxVal)) {
+        minVal = -1.0;
+        maxVal = 1.0;
+      } else {
+        const span = maxVal - minVal;
+        if (span < 0.2) {
+          const mid = (maxVal + minVal) * 0.5;
+          minVal = mid - 0.15;
+          maxVal = mid + 0.15;
+        } else {
+          const margin = span * 0.12;
+          minVal -= margin;
+          maxVal += margin;
+        }
+      }
+      const ySpan = maxVal - minVal;
+      const valToY = (v) => padT + (1.0 - (v - minVal) / ySpan) * plotH;
+      const tToX = (t) => padL + ((t - tMin) / scopeWindowSec) * plotW;
+
+      // Grade horizontal + rótulos Y
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      const yDivs = 4;
+      for (let i = 0; i <= yDivs; i++) {
+        const frac = i / yDivs;
+        const yVal = maxVal - frac * ySpan;
+        const yPx = padT + frac * plotH;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padL, yPx);
+        ctx.lineTo(w - padR, yPx);
+        ctx.stroke();
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(yVal.toFixed(2), padL - 7, yPx);
+      }
+
+      // Linha de zero destacada
+      if (minVal < 0 && maxVal > 0) {
+        const yZero = valToY(0);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(250, 204, 21, 0.35)';
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(padL, yZero);
+        ctx.lineTo(w - padR, yZero);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Grade vertical de tempo (-30s .. 0s)
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      const xDivs = 5;
+      for (let i = 0; i <= xDivs; i++) {
+        const frac = i / xDivs;
+        const xPx = padL + frac * plotW;
+        const relSec = -scopeWindowSec * (1.0 - frac);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(xPx, padT);
+        ctx.lineTo(xPx, h - padB);
+        ctx.stroke();
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(relSec === 0 ? '0s' : `${relSec.toFixed(0)}s`, xPx, h - padB + 6);
+      }
+
+      // Moldura da área de plotagem
+      ctx.strokeStyle = '#273549';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(padL, padT, plotW, plotH);
+
+      if (signalKeys.length === 0 || vis.length === 0) {
+        ctx.fillStyle = '#64748b';
+        ctx.font = '13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(
+          signalKeys.length === 0 ? 'Selecione sinais no catálogo abaixo para visualizar no gráfico' : 'Aguardando amostras...',
+          padL + plotW * 0.5,
+          padT + plotH * 0.5
+        );
+        if (readoutEl) readoutEl.innerText = 'Passe o mouse no gráfico para inspecionar';
+        return vis;
+      }
+
+      // Curvas com clipping estrito
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(padL, padT, plotW, plotH);
+      ctx.clip();
+
+      signalKeys.forEach(k => {
+        const sig = SIGNAL_MAP[k];
+        if (!sig) return;
+        ctx.strokeStyle = sig.color;
+        ctx.lineWidth = 2.0;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        let drawing = false;
+        for (let i = 0; i < vis.length; i++) {
+          const s = vis[i];
+          const v = s[k];
+          if (v === null || v === undefined || !Number.isFinite(v)) {
+            drawing = false;
+            continue;
+          }
+          const x = tToX(s.t);
+          const y = valToY(v);
+          if (!drawing) {
+            ctx.moveTo(x, y);
+            drawing = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      });
+
+      // Crosshair interativo ao passar o mouse
+      const hoverX = scopeHoverX[scopeId];
+      if (hoverX !== null && hoverX >= padL && hoverX <= (w - padR) && vis.length > 0) {
+        const hoverT = tMin + ((hoverX - padL) / plotW) * scopeWindowSec;
+        let nearest = vis[0];
+        let bestDist = Math.abs(vis[0].t - hoverT);
+        for (let i = 1; i < vis.length; i++) {
+          const d = Math.abs(vis[i].t - hoverT);
+          if (d < bestDist) {
+            bestDist = d;
+            nearest = vis[i];
+          }
+        }
+        const snapX = tToX(nearest.t);
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.55)';
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(snapX, padT);
+        ctx.lineTo(snapX, padT + plotH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        const parts = [];
+        const tipRows = [];
+        signalKeys.forEach(k => {
+          const sig = SIGNAL_MAP[k];
+          if (!sig) return;
+          const val = nearest[k];
+          if (val !== null && val !== undefined && Number.isFinite(val)) {
+            ctx.fillStyle = sig.color;
+            ctx.beginPath();
+            ctx.arc(snapX, valToY(val), 4, 0, Math.PI * 2);
+            ctx.fill();
+            parts.push(`${sig.name.split(' ')[0]}: ${val.toFixed(3)} ${sig.unit}`);
+            tipRows.push({ color: sig.color, label: `${sig.name}: ${val.toFixed(3)} ${sig.unit}` });
+          } else {
+            parts.push(`${sig.name.split(' ')[0]}: --`);
+            tipRows.push({ color: sig.color, label: `${sig.name}: --` });
+          }
+        });
+        const relDt = (nearest.t - tMax).toFixed(1);
+        if (readoutEl) {
+          readoutEl.innerText = `Δt = ${relDt}s | ` + parts.slice(0, 4).join(' | ');
+        }
+
+        // Caixa tooltip flutuante próxima ao cursor
+        if (tipRows.length > 0) {
+          const boxW = 248;
+          const rowH = 16;
+          const boxH = 24 + tipRows.length * rowH;
+          let boxX = snapX + 12;
+          if (boxX + boxW > padL + plotW) boxX = Math.max(padL + 4, snapX - boxW - 12);
+          const boxY = padT + 8;
+
+          ctx.fillStyle = 'rgba(11, 16, 24, 0.90)';
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(boxX, boxY, boxW, boxH, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 11px ui-monospace, monospace';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          ctx.fillText(`t = ${relDt}s`, boxX + 8, boxY + 6);
+
+          ctx.font = '11px ui-monospace, monospace';
+          tipRows.forEach((row, idx) => {
+            const ry = boxY + 22 + idx * rowH;
+            ctx.fillStyle = row.color;
+            ctx.fillRect(boxX + 8, ry + 3, 7, 7);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText(row.label.slice(0, 31), boxX + 20, ry);
+          });
+        }
+      } else if (readoutEl) {
+        const latest = vis[vis.length - 1];
+        const parts = signalKeys.slice(0, 4).map(k => {
+          const sig = SIGNAL_MAP[k];
+          if (!sig) return '';
+          const val = latest[k];
+          return (val !== null && val !== undefined && Number.isFinite(val))
+            ? `${sig.name.split(' ')[0]}: ${val.toFixed(2)}`
+            : `${sig.name.split(' ')[0]}: --`;
+        });
+        readoutEl.innerText = 'LIVE | ' + parts.join(' | ');
+      }
+
+      ctx.restore();
+      return vis;
+    }
+
+    function renderMetricsTable(visSamples) {
+      const tbody = document.getElementById('scope-metrics-body');
+      const pill = document.getElementById('scope-samples-pill');
+      if (pill) pill.innerText = `${visSamples.length} AMOSTRAS (${scopeWindowSec}s)`;
+      if (!tbody) return;
+
+      const entries = [];
+      selectedSignalsA.forEach(k => entries.push({ scope: 'A', key: k }));
+      if (scopeMode === 2) {
+        selectedSignalsB.forEach(k => entries.push({ scope: 'B', key: k }));
+      }
+      if (entries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum sinal selecionado.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = entries.map(({ scope, key }) => {
+        const sig = SIGNAL_MAP[key];
+        if (!sig) return '';
+        let cur = null, minV = Infinity, maxV = -Infinity, sumV = 0, cnt = 0;
+        for (let i = 0; i < visSamples.length; i++) {
+          const v = visSamples[i][key];
+          if (v !== null && v !== undefined && Number.isFinite(v)) {
+            cur = v;
+            if (v < minV) minV = v;
+            if (v > maxV) maxV = v;
+            sumV += v;
+            cnt++;
+          }
+        }
+        const fmt = (v) => (v === null || !Number.isFinite(v)) ? '--' : `${v.toFixed(3)} ${sig.unit}`;
+        const avg = cnt > 0 ? (sumV / cnt) : null;
+        return `<tr>
+          <td><span class="pill" style="background: rgba(56,189,248,0.12); color:${sig.color}; border:1px solid ${sig.color};">${scope}</span></td>
+          <td class="label-col"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${sig.color};margin-right:6px;"></span>${sig.name}</td>
+          <td>${sig.nodeTitle}</td>
+          <td>${sig.topic}</td>
+          <td>${fmt(cur)}</td>
+          <td>${cnt > 0 ? fmt(minV) : '--'}</td>
+          <td>${cnt > 0 ? fmt(maxV) : '--'}</td>
+          <td>${fmt(avg)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderScopeView() {
+      renderScopeChips('A', selectedSignalsA);
+      const visA = drawScopeCanvas('A', selectedSignalsA);
+      if (scopeMode === 2) {
+        renderScopeChips('B', selectedSignalsB);
+        drawScopeCanvas('B', selectedSignalsB);
+      }
+      renderMetricsTable(visA);
+      renderNodeCatalog();
+    }
+
+    function exportScopeCSV() {
+      if (scopeSamples.length === 0) return;
+      const tMax = scopeSamples[scopeSamples.length - 1].t;
+      const vis = scopeSamples.filter(s => s.t >= (tMax - scopeWindowSec));
+      if (vis.length === 0) return;
+
+      const activeSet = new Set([...selectedSignalsA, ...(scopeMode === 2 ? selectedSignalsB : [])]);
+      const cols = activeSet.size > 0 ? Array.from(activeSet) : Object.keys(SIGNAL_MAP);
+      const header = ['server_time_s', 'rel_time_s', ...cols].join(',');
+      const rows = vis.map(s => {
+        const relT = (s.t - tMax).toFixed(3);
+        const vals = cols.map(k => (s[k] === null || s[k] === undefined) ? '' : s[k]);
+        return [s.t.toFixed(3), relT, ...vals].join(',');
+      });
+      const blob = new Blob([header + '\n' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `agv_telemetria_${Math.round(Date.now() / 1000)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function attachScopeHover(scopeId) {
+      const canvas = document.getElementById('scope-canvas-' + scopeId.toLowerCase());
+      if (!canvas) return;
+      canvas.addEventListener('mousemove', (ev) => {
+        const rect = canvas.getBoundingClientRect();
+        scopeHoverX[scopeId] = ev.clientX - rect.left;
+        if (activeTab === 'scope') renderScopeView();
+      });
+      canvas.addEventListener('mouseleave', () => {
+        scopeHoverX[scopeId] = null;
+        if (activeTab === 'scope') renderScopeView();
+      });
+    }
+
+    buildNodeCatalogDOM();
+    attachScopeHover('A');
+    attachScopeHover('B');
+    renderNodeCatalog();
+    window.addEventListener('resize', () => {
+      if (activeTab === 'scope') renderScopeView();
+    });
+
     drawUltrasonicView(null, null, false);
+    bootstrapTelemetryHistory();
     setInterval(updateTelemetry, 150);
     updateTelemetry();
   </script>

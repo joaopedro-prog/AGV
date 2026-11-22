@@ -76,6 +76,8 @@ class RpiSensorsNode(Node):
         self.fan_pin: int = int(self.get_parameter('fan_relay_pin').value)
         self.led_pin: int = int(self.get_parameter('led_relay_pin').value)
         self.auto_fan: bool = bool(self.get_parameter('auto_fan_enable').value)
+        self.fan_enabled: bool = self.auto_fan
+        self.led_enabled: bool = True
 
         self.emergency_pin: int = int(self.get_parameter('emergency_button_pin').value)
         self.start_pin: int = int(self.get_parameter('start_button_pin').value)
@@ -91,12 +93,14 @@ class RpiSensorsNode(Node):
         self.obstacle_pub = self.create_publisher(Bool, '/agv/obstacle_detected', 10)
         self.emergency_pub = self.create_publisher(Twist, '/cmd_vel_emergency', 10)
         self.imu_pub = self.create_publisher(Imu, '/imu/data_raw', 10)
+        self.relay_status_pub = self.create_publisher(String, '/agv/relay_status', 10)
 
-        # Subscribers de Estado para controle visual do Relé K2 (Fita LED 12V)
+        # Subscribers de Estado e Controle dos Relés K1 (Ventoinha) e K2 (Fita LED 12V)
         self.agv_state = 'IDLE'
         self.hw_safety_state = 'INIT'
         self.sub_state = self.create_subscription(String, '/agv/state', self._state_cb, 10)
         self.sub_hw = self.create_subscription(String, '/agv/hardware_status', self._hw_status_cb, 10)
+        self.sub_relay_cmd = self.create_subscription(String, '/agv/relay_command', self._relay_cmd_cb, 10)
 
         # Inicialização GPIO Raspberry Pi 3B
         self.gpio_active = False
@@ -167,31 +171,87 @@ class RpiSensorsNode(Node):
         except Exception:
             pass
 
+    def _relay_cmd_cb(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            if not isinstance(data, dict):
+                return
+            changed = False
+            target = str(data.get('target', '')).lower()
+            if target == 'fan' and 'state' in data:
+                self.fan_enabled = bool(data['state'])
+                changed = True
+                self.get_logger().info(
+                    f"[RELE K1 VENTOINHA] -> {'LIGADO' if self.fan_enabled else 'DESLIGADO'} (BCM {self.fan_pin})"
+                )
+            elif target == 'led' and 'state' in data:
+                self.led_enabled = bool(data['state'])
+                changed = True
+                self.get_logger().info(
+                    f"[RELE K2 LED 12V] -> {'LIGADO' if self.led_enabled else 'DESLIGADO'} (BCM {self.led_pin})"
+                )
+
+            if 'fan' in data and target != 'fan':
+                new_fan = bool(data['fan'])
+                if new_fan != self.fan_enabled:
+                    self.fan_enabled = new_fan
+                    changed = True
+                    self.get_logger().info(
+                        f"[RELE K1 VENTOINHA] -> {'LIGADO' if self.fan_enabled else 'DESLIGADO'} (BCM {self.fan_pin})"
+                    )
+            if 'led' in data and target != 'led':
+                new_led = bool(data['led'])
+                if new_led != self.led_enabled:
+                    self.led_enabled = new_led
+                    changed = True
+                    self.get_logger().info(
+                        f"[RELE K2 LED 12V] -> {'LIGADO' if self.led_enabled else 'DESLIGADO'} (BCM {self.led_pin})"
+                    )
+
+            if changed:
+                self._update_relays()
+                self._publish_relay_status()
+        except Exception as exc:
+            self.get_logger().warn(f'Comando de relé inválido em /agv/relay_command: {exc}')
+
+    def _publish_relay_status(self):
+        msg = String()
+        msg.data = json.dumps({
+            'fan_on': self.fan_enabled,
+            'led_on': self.led_enabled,
+            'gpio_active': self.gpio_active,
+        })
+        self.relay_status_pub.publish(msg)
+
     def _update_relays(self):
         if not self.gpio_active or not HAS_RPI_GPIO:
             return
 
         # K1 (Ventoinhas Fan #1 e Fan #2)
         if self.fan_pin >= 0:
-            GPIO.output(self.fan_pin, GPIO.HIGH if self.auto_fan else GPIO.LOW)
+            GPIO.output(self.fan_pin, GPIO.HIGH if self.fan_enabled else GPIO.LOW)
 
-        # K2 (Fita LED 12V): pisca em alerta de emergência / parada, contínuo em operação normal
+        # K2 (Fita LED 12V): respeita desligamento manual; quando ligado, pisca em alerta ou fica contínuo
         if self.led_pin >= 0:
-            is_alert = (
-                'ESTOP' in self.agv_state
-                or 'ESTOP' in self.hw_safety_state
-                or self.agv_state in ('REMOTE_STOP_REQUESTED', 'RECOVERY_PENDING')
-                or self.hw_safety_state in ('WATCHDOG_TIMEOUT', 'DRIVER_FAULT')
-            )
-            if is_alert:
-                now = time.monotonic()
-                if (now - self.last_blink_time) >= 0.25:
-                    self.last_blink_time = now
-                    self.led_output_state = not self.led_output_state
-                GPIO.output(self.led_pin, GPIO.HIGH if self.led_output_state else GPIO.LOW)
+            if not self.led_enabled:
+                self.led_output_state = False
+                GPIO.output(self.led_pin, GPIO.LOW)
             else:
-                self.led_output_state = True
-                GPIO.output(self.led_pin, GPIO.HIGH)
+                is_alert = (
+                    'ESTOP' in self.agv_state
+                    or 'ESTOP' in self.hw_safety_state
+                    or self.agv_state in ('REMOTE_STOP_REQUESTED', 'RECOVERY_PENDING')
+                    or self.hw_safety_state in ('WATCHDOG_TIMEOUT', 'DRIVER_FAULT')
+                )
+                if is_alert:
+                    now = time.monotonic()
+                    if (now - self.last_blink_time) >= 0.25:
+                        self.last_blink_time = now
+                        self.led_output_state = not self.led_output_state
+                    GPIO.output(self.led_pin, GPIO.HIGH if self.led_output_state else GPIO.LOW)
+                else:
+                    self.led_output_state = True
+                    GPIO.output(self.led_pin, GPIO.HIGH)
 
     def _poll_optional_inputs(self):
         if not self.gpio_active or not HAS_RPI_GPIO:
@@ -255,6 +315,7 @@ class RpiSensorsNode(Node):
 
     def poll_loop(self):
         self._update_relays()
+        self._publish_relay_status()
         self._poll_optional_inputs()
         self._poll_imu()
 

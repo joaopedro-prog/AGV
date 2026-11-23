@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     gedit \
     nano \
     wget \
+    mesa-utils \
     # Integração básica do Gazebo com ROS 2 (Resolve o erro 'gazebo_ros' not found)
     ros-humble-gazebo-ros-pkgs \
     # Multiplexador de comandos de velocidade (Resolve o erro 'twist_mux' not found)

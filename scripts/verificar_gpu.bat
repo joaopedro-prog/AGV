@@ -24,16 +24,18 @@ echo.
 REM 3. Executa o teste de renderizacao OpenGL / Direct3D 12 no container
 echo [3/3] Consultando o renderizador 3D do Gazebo dentro do Linux:
 echo ----------------------------------------------------------------------
-wsl -d Ubuntu-24.04 docker exec meu_container_ros glxinfo -B
+wsl -d Ubuntu-24.04 docker exec meu_container_ros bash /workspace/scripts/ros_exec.sh glxinfo -B
 echo ----------------------------------------------------------------------
 echo.
 
 echo ======================================================================
 echo                       RESULTADO DO DIAGNOSTICO
 echo ======================================================================
-echo  Se na linha "OpenGL renderer string" aparecer sua placa AMD Radeon
+echo  Se na linha "OpenGL renderer string" aparecer sua placa (D3D12)
 echo  e "Accelerated: yes", o Gazebo e todo o ambiente 3D estao rodando
 echo  100%% ACELERADOS PELA GPU DE FORMA NATIVA (DirectX 12 / D3D12)!
+echo  (Caso a maquina nao suporte D3D12 no WSL, o sistema usa llvmpipe
+echo   automaticamente para evitar que o Gazebo feche com exit code -11).
 echo.
 echo  Deseja abrir o teste visual de engrenagens 3D (glxgears)?
 echo    [1] Sim, abrir teste visual de FPS da GPU (glxgears)
@@ -46,7 +48,7 @@ if "%OPC%"=="1" (
     echo Abrindo janela de engrenagens 3D...
     echo (Feche a janelinha das engrenagens quando terminar para encerrar)
     echo.
-    wsl -d Ubuntu-24.04 docker exec meu_container_ros glxgears
+    wsl -d Ubuntu-24.04 docker exec meu_container_ros bash /workspace/scripts/ros_exec.sh glxgears
 )
 
 echo.

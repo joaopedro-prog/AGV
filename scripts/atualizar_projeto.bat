@@ -45,9 +45,9 @@ echo.
 
 :: 4. Compilar pacotes ROS 2 no workspace
 echo [4/4] Compilando os pacotes ROS 2 (colcon build)...
-wsl -d Ubuntu-24.04 docker exec -w /workspace meu_container_ros chmod +x /workspace/scripts/ros_exec.sh >nul 2>&1
+wsl -d Ubuntu-24.04 docker exec -w /workspace meu_container_ros bash -c "sed -i 's/\r$//' /workspace/scripts/*.sh 2>/dev/null && chmod +x /workspace/scripts/*.sh >nul 2>&1"
 wsl -d Ubuntu-24.04 docker exec -u 0 meu_container_ros chmod 777 /tmp/runtime-user >nul 2>&1
-wsl -d Ubuntu-24.04 docker exec -w /workspace meu_container_ros /workspace/scripts/ros_exec.sh colcon build --symlink-install
+wsl -d Ubuntu-24.04 docker exec -w /workspace meu_container_ros bash /workspace/scripts/ros_exec.sh colcon build --symlink-install
 if errorlevel 1 (
     echo [AVISO] Ocorreu um erro durante a compilacao.
     pause

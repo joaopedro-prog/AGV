@@ -38,7 +38,7 @@ A equipe permanente é composta por 7 especialistas com fronteiras estritas de a
 | :--- | :--- | :--- | :--- |
 | **Agent-Firmware-ESP32** | Firmware C++/ESP32, controle PID de rodas, encoders quadratura/PCNT, watchdog 200ms, protocolo serial CRC16-CCITT e circuito E-Stop físico. | `firmware/**` | `inherit` / `pro` |
 | **Agent-HAL-RPi** | Hardware Abstraction Layer ROS 2 na Raspberry Pi 3B, driver `serial_bridge`, reconexão serial sem odometria falsa, GPIO `rpi_sensors`, câmera USB V4L2. | `src/agv_hardware/**` | `inherit` / `pro` |
-| **Agent-SimCAD** | Simulação Gazebo Classic 11, URDF/Xacro, malhas CAD 3D Fusion 360, mundos, circuitos, física de rodas/rodízios, sensores virtuais e RViz 2. | `src/articubot_one/**`, `worlds/**`, `tiles/**` | `inherit` |
+| **Agent-SimCAD** | Simulação Gazebo Classic 11, URDF/Xacro, malhas CAD 3D Fusion 360, mundos, circuitos, física de rodas/rodízios, sensores virtuais e RViz 2. | `src/agv_description/**`, `tiles/**` | `inherit` |
 | **Agent-Brain-Nav** | Percepção OpenCV leve para RPi 3B (ROI solo), controlador PID seguidor de linha, detecção de estações coloridas, supervisor de segurança LiDAR 360 (/scan). | `src/agv_brain/**` | `inherit` / `pro` |
 | **Agent-Web-HMI** | Dashboard Web HMI, frontend HTML5 responsivo, backend HTTP/WebSocket, 3 estados visuais de parada, telemetria ao vivo e teleoperação remota. | `src/agv_dashboard/**` | `inherit` |
 | **Agent-DevOps-Docker** | Dockerfile, Docker Compose, WSL2 / D3D12 GPU passthrough, scripts de automação (`.bat` / `.sh`), compilação colcon e Git Flow. | `dockerfile`, `docker-compose.yml`, `scripts/**` | `flash` / `inherit` |
@@ -99,7 +99,7 @@ Sempre que uma tarefa acionar especialistas (Níveis 2 e 3), o agente principal 
 
 Para garantir integridade total do código:
 * **Arquivos Bloqueados (Custódia Exclusiva do Orquestrador):**
-  * `src/articubot_one/config/twist_mux.yaml`
+  * `src/agv_description/config/twist_mux.yaml`
   * `src/agv_hardware/launch/agv_complete.launch.py`
   * `docker-compose.yml`
   * Contratos formais em `docs/contracts/`

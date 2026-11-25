@@ -7,7 +7,7 @@
 
 ## 1. Topologia de Tópicos de Velocidade (`twist_mux`)
 
-A arbitragem de movimento segue estritamente a configuração de prioridades definida em `src/articubot_one/config/twist_mux.yaml`:
+A arbitragem de movimento segue estritamente a configuração de prioridades definida em `src/agv_description/config/twist_mux.yaml`:
 
 | Tópico | Tipo de Mensagem | Prioridade | Timeout | Origem | Finalidade |
 | :--- | :--- | :--- | :--- | :--- | :--- |

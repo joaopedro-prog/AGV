@@ -1,27 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Define os diretorios de mundos do projeto
-set "WORLDS_DIR=%~dp0..\src\articubot_one\worlds"
-set "ROOT_WORLDS_DIR=%~dp0..\worlds"
-
-REM Garante que a pasta worlds na raiz exista
-if not exist "!ROOT_WORLDS_DIR!" mkdir "!ROOT_WORLDS_DIR!" >nul 2>&1
-
-REM Sincroniza arquivos .world entre a raiz worlds e src/articubot_one/worlds
-if exist "!ROOT_WORLDS_DIR!" if exist "!WORLDS_DIR!" (
-    copy /y "!ROOT_WORLDS_DIR!\*.world" "!WORLDS_DIR!\" >nul 2>&1
-    copy /y "!WORLDS_DIR!\*.world" "!ROOT_WORLDS_DIR!\" >nul 2>&1
-)
+REM Define o diretorio oficial de mundos do projeto
+set "WORLDS_DIR=%~dp0..\src\agv_description\worlds"
 
 if not exist "!WORLDS_DIR!" (
-    if exist "!ROOT_WORLDS_DIR!" (
-        set "WORLDS_DIR=!ROOT_WORLDS_DIR!"
-    ) else (
-        echo [ERRO] Nao foi possivel encontrar a pasta de mundos do Gazebo.
-        pause
-        exit /b 1
-    )
+    echo [ERRO] Nao foi possivel encontrar a pasta de mundos do Gazebo em !WORLDS_DIR!.
+    pause
+    exit /b 1
 )
 
 :MENU_MUNDOS

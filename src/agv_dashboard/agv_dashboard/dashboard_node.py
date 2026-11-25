@@ -27,6 +27,7 @@ import http.server
 import json
 import math
 import os
+import socket
 import socketserver
 import struct
 import threading
@@ -36,8 +37,10 @@ from typing import Any, Dict, Optional
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from geometry_msgs.msg import Twist, Vector3
 from nav_msgs.msg import Odometry
+from rcl_interfaces.msg import Log as RosoutLog
 from sensor_msgs.msg import Image, Imu, JointState, Range
 from std_msgs.msg import Bool, Float32, String
 from std_srvs.srv import Trigger
@@ -88,6 +91,10 @@ class DashboardNode(Node):
         self.latest_raw_jpeg: Optional[bytes] = None
         self.latest_debug_jpeg: Optional[bytes] = None
         self.history: deque = deque(maxlen=self.HISTORY_MAX_LEN)
+        self.rosout_logs: deque = deque(maxlen=400)
+        self._log_seq: int = 0
+        self.robot_hostname: str = socket.gethostname()
+        self.deploy_info: Dict[str, Any] = self._load_deploy_info()
 
         # Estado interno de telemetria
         self.telemetry: Dict[str, Any] = {
@@ -142,6 +149,16 @@ class DashboardNode(Node):
             # Relés 12V Raspberry Pi (K1 Ventoinha BCM 17 / K2 Fita LED BCM 27)
             'fan_on': True,
             'led_on': True,
+            # Curva de Aceleração & Perfis de Movimento (/line_follower)
+            'motion_profile': 'PADRAO',
+            'motion_curve_type': 's_curve',
+            'motion_base_speed': 0.35,
+            'motion_max_accel': 0.50,
+            'motion_max_decel': 0.80,
+            'motion_max_jerk': 2.00,
+            'target_lin_raw': 0.0,
+            'motion_accel': 0.0,
+            'motion_jerk': 0.0,
         }
 
         # Subscribers básicos
@@ -152,6 +169,9 @@ class DashboardNode(Node):
         self.sub_odom = self.create_subscription(Odometry, '/odom', self._odom_cb, 10)
         self.sub_hw = self.create_subscription(String, '/agv/hardware_status', self._hw_cb, 10)
         self.sub_relay_status = self.create_subscription(String, '/agv/relay_status', self._relay_status_cb, 10)
+        self.sub_motion_profile = self.create_subscription(
+            String, '/agv/motion_profile_status', self._motion_profile_cb, 10
+        )
 
         # Subscribers de Comando / Cinemática / Juntas (para Osciloscópio por Node)
         self.sub_cmd_line = self.create_subscription(Twist, '/cmd_vel_line', self._cmd_line_cb, 10)
@@ -167,11 +187,20 @@ class DashboardNode(Node):
         self.sub_us_left = self.create_subscription(Range, '/agv/ultrasonic_left', self._us_left_cb, 10, raw=True)
         self.sub_us_right = self.create_subscription(Range, '/agv/ultrasonic_right', self._us_right_cb, 10, raw=True)
 
+        # Subscriber nativo de logs ROS 2 (/rosout -> AGVLog / estilo RioLog no Dashboard)
+        rosout_qos = QoSProfile(
+            depth=100,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            reliability=ReliabilityPolicy.RELIABLE,
+        )
+        self.sub_rosout = self.create_subscription(RosoutLog, '/rosout', self._rosout_cb, rosout_qos)
+
         # Publishers
         self.pub_cmd = self.create_publisher(String, '/agv/command', 10)
         self.pub_emergency = self.create_publisher(Twist, '/cmd_vel_emergency', 10)
         self.pub_teleop = self.create_publisher(Twist, '/cmd_vel_joy', 10)
         self.pub_relay_cmd = self.create_publisher(String, '/agv/relay_command', 10)
+        self.pub_motion_profile = self.create_publisher(String, '/agv/motion_profile_command', 10)
 
         # Service Client de Rearme
         self.cli_reset = self.create_client(Trigger, '/agv/reset_emergency')
@@ -311,6 +340,31 @@ class DashboardNode(Node):
                     self.telemetry['fan_on'] = bool(data['fan_on'])
                 if 'led_on' in data:
                     self.telemetry['led_on'] = bool(data['led_on'])
+        except Exception:
+            pass
+
+    def _motion_profile_cb(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            with self._lock:
+                if 'profile' in data:
+                    self.telemetry['motion_profile'] = str(data['profile'])
+                if 'curve_type' in data:
+                    self.telemetry['motion_curve_type'] = str(data['curve_type'])
+                if 'base_speed' in data:
+                    self.telemetry['motion_base_speed'] = round(float(data['base_speed']), 3)
+                if 'max_accel' in data:
+                    self.telemetry['motion_max_accel'] = round(float(data['max_accel']), 3)
+                if 'max_decel' in data:
+                    self.telemetry['motion_max_decel'] = round(float(data['max_decel']), 3)
+                if 'max_jerk' in data:
+                    self.telemetry['motion_max_jerk'] = round(float(data['max_jerk']), 3)
+                if 'target_v' in data:
+                    self.telemetry['target_lin_raw'] = round(float(data['target_v']), 3)
+                if 'current_accel' in data:
+                    self.telemetry['motion_accel'] = round(float(data['current_accel']), 3)
+                if 'current_jerk' in data:
+                    self.telemetry['motion_jerk'] = round(float(data['current_jerk']), 3)
         except Exception:
             pass
 
@@ -459,6 +513,9 @@ class DashboardNode(Node):
                 'imu_yaw_rate_deg': t['imu_yaw_rate_deg'],
                 'fan_on': 1 if t['fan_on'] else 0,
                 'led_on': 1 if t['led_on'] else 0,
+                'target_lin_raw': t['target_lin_raw'],
+                'motion_accel': t['motion_accel'],
+                'motion_jerk': t['motion_jerk'],
             })
 
     def get_history_snapshot(self, limit: int = 0) -> Dict[str, Any]:
@@ -472,11 +529,66 @@ class DashboardNode(Node):
                 'samples': items,
             }
 
+    @staticmethod
+    def _load_deploy_info() -> Dict[str, Any]:
+        candidates = (
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'deploy_info.json'),
+            '/workspace/src/agv_dashboard/agv_dashboard/static/deploy_info.json',
+            '/workspace/deploy_info.json',
+        )
+        for path in candidates:
+            try:
+                if os.path.isfile(path):
+                    with open(path, 'r', encoding='utf-8-sig') as f:
+                        data = json.load(f)
+                        if isinstance(data, dict):
+                            return data
+            except Exception:
+                pass
+        return {}
+
+    def _rosout_cb(self, msg: RosoutLog):
+        lvl_map = {10: 'DEBUG', 20: 'INFO', 30: 'WARN', 40: 'ERROR', 50: 'FATAL'}
+        lvl = lvl_map.get(int(msg.level), 'INFO')
+        t_rel = round(time.monotonic() - self.start_time, 2)
+        node_name = str(msg.name or 'ros2')
+        text = str(msg.msg or '').strip()
+        if not text:
+            return
+        with self._lock:
+            self._log_seq += 1
+            self.rosout_logs.append({
+                'id': self._log_seq,
+                't': t_rel,
+                'level': lvl,
+                'level_num': int(msg.level),
+                'node': node_name,
+                'msg': text,
+            })
+
+    def get_logs_snapshot(self, since: int = 0, limit: int = 200) -> Dict[str, Any]:
+        with self._lock:
+            if since > 0:
+                entries = [e for e in self.rosout_logs if e['id'] > since]
+            else:
+                entries = list(self.rosout_logs)
+            if limit > 0 and len(entries) > limit:
+                entries = entries[-limit:]
+            return {
+                'latest_id': self._log_seq,
+                'hostname': self.robot_hostname,
+                'entries': entries,
+            }
+
     def get_status_snapshot(self) -> Dict[str, Any]:
         now = time.monotonic()
         with self._lock:
             snap = dict(self.telemetry)
             snap['server_time_s'] = round(now - self.start_time, 3)
+            snap['uptime_s'] = round(now - self.start_time, 1)
+            snap['robot_hostname'] = self.robot_hostname
+            snap['deploy_info'] = self.deploy_info
+            snap['log_latest_id'] = self._log_seq
             snap['camera_active'] = (now - self.last_cam_time) < 2.5
             snap['debug_cam_active'] = (now - self.last_debug_cam_time) < 2.5
             snap['imu_active'] = (now - self.last_imu_time) < 2.5
@@ -581,6 +693,79 @@ class DashboardNode(Node):
                 'message': f"{label} {'LIGADA' if new_state else 'DESLIGADA'}",
             }
 
+        elif action == 'motion_profile':
+            presets = {
+                'SUAVE_CARGA': {
+                    'motion_curve_type': 's_curve',
+                    'motion_base_speed': 0.20,
+                    'motion_max_accel': 0.25,
+                    'motion_max_decel': 0.45,
+                    'motion_max_jerk': 0.80,
+                },
+                'PADRAO': {
+                    'motion_curve_type': 's_curve',
+                    'motion_base_speed': 0.35,
+                    'motion_max_accel': 0.50,
+                    'motion_max_decel': 0.80,
+                    'motion_max_jerk': 2.00,
+                },
+                'TURBO': {
+                    'motion_curve_type': 'trapezoidal',
+                    'motion_base_speed': 0.55,
+                    'motion_max_accel': 1.00,
+                    'motion_max_decel': 1.40,
+                    'motion_max_jerk': 5.00,
+                },
+                'PRECISAO': {
+                    'motion_curve_type': 's_curve',
+                    'motion_base_speed': 0.14,
+                    'motion_max_accel': 0.18,
+                    'motion_max_decel': 0.40,
+                    'motion_max_jerk': 0.60,
+                },
+            }
+            payload: Dict[str, Any] = {}
+            with self._lock:
+                if 'profile' in params and params['profile'] is not None:
+                    prof = str(params['profile']).upper()
+                    self.telemetry['motion_profile'] = prof
+                    payload['profile'] = prof
+                    if prof in presets:
+                        for k, v in presets[prof].items():
+                            self.telemetry[k] = v
+                if 'curve_type' in params and params['curve_type'] is not None:
+                    ct = str(params['curve_type']).lower()
+                    if ct in ('s_curve', 'trapezoidal', 'direto'):
+                        self.telemetry['motion_curve_type'] = ct
+                        payload['curve_type'] = ct
+                for key, t_key in (
+                    ('base_speed', 'motion_base_speed'),
+                    ('max_accel', 'motion_max_accel'),
+                    ('max_decel', 'motion_max_decel'),
+                    ('max_jerk', 'motion_max_jerk'),
+                ):
+                    if key in params and params[key] is not None:
+                        val = round(float(params[key]), 3)
+                        self.telemetry[t_key] = val
+                        payload[key] = val
+                if 'profile' not in payload:
+                    self.telemetry['motion_profile'] = 'PERSONALIZADO'
+                    payload['profile'] = 'PERSONALIZADO'
+
+                snap_profile = {
+                    'motion_profile': self.telemetry['motion_profile'],
+                    'motion_curve_type': self.telemetry['motion_curve_type'],
+                    'motion_base_speed': self.telemetry['motion_base_speed'],
+                    'motion_max_accel': self.telemetry['motion_max_accel'],
+                    'motion_max_decel': self.telemetry['motion_max_decel'],
+                    'motion_max_jerk': self.telemetry['motion_max_jerk'],
+                }
+
+            cmd_msg = String()
+            cmd_msg.data = json.dumps(payload)
+            self.pub_motion_profile.publish(cmd_msg)
+            return {'status': 'ok', **snap_profile, 'message': f"Perfil {snap_profile['motion_profile']} aplicado"}
+
         return {'status': 'error', 'message': f'Ação desconhecida: {action}'}
 
     def _start_http_server(self):
@@ -616,6 +801,25 @@ class DashboardNode(Node):
                     except ValueError:
                         limit = 0
                     payload = json.dumps(node_ref.get_history_snapshot(limit=limit)).encode('utf-8')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.send_header('Content-Length', str(len(payload)))
+                    self.send_header('Cache-Control', 'no-store')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(payload)
+                    return
+
+                if route == '/api/logs':
+                    try:
+                        since = int(query.get('since', ['0'])[0])
+                    except ValueError:
+                        since = 0
+                    try:
+                        limit = int(query.get('limit', ['200'])[0])
+                    except ValueError:
+                        limit = 200
+                    payload = json.dumps(node_ref.get_logs_snapshot(since=since, limit=limit)).encode('utf-8')
                     self.send_response(200)
                     self.send_header('Content-Type', 'application/json')
                     self.send_header('Content-Length', str(len(payload)))

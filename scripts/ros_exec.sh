@@ -36,8 +36,8 @@ if [ -f /workspace/install/setup.bash ]; then
 fi
 
 # Paths para o Gazebo Classic encontrar modelos e malhas STL diretamente
-export GAZEBO_MODEL_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_MODEL_PATH}
-export GAZEBO_RESOURCE_PATH=/workspace/install/articubot_one/share:/workspace/src:${GAZEBO_RESOURCE_PATH}
+export GAZEBO_MODEL_PATH=/workspace/install/agv_description/share:/workspace/src:${GAZEBO_MODEL_PATH}
+export GAZEBO_RESOURCE_PATH=/workspace/install/agv_description/share:/workspace/src:${GAZEBO_RESOURCE_PATH}
 
 # Desativa asserts de debug do rosidl_generator_py (corrige Range FLT_MAX do Gazebo)
 export PYTHONOPTIMIZE=1

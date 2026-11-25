@@ -36,7 +36,11 @@ services:
       - AUTO_START=${AUTO_START:-false}
 
     volumes:
-      # Montagem das pastas de calibração permite editar PID/portas sem rebuild da imagem
-      - ./src/agv_hardware/config:/workspace/src/agv_hardware/config
-      - ./src/agv_brain/config:/workspace/src/agv_brain/config
+      # Montagem direta dos pacotes de producao permite deploy rapido sem rebuild da imagem
+      - ./src/agv_description:/workspace/src/agv_description
+      - ./src/agv_hardware:/workspace/src/agv_hardware
+      - ./src/agv_brain:/workspace/src/agv_brain
+      - ./src/agv_dashboard:/workspace/src/agv_dashboard
+      - ./scripts/teleop_joy_receiver.py:/workspace/scripts/teleop_joy_receiver.py:ro
+      - ./scripts/rpi:/workspace/scripts/rpi:ro
       - /dev:/dev

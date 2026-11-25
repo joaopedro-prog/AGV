@@ -3,12 +3,12 @@
 Gerador de propriedades fisicas do AGV real a partir dos STL exportados do Fusion 360.
 
 O que ele faz:
-  1. Le os STL de src/articubot_one/meshes (exportados pelo fusion2urdf, em mm, com Y para cima).
+  1. Le os STL de src/agv_description/meshes (exportados pelo fusion2urdf, em mm, com Y para cima).
   2. Converte para a convencao ROS (X frente, Y esquerda, Z cima) com origem no CENTRO DO EIXO
      das rodas motrizes (base_link).
   3. Calcula volume, massa (pela densidade REAL de cada material), centro de massa e tensor de
      inercia completo de cada peca, direto da malha (metodo dos tetraedros com sinal).
-  4. Escreve src/articubot_one/description/robot_cad_properties.xacro, que e incluido pelo
+  4. Escreve src/agv_description/description/robot_cad_properties.xacro, que e incluido pelo
      robot_core.xacro.
 
 Quando usar:
@@ -31,8 +31,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.abspath(os.path.join(HERE, '..'))
-MESH_DIR = os.path.join(WS, 'src', 'articubot_one', 'meshes')
-OUT_FILE = os.path.join(WS, 'src', 'articubot_one', 'description', 'robot_cad_properties.xacro')
+MESH_DIR = os.path.join(WS, 'src', 'agv_description', 'meshes')
+OUT_FILE = os.path.join(WS, 'src', 'agv_description', 'description', 'robot_cad_properties.xacro')
 
 RHO_ALUMINIO = 2700.0
 RHO_POLIURETANO = 1200.0
@@ -174,7 +174,7 @@ def main():
     L.append('<?xml version="1.0"?>')
     L.append('<!--')
     L.append('  ARQUIVO GERADO AUTOMATICAMENTE por scripts/gerar_propriedades_robo.py  (NAO edite a mao)')
-    L.append('  Fonte: STL do Fusion 360 em src/articubot_one/meshes/')
+    L.append('  Fonte: STL do Fusion 360 em src/agv_description/meshes/')
     L.append('  Massas calculadas pelo VOLUME REAL de cada malha x densidade do material:')
     L.append(f'    Chassi (aluminio 2700 kg/m3)          : {out["chassis"]["vol"]*1e6:8.1f} cm3 -> {out["chassis"]["m"]:.3f} kg')
     L.append(f'    Roda esquerda (poliuretano 1200 kg/m3): {wheels["left"]["vol"]*1e6:8.1f} cm3 -> {wheels["left"]["m"]:.3f} kg')

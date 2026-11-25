@@ -598,7 +598,7 @@ def main():
     content = build_warehouse_world()
     
     out_paths = [
-        os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src', 'articubot_one', 'worlds', 'armazem_logistico.world')),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src', 'agv_description', 'worlds', 'armazem_logistico.world')),
         os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'worlds', 'armazem_logistico.world'))
     ]
     

@@ -2,6 +2,17 @@
 set -e
 
 source /opt/ros/humble/setup.bash
+
+# Auto-compilacao segura antes de lancar ROS 2 caso pacote novo (ex.: agv_description) ou deploy estrutural tenha chegado
+BUILD_FLAG="/workspace/src/agv_dashboard/.needs_colcon_build"
+if [ ! -d /workspace/install/agv_description ] || [ -f "${BUILD_FLAG}" ]; then
+    echo "[entrypoint_rpi] Compilando workspace ROS 2 (agv_description, agv_brain, agv_hardware, agv_dashboard)..."
+    cd /workspace
+    rm -rf /workspace/src/articubot_one /workspace/build/articubot_one /workspace/install/articubot_one
+    colcon build --symlink-install --parallel-workers 2 --packages-select agv_description agv_brain agv_hardware agv_dashboard
+    rm -f "${BUILD_FLAG}" 2>/dev/null || true
+fi
+
 if [ -f /workspace/install/setup.bash ]; then
     source /workspace/install/setup.bash
 fi
@@ -26,9 +37,19 @@ echo "======================================================================"
 python3 /workspace/scripts/teleop_joy_receiver.py &
 TELEOP_PID=$!
 
+# Inicia beacon de descoberta automatica UDP (porta 5800, estilo FRC roboRIO)
+BEACON_PID=""
+if [ -f /workspace/scripts/rpi/agv_beacon.py ]; then
+    python3 /workspace/scripts/rpi/agv_beacon.py &
+    BEACON_PID=$!
+fi
+
 cleanup() {
     echo "[entrypoint_rpi] Encerrando processos do AGV com seguranca..."
     kill -TERM "${TELEOP_PID}" 2>/dev/null || true
+    if [ -n "${BEACON_PID}" ]; then
+        kill -TERM "${BEACON_PID}" 2>/dev/null || true
+    fi
     if [ -n "${ROS_PID}" ]; then
         kill -TERM "${ROS_PID}" 2>/dev/null || true
         wait "${ROS_PID}" 2>/dev/null || true

@@ -20,7 +20,7 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 
 
 def generate_launch_description():
-    pkg_desc = get_package_share_directory('articubot_one')
+    pkg_desc = get_package_share_directory('agv_description')
     pkg_hw = get_package_share_directory('agv_hardware')
     pkg_brain = get_package_share_directory('agv_brain')
     pkg_dash = get_package_share_directory('agv_dashboard')

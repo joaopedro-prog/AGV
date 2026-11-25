@@ -187,6 +187,77 @@
       border: 1px solid #334155; background: #1e293b; color: #94a3b8; cursor: pointer;
     }
     .assign-btn.active { color: #06121e; border-color: transparent; }
+
+    /* Card de Perfis de Movimento & Curva de Aceleração */
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .profile-btn {
+      padding: 8px 10px; border-radius: 7px; border: 1px solid #2b3b52; background: #0f172a;
+      color: #cbd5e1; cursor: pointer; text-align: left; transition: 0.15s; font-size: 0.82rem; font-weight: 700;
+    }
+    .profile-btn small { display: block; font-size: 0.70rem; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+    .profile-btn:hover { border-color: #38bdf8; }
+    .profile-btn.active { background: rgba(14, 165, 233, 0.18); border-color: #38bdf8; color: #fff; box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); }
+    .curve-mode-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+    .curve-btn {
+      padding: 6px 6px; border-radius: 6px; border: 1px solid #2b3b52; background: #111827;
+      color: #94a3b8; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-align: center; transition: 0.15s;
+    }
+    .curve-btn.active { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+    #profile-curve-preview { width: 100%; height: 96px; background: #070b12; border: 1px solid #1e293b; border-radius: 6px; margin-bottom: 10px; display: block; }
+    .slider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 10px; }
+    .slider-item { display: flex; flex-direction: column; gap: 3px; }
+    .slider-item label { display: flex; justify-content: space-between; font-size: 0.73rem; color: var(--text-muted); }
+    .slider-item label strong { color: #38bdf8; font-family: ui-monospace, monospace; }
+    .slider-item input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; }
+
+    /* Barra FRC Driver Station (3 LEDs + Deploy Info + Atalho Espaco E-STOP) */
+    .ds-bar {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+      background: #101723; border: 1px solid var(--border-color); border-radius: 9px;
+      padding: 8px 14px; margin-bottom: 12px;
+    }
+    .ds-leds { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .ds-led-item {
+      display: inline-flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 800;
+      letter-spacing: 0.5px; color: #cbd5e1; background: #0b1018; border: 1px solid #1e293b;
+      padding: 4px 10px; border-radius: 6px;
+    }
+    .ds-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; background: #475569; }
+    .ds-dot.ok { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8); }
+    .ds-dot.warn { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.75); }
+    .ds-dot.err { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.8); }
+    .ds-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 0.78rem; font-family: ui-monospace, monospace; color: #94a3b8; }
+    .ds-deploy-badge { background: #0c192c; color: #38bdf8; border: 1px solid #1e3a5f; padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+    .ds-hotkey { background: rgba(220, 38, 38, 0.14); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45); padding: 4px 9px; border-radius: 6px; font-weight: 700; }
+
+    /* Aba 3: AGVLog (Console RioLog ao Vivo) */
+    .agvlog-toolbar {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 12px; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .agvlog-input, .agvlog-select {
+      background: #0b1018; border: 1px solid #334155; color: #e2e8f0; border-radius: 6px;
+      padding: 5px 9px; font-size: 0.80rem; outline: none;
+    }
+    .agvlog-input:focus, .agvlog-select:focus { border-color: #38bdf8; }
+    .agvlog-terminal {
+      background: #05080e; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;
+      height: 540px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.80rem; line-height: 1.48; color: #e2e8f0;
+    }
+    .log-row { display: flex; gap: 8px; padding: 2px 4px; border-bottom: 1px solid rgba(30, 41, 59, 0.45); word-break: break-word; }
+    .log-row:hover { background: rgba(56, 189, 248, 0.06); }
+    .log-ts { color: #64748b; flex-shrink: 0; min-width: 64px; }
+    .log-lvl { font-weight: 800; flex-shrink: 0; min-width: 50px; }
+    .log-node { color: #38bdf8; flex-shrink: 0; min-width: 125px; }
+    .log-msg { color: #e2e8f0; flex: 1; }
+    .log-lvl-DEBUG { color: #94a3b8; }
+    .log-lvl-INFO { color: #34d399; }
+    .log-lvl-WARN { color: #fbbf24; }
+    .log-lvl-ERROR, .log-lvl-FATAL { color: #f87171; }
+    .log-row-WARN { background: rgba(245, 158, 11, 0.06); }
+    .log-row-ERROR, .log-row-FATAL { background: rgba(239, 68, 68, 0.10); }
   </style>
 </head>
 <body>
@@ -201,9 +272,23 @@
     </div>
   </header>
 
+  <!-- Barra estilo FRC Driver Station -->
+  <div class="ds-bar">
+    <div class="ds-leds">
+      <div class="ds-led-item"><span class="ds-dot err" id="ds-led-comms"></span>COMMS</div>
+      <div class="ds-led-item"><span class="ds-dot err" id="ds-led-code"></span>ROBOT CODE</div>
+      <div class="ds-led-item"><span class="ds-dot err" id="ds-led-hw"></span>ESP32 / HW</div>
+    </div>
+    <div class="ds-meta">
+      <span class="ds-deploy-badge" id="ds-deploy-badge">🤖 Conectando ao robô...</span>
+      <span class="ds-hotkey" title="Pressione a barra de espaço para parada de emergência imediata">⌨️ ESPAÇO = E-STOP</span>
+    </div>
+  </div>
+
   <nav class="nav-tabs">
     <button class="tab-btn active" id="tab-btn-cockpit" onclick="switchTab('cockpit')">🕹️ Cockpit &amp; Operação</button>
     <button class="tab-btn" id="tab-btn-scope" onclick="switchTab('scope')">📈 Osciloscópio &amp; Telemetria por Node</button>
+    <button class="tab-btn" id="tab-btn-agvlog" onclick="switchTab('agvlog')">📟 AGVLog (Console ao Vivo) <span class="pill pill-on" id="agvlog-count-pill">0</span></button>
   </nav>
 
   <!-- ABA 1: COCKPIT & OPERAÇÃO -->
@@ -340,6 +425,61 @@
       </div>
     </div>
 
+    <!-- Card 5: Perfis de Movimento & Curva de Aceleração -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Perfis &amp; Curva de Aceleração</h2>
+        <span class="pill pill-on" id="badge-motion-profile">PADRAO</span>
+      </div>
+
+      <div class="profile-grid">
+        <button class="profile-btn" id="prof-SUAVE_CARGA" onclick="selectMotionProfile('SUAVE_CARGA')">
+          🐢 Suave / Carga<small>0.20 m/s • S-Curve • Jerk 0.8</small>
+        </button>
+        <button class="profile-btn active" id="prof-PADRAO" onclick="selectMotionProfile('PADRAO')">
+          ⚙️ Padrão<small>0.35 m/s • S-Curve • Jerk 2.0</small>
+        </button>
+        <button class="profile-btn" id="prof-TURBO" onclick="selectMotionProfile('TURBO')">
+          🚀 Turbo<small>0.55 m/s • Trap. • Acel 1.0</small>
+        </button>
+        <button class="profile-btn" id="prof-PRECISAO" onclick="selectMotionProfile('PRECISAO')">
+          🎯 Precisão<small>0.14 m/s • S-Curve • Jerk 0.6</small>
+        </button>
+      </div>
+
+      <div class="curve-mode-row">
+        <button class="curve-btn active" id="curve-s_curve" onclick="selectCurveType('s_curve')">〰️ Curva S (Jerk)</button>
+        <button class="curve-btn" id="curve-trapezoidal" onclick="selectCurveType('trapezoidal')">📐 Trapezoidal</button>
+        <button class="curve-btn" id="curve-direto" onclick="selectCurveType('direto')">⚡ Degrau Direto</button>
+      </div>
+
+      <canvas id="profile-curve-preview" width="340" height="96"></canvas>
+
+      <div class="slider-grid">
+        <div class="slider-item">
+          <label><span>Vel. Base:</span><strong id="lbl-base-speed">0.35 m/s</strong></label>
+          <input type="range" id="rng-base-speed" min="0.10" max="0.70" step="0.02" value="0.35" oninput="onProfileSliderInput()">
+        </div>
+        <div class="slider-item">
+          <label><span>Acel. Máx:</span><strong id="lbl-max-accel">0.50 m/s²</strong></label>
+          <input type="range" id="rng-max-accel" min="0.10" max="1.80" step="0.05" value="0.50" oninput="onProfileSliderInput()">
+        </div>
+        <div class="slider-item">
+          <label><span>Frenagem:</span><strong id="lbl-max-decel">0.80 m/s²</strong></label>
+          <input type="range" id="rng-max-decel" min="0.15" max="2.50" step="0.05" value="0.80" oninput="onProfileSliderInput()">
+        </div>
+        <div class="slider-item">
+          <label><span>Jerk Máx:</span><strong id="lbl-max-jerk">2.00 m/s³</strong></label>
+          <input type="range" id="rng-max-jerk" min="0.20" max="8.00" step="0.20" value="2.00" oninput="onProfileSliderInput()">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto;">
+        <span style="font-size: 0.76rem; color: var(--text-muted);" id="val-motion-live">a: 0.00 m/s² | J: 0.00 m/s³</span>
+        <button class="btn-mini active" onclick="applyCustomMotionParams()">✓ Aplicar Ajuste</button>
+      </div>
+    </div>
+
   </div>
   </div> <!-- fim #tab-cockpit -->
 
@@ -379,6 +519,7 @@
         <div class="toolbar-group">
           <span class="toolbar-label">Presets:</span>
           <button class="btn-preset active" id="preset-motor_vel" onclick="applyPreset('motor_vel')">⚡ Motor: Vel. Comandada vs Real</button>
+          <button class="btn-preset" id="preset-accel_curve" onclick="applyPreset('accel_curve')">📈 Curva de Aceleração</button>
           <button class="btn-preset" id="preset-wheels" onclick="applyPreset('wheels')">🛞 Rodas Esq/Dir (rad/s)</button>
           <button class="btn-preset" id="preset-pid_line" onclick="applyPreset('pid_line')">🎯 Malha PID Linha</button>
           <button class="btn-preset" id="preset-ultrasonics" onclick="applyPreset('ultrasonics')">📡 Ultrassônicos (m)</button>
@@ -447,6 +588,30 @@
     <div class="node-catalog-grid" id="node-catalog-grid"></div>
 
   </div> <!-- fim #tab-scope -->
+
+  <!-- ABA 3: AGVLOG (CONSOLE RIOLOG AO VIVO VIA /rosout) -->
+  <div id="tab-agvlog" class="tab-pane">
+    <div class="agvlog-toolbar">
+      <div class="toolbar-group">
+        <span class="toolbar-label">Nível:</span>
+        <button class="btn-mini active" id="log-lvl-0" onclick="setLogMinLevel(0)">Todos</button>
+        <button class="btn-mini" id="log-lvl-30" onclick="setLogMinLevel(30)">WARN+</button>
+        <button class="btn-mini" id="log-lvl-40" onclick="setLogMinLevel(40)">ERROR</button>
+        <select class="agvlog-select" id="agvlog-node-filter" onchange="renderAgvLogs()">
+          <option value="">Todos os Nós</option>
+        </select>
+        <input class="agvlog-input" id="agvlog-search" type="text" placeholder="Buscar no log..." oninput="renderAgvLogs()">
+      </div>
+      <div class="toolbar-group">
+        <button class="btn-mini" id="btn-log-pause" onclick="toggleLogPause()">⏸ Pausar Scroll</button>
+        <button class="btn-mini" onclick="clearAgvLogs()">🗑 Limpar</button>
+        <button class="btn-mini" onclick="downloadAgvLogs()">⬇ Baixar .log</button>
+      </div>
+    </div>
+    <div class="agvlog-terminal" id="agvlog-terminal">
+      <div style="color: #64748b; padding: 8px;">Aguardando eventos /rosout do robô...</div>
+    </div>
+  </div> <!-- fim #tab-agvlog -->
 
   <script>
     let teleopTimer = null;
@@ -723,12 +888,15 @@
           renderRelayButtons();
         }
 
-        // Alimenta Osciloscópio & Catálogo por Node
+        // Alimenta Driver Station Bar, Osciloscópio & Catálogo por Node
+        updateDriverStationBar(data);
+        syncMotionProfileUI(data);
         ingestTelemetrySample(data);
 
       } catch (err) {
         document.getElementById('conn-badge').innerHTML = '● DESCONECTADO';
         document.getElementById('conn-badge').style.color = 'var(--color-danger)';
+        setDriverStationOffline();
       }
     }
 
@@ -793,11 +961,14 @@
       },
       {
         id: 'line_follower',
-        title: '/line_follower (Controlador PID & FSM)',
+        title: '/line_follower (Controlador PID, Curva & FSM)',
         activeKey: 'line_follower',
         signals: [
-          { key: 'cmd_line_lin', name: 'Cmd Linear PID', topic: '/cmd_vel_line', unit: 'm/s', color: '#22d3ee' },
+          { key: 'target_lin_raw', name: 'Vel. Alvo Pré-Curva', topic: '/agv/motion_profile_status', unit: 'm/s', color: '#94a3b8' },
+          { key: 'cmd_line_lin', name: 'Cmd Linear PID (Pós-Curva)', topic: '/cmd_vel_line', unit: 'm/s', color: '#22d3ee' },
           { key: 'cmd_line_ang', name: 'Cmd Angular PID', topic: '/cmd_vel_line', unit: 'rad/s', color: '#fb923c' },
+          { key: 'motion_accel', name: 'Aceleração Instantânea', topic: '/agv/motion_profile_status', unit: 'm/s²', color: '#f97316' },
+          { key: 'motion_jerk', name: 'Jerk Instantâneo', topic: '/agv/motion_profile_status', unit: 'm/s³', color: '#a855f7' },
         ]
       },
       {
@@ -865,6 +1036,10 @@
         A: ['cmd_mux_lin', 'speed_lin', 'cmd_mux_ang', 'speed_ang'],
         B: ['vel_error_lin', 'vel_error_ang'],
       },
+      accel_curve: {
+        A: ['target_lin_raw', 'cmd_line_lin', 'speed_lin'],
+        B: ['motion_accel', 'motion_jerk'],
+      },
       wheels: {
         A: ['cmd_wheel_left_rad_s', 'real_wheel_left_rad_s', 'cmd_wheel_right_rad_s', 'real_wheel_right_rad_s'],
         B: ['cmd_mux_lin', 'speed_lin'],
@@ -903,10 +1078,14 @@
       activeTab = tab;
       document.getElementById('tab-btn-cockpit').classList.toggle('active', tab === 'cockpit');
       document.getElementById('tab-btn-scope').classList.toggle('active', tab === 'scope');
+      document.getElementById('tab-btn-agvlog').classList.toggle('active', tab === 'agvlog');
       document.getElementById('tab-cockpit').classList.toggle('active', tab === 'cockpit');
       document.getElementById('tab-scope').classList.toggle('active', tab === 'scope');
+      document.getElementById('tab-agvlog').classList.toggle('active', tab === 'agvlog');
       if (tab === 'scope') {
         requestAnimationFrame(() => renderScopeView());
+      } else if (tab === 'agvlog') {
+        pollAgvLogs();
       }
     }
 
@@ -1125,6 +1304,9 @@
         imu_yaw_rate_deg: num(d.imu_yaw_rate_deg),
         fan_on: flag(d.fan_on),
         led_on: flag(d.led_on),
+        target_lin_raw: num(d.target_lin_raw),
+        motion_accel: num(d.motion_accel),
+        motion_jerk: num(d.motion_jerk),
       };
     }
 
@@ -1536,6 +1718,390 @@
       });
     }
 
+    // =========================================================================
+    // PERFIS DE MOVIMENTO & PREVIEW DA CURVA DE ACELERAÇÃO
+    // =========================================================================
+    const MOTION_PRESET_UI = {
+      SUAVE_CARGA: { curve: 's_curve', v: 0.20, a: 0.25, d: 0.45, j: 0.80 },
+      PADRAO:      { curve: 's_curve', v: 0.35, a: 0.50, d: 0.80, j: 2.00 },
+      TURBO:       { curve: 'trapezoidal', v: 0.55, a: 1.00, d: 1.40, j: 5.00 },
+      PRECISAO:    { curve: 's_curve', v: 0.14, a: 0.18, d: 0.40, j: 0.60 },
+    };
+    let motionUi = { profile: 'PADRAO', curve: 's_curve', v: 0.35, a: 0.50, d: 0.80, j: 2.00 };
+    let lastProfileTouchAt = 0;
+
+    function updateMotionControlsDOM() {
+      document.getElementById('badge-motion-profile').innerText = motionUi.profile;
+      ['SUAVE_CARGA', 'PADRAO', 'TURBO', 'PRECISAO'].forEach(p => {
+        const btn = document.getElementById('prof-' + p);
+        if (btn) btn.classList.toggle('active', motionUi.profile === p);
+      });
+      ['s_curve', 'trapezoidal', 'direto'].forEach(c => {
+        const btn = document.getElementById('curve-' + c);
+        if (btn) btn.classList.toggle('active', motionUi.curve === c);
+      });
+      document.getElementById('rng-base-speed').value = motionUi.v;
+      document.getElementById('rng-max-accel').value = motionUi.a;
+      document.getElementById('rng-max-decel').value = motionUi.d;
+      document.getElementById('rng-max-jerk').value = motionUi.j;
+      document.getElementById('lbl-base-speed').innerText = motionUi.v.toFixed(2) + ' m/s';
+      document.getElementById('lbl-max-accel').innerText = motionUi.a.toFixed(2) + ' m/s²';
+      document.getElementById('lbl-max-decel').innerText = motionUi.d.toFixed(2) + ' m/s²';
+      document.getElementById('lbl-max-jerk').innerText = motionUi.j.toFixed(2) + ' m/s³';
+      drawMotionCurvePreview();
+    }
+
+    function drawMotionCurvePreview() {
+      const canvas = document.getElementById('profile-curve-preview');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = 8, padR = 8, padT = 10, padB = 14;
+      const pw = w - padL - padR;
+      const ph = h - padT - padB;
+      const totalSec = 3.6;
+      const dt = 0.02;
+      const steps = Math.round(totalSec / dt);
+      const pts = [];
+      let v = 0.0, a = 0.0;
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i * dt;
+        const target = (t >= 0.25 && t <= 2.2) ? motionUi.v : 0.0;
+        if (motionUi.curve === 'direto') {
+          v = target;
+        } else if (motionUi.curve === 'trapezoidal') {
+          const dv = target - v;
+          const step = (dv >= 0 ? motionUi.a : motionUi.d) * dt;
+          v = Math.abs(dv) <= step ? target : v + (dv >= 0 ? step : -step);
+        } else {
+          const dv = target - v;
+          const j = motionUi.j;
+          if (Math.abs(dv) < 1e-4 && Math.abs(a) <= j * dt * 1.1) {
+            v = target; a = 0.0;
+          } else {
+            const aDes = dv >= 0
+              ? Math.min(motionUi.a, Math.sqrt(2.0 * j * dv))
+              : Math.max(-motionUi.d, -Math.sqrt(2.0 * j * (-dv)));
+            const daMax = j * dt;
+            const aNext = a + Math.max(-daMax, Math.min(daMax, aDes - a));
+            const vCand = v + 0.5 * (a + aNext) * dt;
+            if ((dv >= 0 && vCand >= target) || (dv < 0 && vCand <= target)) {
+              v = target; a = 0.0;
+            } else {
+              v = vCand; a = aNext;
+            }
+          }
+        }
+        pts.push({ t, v, target });
+      }
+
+      const vMaxScale = Math.max(0.65, motionUi.v * 1.15);
+      // Grade de referência
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+      ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75].forEach(f => {
+        const y = padT + f * ph;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      });
+
+      // Alvo (tracejado)
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      pts.forEach((p, idx) => {
+        const x = padL + (p.t / totalSec) * pw;
+        const y = padT + (1.0 - p.target / vMaxScale) * ph;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Curva aplicada (ciano)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      pts.forEach((p, idx) => {
+        const x = padL + (p.t / totalSec) * pw;
+        const y = padT + (1.0 - Math.max(0, p.v) / vMaxScale) * ph;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.fillText('Preview resposta 0 → ' + motionUi.v.toFixed(2) + ' m/s → 0 (' + motionUi.curve + ')', padL + 2, h - 3);
+    }
+
+    async function sendMotionProfilePayload(payload) {
+      lastProfileTouchAt = Date.now();
+      try {
+        await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'motion_profile', ...payload })
+        });
+        lastProfileTouchAt = 0;
+        updateTelemetry();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function selectMotionProfile(profileName) {
+      const p = MOTION_PRESET_UI[profileName];
+      if (!p) return;
+      motionUi = { profile: profileName, curve: p.curve, v: p.v, a: p.a, d: p.d, j: p.j };
+      updateMotionControlsDOM();
+      sendMotionProfilePayload({ profile: profileName });
+    }
+
+    function selectCurveType(curveType) {
+      motionUi.profile = 'PERSONALIZADO';
+      motionUi.curve = curveType;
+      updateMotionControlsDOM();
+      sendMotionProfilePayload({
+        profile: 'PERSONALIZADO',
+        curve_type: curveType,
+        base_speed: motionUi.v,
+        max_accel: motionUi.a,
+        max_decel: motionUi.d,
+        max_jerk: motionUi.j,
+      });
+    }
+
+    function onProfileSliderInput() {
+      lastProfileTouchAt = Date.now();
+      motionUi.profile = 'PERSONALIZADO';
+      motionUi.v = parseFloat(document.getElementById('rng-base-speed').value);
+      motionUi.a = parseFloat(document.getElementById('rng-max-accel').value);
+      motionUi.d = parseFloat(document.getElementById('rng-max-decel').value);
+      motionUi.j = parseFloat(document.getElementById('rng-max-jerk').value);
+      updateMotionControlsDOM();
+    }
+
+    function applyCustomMotionParams() {
+      onProfileSliderInput();
+      sendMotionProfilePayload({
+        profile: 'PERSONALIZADO',
+        curve_type: motionUi.curve,
+        base_speed: motionUi.v,
+        max_accel: motionUi.a,
+        max_decel: motionUi.d,
+        max_jerk: motionUi.j,
+      });
+    }
+
+    function syncMotionProfileUI(data) {
+      const liveEl = document.getElementById('val-motion-live');
+      if (liveEl) {
+        const aNow = (data.motion_accel || 0).toFixed(2);
+        const jNow = (data.motion_jerk || 0).toFixed(2);
+        liveEl.innerText = `a: ${aNow} m/s² | J: ${jNow} m/s³`;
+      }
+      if (Date.now() - lastProfileTouchAt > 1200 && data.motion_profile) {
+        motionUi.profile = data.motion_profile;
+        motionUi.curve = data.motion_curve_type || motionUi.curve;
+        motionUi.v = (typeof data.motion_base_speed === 'number') ? data.motion_base_speed : motionUi.v;
+        motionUi.a = (typeof data.motion_max_accel === 'number') ? data.motion_max_accel : motionUi.a;
+        motionUi.d = (typeof data.motion_max_decel === 'number') ? data.motion_max_decel : motionUi.d;
+        motionUi.j = (typeof data.motion_max_jerk === 'number') ? data.motion_max_jerk : motionUi.j;
+        updateMotionControlsDOM();
+      }
+    }
+
+    // =========================================================================
+    // BARRA FRC DRIVER STATION + ATALHO ESPACO = E-STOP + AGVLOG (/rosout)
+    // =========================================================================
+    let agvLogs = [];
+    let agvLogLastId = 0;
+    let agvLogMinLevel = 0;
+    let agvLogPaused = false;
+    const agvLogKnownNodes = new Set();
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function updateDriverStationBar(data) {
+      const nodes = data.nodes_active || {};
+      const ledComms = document.getElementById('ds-led-comms');
+      const ledCode = document.getElementById('ds-led-code');
+      const ledHw = document.getElementById('ds-led-hw');
+      const badge = document.getElementById('ds-deploy-badge');
+
+      if (ledComms) ledComms.className = 'ds-dot ok';
+      if (ledCode) {
+        ledCode.className = (nodes.line_follower && nodes.twist_mux) ? 'ds-dot ok' : 'ds-dot warn';
+      }
+      if (ledHw) {
+        if (data.serial_connected) {
+          ledHw.className = 'ds-dot ok';
+        } else if (nodes.rpi_sensors || nodes.odom) {
+          ledHw.className = 'ds-dot warn';
+        } else {
+          ledHw.className = 'ds-dot err';
+        }
+      }
+      if (badge) {
+        const host = data.robot_hostname || 'AGV';
+        const up = typeof data.uptime_s === 'number' ? `${Math.round(data.uptime_s)}s` : '--';
+        const dep = data.deploy_info || {};
+        if (dep.commit) {
+          const shortTime = (dep.deployed_at || '').split(' ')[1] || dep.deployed_at || '';
+          badge.innerText = `🤖 ${host} | Deploy: ${dep.commit} • ${shortTime} (${dep.mode || 'OK'}) | Up: ${up}`;
+        } else {
+          badge.innerText = `🤖 ${host} | Online | Uptime: ${up}`;
+        }
+      }
+    }
+
+    function setDriverStationOffline() {
+      ['ds-led-comms', 'ds-led-code', 'ds-led-hw'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'ds-dot err';
+      });
+      const badge = document.getElementById('ds-deploy-badge');
+      if (badge) badge.innerText = '🤖 SEM COMUNICAÇÃO COM O ROBÔ';
+    }
+
+    // Atalho global estilo FRC Driver Station: BARRA DE ESPACO = E-STOP imediato
+    document.addEventListener('keydown', (ev) => {
+      if (ev.code !== 'Space') return;
+      const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toUpperCase() : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      ev.preventDefault();
+      if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+      sendCommand('emergency');
+    });
+
+    function setLogMinLevel(lvl) {
+      agvLogMinLevel = lvl;
+      [0, 30, 40].forEach(l => {
+        const b = document.getElementById('log-lvl-' + l);
+        if (b) b.classList.toggle('active', l === lvl);
+      });
+      renderAgvLogs();
+    }
+
+    function toggleLogPause() {
+      agvLogPaused = !agvLogPaused;
+      const btn = document.getElementById('btn-log-pause');
+      if (btn) {
+        btn.innerText = agvLogPaused ? '▶ Retomar Scroll' : '⏸ Pausar Scroll';
+        btn.classList.toggle('active', agvLogPaused);
+      }
+    }
+
+    function clearAgvLogs() {
+      agvLogs = [];
+      renderAgvLogs();
+    }
+
+    function downloadAgvLogs() {
+      if (agvLogs.length === 0) return;
+      const lines = agvLogs.map(e => `[${e.t.toFixed(2)}s] [${e.level}] [${e.node}] ${e.msg}`);
+      const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `agvlog_${Math.round(Date.now() / 1000)}.log`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function refreshLogNodeDropdown() {
+      const sel = document.getElementById('agvlog-node-filter');
+      if (!sel) return;
+      const current = sel.value;
+      const sorted = Array.from(agvLogKnownNodes).sort();
+      sel.innerHTML = '<option value="">Todos os Nós</option>' +
+        sorted.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      sel.value = current;
+    }
+
+    function renderAgvLogs() {
+      const term = document.getElementById('agvlog-terminal');
+      const countPill = document.getElementById('agvlog-count-pill');
+      if (countPill) countPill.innerText = String(agvLogs.length);
+      if (!term) return;
+
+      const nodeFilter = (document.getElementById('agvlog-node-filter')?.value || '').trim();
+      const query = (document.getElementById('agvlog-search')?.value || '').trim().toLowerCase();
+
+      const filtered = agvLogs.filter(e => {
+        if ((e.level_num || 20) < agvLogMinLevel) return false;
+        if (nodeFilter && e.node !== nodeFilter) return false;
+        if (query && !(e.msg.toLowerCase().includes(query) || e.node.toLowerCase().includes(query))) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        term.innerHTML = '<div style="color: #64748b; padding: 8px;">Nenhuma entrada de log para os filtros atuais.</div>';
+        return;
+      }
+
+      term.innerHTML = filtered.map(e => {
+        const lvl = escapeHtml(e.level || 'INFO');
+        const ts = typeof e.t === 'number' ? e.t.toFixed(2).padStart(7, ' ') + 's' : '--';
+        return `<div class="log-row log-row-${lvl}">
+          <span class="log-ts">${ts}</span>
+          <span class="log-lvl log-lvl-${lvl}">[${lvl}]</span>
+          <span class="log-node">${escapeHtml(e.node)}</span>
+          <span class="log-msg">${escapeHtml(e.msg)}</span>
+        </div>`;
+      }).join('');
+
+      if (!agvLogPaused) {
+        term.scrollTop = term.scrollHeight;
+      }
+    }
+
+    async function pollAgvLogs() {
+      try {
+        const res = await fetch(`/api/logs?since=${agvLogLastId}&limit=250`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const payload = await res.json();
+        const latestId = Number(payload.latest_id || 0);
+
+        // Detecta reinicio do container (apos deploy) e recarrega do inicio
+        if (latestId < agvLogLastId) {
+          agvLogs = [];
+          agvLogLastId = 0;
+          agvLogKnownNodes.clear();
+          refreshLogNodeDropdown();
+          return pollAgvLogs();
+        }
+
+        const entries = Array.isArray(payload.entries) ? payload.entries : [];
+        if (entries.length > 0) {
+          let newNodeFound = false;
+          entries.forEach(e => {
+            agvLogs.push(e);
+            if (e.id > agvLogLastId) agvLogLastId = e.id;
+            if (e.node && !agvLogKnownNodes.has(e.node)) {
+              agvLogKnownNodes.add(e.node);
+              newNodeFound = true;
+            }
+          });
+          while (agvLogs.length > 500) agvLogs.shift();
+          if (newNodeFound) refreshLogNodeDropdown();
+          renderAgvLogs();
+        }
+      } catch (e) {}
+    }
+
+    updateMotionControlsDOM();
     buildNodeCatalogDOM();
     attachScopeHover('A');
     attachScopeHover('B');
@@ -1546,6 +2112,8 @@
 
     drawUltrasonicView(null, null, false);
     bootstrapTelemetryHistory();
+    pollAgvLogs();
+    setInterval(pollAgvLogs, 700);
     setInterval(updateTelemetry, 150);
     updateTelemetry();
   </script>

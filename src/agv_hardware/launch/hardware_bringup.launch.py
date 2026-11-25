@@ -9,7 +9,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    pkg_desc = get_package_share_directory('articubot_one')
+    pkg_desc = get_package_share_directory('agv_description')
     pkg_hw = get_package_share_directory('agv_hardware')
 
     hw_params_file = LaunchConfiguration('hw_params_file')

@@ -29,7 +29,7 @@ def reload_robot():
     
     # 1. Gera o URDF novo a partir do Xacro
     print("[1/3] Processando xacro atualizado...")
-    xacro_cmd = "xacro /workspace/src/articubot_one/description/robot.urdf.xacro use_ros2_control:=false sim_mode:=true > /tmp/reloaded_robot.urdf"
+    xacro_cmd = "xacro /workspace/src/agv_description/description/robot.urdf.xacro use_ros2_control:=false sim_mode:=true > /tmp/reloaded_robot.urdf"
     ok, out, err = run_cmd(xacro_cmd, timeout=20)
     if not ok:
         print(f"[ERRO] Falha ao processar Xacro:\n{err}\n{out}")

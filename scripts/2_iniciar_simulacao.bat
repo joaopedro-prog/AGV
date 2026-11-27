@@ -1,27 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Define os diretorios de mundos do projeto
-set "WORLDS_DIR=%~dp0..\src\articubot_one\worlds"
-set "ROOT_WORLDS_DIR=%~dp0..\worlds"
-
-REM Garante que a pasta worlds na raiz exista
-if not exist "!ROOT_WORLDS_DIR!" mkdir "!ROOT_WORLDS_DIR!" >nul 2>&1
-
-REM Sincroniza arquivos .world entre a raiz worlds e src/articubot_one/worlds
-if exist "!ROOT_WORLDS_DIR!" if exist "!WORLDS_DIR!" (
-    copy /y "!ROOT_WORLDS_DIR!\*.world" "!WORLDS_DIR!\" >nul 2>&1
-    copy /y "!WORLDS_DIR!\*.world" "!ROOT_WORLDS_DIR!\" >nul 2>&1
-)
+REM Define o diretorio oficial de mundos do projeto
+set "WORLDS_DIR=%~dp0..\src\agv_description\worlds"
 
 if not exist "!WORLDS_DIR!" (
-    if exist "!ROOT_WORLDS_DIR!" (
-        set "WORLDS_DIR=!ROOT_WORLDS_DIR!"
-    ) else (
-        echo [ERRO] Nao foi possivel encontrar a pasta de mundos do Gazebo.
-        pause
-        exit /b 1
-    )
+    echo [ERRO] Nao foi possivel encontrar a pasta de mundos do Gazebo em !WORLDS_DIR!.
+    pause
+    exit /b 1
 )
 
 :MENU_MUNDOS
@@ -97,7 +83,6 @@ echo.
 wsl -d Ubuntu-24.04 docker start meu_container_ros >nul 2>&1
 wsl -d Ubuntu-24.04 docker exec meu_container_ros pkill -9 -f "gzserver|gzclient" >nul 2>&1
 wsl -d Ubuntu-24.04 docker exec -u 0 meu_container_ros chmod 777 /tmp/runtime-user >nul 2>&1
-wsl -d Ubuntu-24.04 docker exec meu_container_ros bash -c "sed -i 's/\r$//' /workspace/scripts/ros_exec.sh 2>/dev/null; chmod +x /workspace/scripts/ros_exec.sh 2>/dev/null" >nul 2>&1
-start "Simulacao AGV - Gazebo (!MUNDO_ESCOLHIDO!)" cmd /k "wsl -d Ubuntu-24.04 docker exec -e DISPLAY=:0 -e WAYLAND_DISPLAY=wayland-0 -it meu_container_ros bash /workspace/scripts/ros_exec.sh ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=!MUNDO_ESCOLHIDO!"
+start "Simulacao AGV - Gazebo (!MUNDO_ESCOLHIDO!)" cmd /k "wsl -d Ubuntu-24.04 docker exec -e DISPLAY=:0 -e WAYLAND_DISPLAY=wayland-0 -it meu_container_ros /workspace/scripts/ros_exec.sh ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=!MUNDO_ESCOLHIDO!"
 
 exit /b 0

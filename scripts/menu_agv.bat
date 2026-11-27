@@ -3,9 +3,6 @@ setlocal
 cd /d "%~dp0"
 title AGV - Painel Principal
 
-:: Garante que os scripts Linux tenham formatacao UNIX (LF) e permissao de execucao
-wsl -d Ubuntu-24.04 docker exec meu_container_ros bash -c "sed -i 's/\r$//' /workspace/scripts/ros_exec.sh 2>/dev/null; chmod +x /workspace/scripts/ros_exec.sh 2>/dev/null" >nul 2>&1
-
 :MENU
 cls
 echo ======================================================================
@@ -21,8 +18,8 @@ echo   -------------------------- COMANDOS DO AGV -------------------------
 echo   [5] Mandar o Robo SEGUIR A LINHA (START)
 echo   [6] Mandar o Robo PARAR IMEDIATAMENTE (STOP)
 echo   [7] Abrir Painel Interativo de Missoes (agv_cmd)
-echo   [W] Abrir DASHBOARD WEB no Navegador (Camera, Controle e Telemetria)
 echo   [J] Controlar Robo por JOYSTICK USB (Simulado ou Real)
+echo   [W] Abrir DASHBOARD WEB no Navegador (Telemetria, HMI e Video)
 echo.
 echo   -------------------------- FERRAMENTAS -----------------------------
 echo   [8] Recompilar o Workspace (colcon build)
@@ -35,7 +32,7 @@ echo ======================================================================
 choice /C 123456789GZUJW0 /N /M "Digite a opcao: "
 
 if errorlevel 15 goto SAIR
-if errorlevel 14 goto CMD_WEB
+if errorlevel 14 goto CMD_DASHBOARD
 if errorlevel 13 goto CMD_JOYSTICK
 if errorlevel 12 goto CMD_PUSH
 if errorlevel 11 goto CMD_GAZEBO
@@ -79,8 +76,8 @@ goto MENU
 call 6_painel_interativo.bat
 goto MENU
 
-:CMD_WEB
-call 8_dashboard_web.bat
+:CMD_DASHBOARD
+call 8_abrir_dashboard.bat
 goto MENU
 
 :CMD_JOYSTICK

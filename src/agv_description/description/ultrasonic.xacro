@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <!--
+      ==========================================================================
+      2x SENSORES ULTRASSÔNICOS FRONTAIS DO AGV (HC-SR04 ESQUERDO E DIREITO)
+      ==========================================================================
+      Montados no para-choque dianteiro (x = 0.355m, y = +0.12m / -0.12m, z = 0.060m).
+      Publicam sensor_msgs/msg/Range em /agv/ultrasonic_left e /agv/ultrasonic_right.
+      Cone vertical estreito (+-0.02 rad) para evitar falso-positivo com o piso.
+      ==========================================================================
+    -->
+    <xacro:macro name="ultrasonic_sensor" params="prefix y_offset topic_name">
+        <joint name="ultrasonic_${prefix}_joint" type="fixed">
+            <parent link="chassis"/>
+            <child link="ultrasonic_${prefix}_frame"/>
+            <origin xyz="0.355 ${y_offset} 0.060" rpy="0 0 0"/>
+        </joint>
+
+        <link name="ultrasonic_${prefix}_frame">
+            <visual>
+                <origin xyz="-0.005 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.012 0.045 0.020"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <!-- Transdutor 1 -->
+            <visual>
+                <origin xyz="0.002 0.012 0" rpy="0 ${pi/2} 0"/>
+                <geometry>
+                    <cylinder radius="0.008" length="0.006"/>
+                </geometry>
+                <material name="steel_silver"/>
+            </visual>
+            <!-- Transdutor 2 -->
+            <visual>
+                <origin xyz="0.002 -0.012 0" rpy="0 ${pi/2} 0"/>
+                <geometry>
+                    <cylinder radius="0.008" length="0.006"/>
+                </geometry>
+                <material name="steel_silver"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.015 0.045 0.020"/>
+                </geometry>
+            </collision>
+            <xacro:inertial_box mass="0.015" x="0.015" y="0.045" z="0.020">
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+            </xacro:inertial_box>
+        </link>
+
+        <gazebo reference="ultrasonic_${prefix}_frame">
+            <material>Gazebo/Black</material>
+
+            <sensor name="ultrasonic_${prefix}_sensor" type="ray">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>false</visualize>
+                <update_rate>20</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>5</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-0.14</min_angle>
+                            <max_angle>0.14</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>3</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-0.02</min_angle>
+                            <max_angle>0.02</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.03</min>
+                        <max>3.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                </ray>
+                <plugin name="ultrasonic_${prefix}_controller" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <argument>~/out:=${topic_name}</argument>
+                    </ros>
+                    <output_type>sensor_msgs/Range</output_type>
+                    <radiation_type>ultrasound</radiation_type>
+                    <frame_name>ultrasonic_${prefix}_frame</frame_name>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+
+    <!-- Sensor Ultrassônico Frontal Esquerdo (US1) -->
+    <xacro:ultrasonic_sensor prefix="left" y_offset="0.120" topic_name="/agv/ultrasonic_left"/>
+
+    <!-- Sensor Ultrassônico Frontal Direito (US2) -->
+    <xacro:ultrasonic_sensor prefix="right" y_offset="-0.120" topic_name="/agv/ultrasonic_right"/>
+
+</robot>

@@ -9,11 +9,13 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    pkg_desc = get_package_share_directory('articubot_one')
+    pkg_desc = get_package_share_directory('agv_description')
     pkg_hw = get_package_share_directory('agv_hardware')
 
     hw_params_file = LaunchConfiguration('hw_params_file')
     enable_camera = LaunchConfiguration('enable_camera')
+    enable_lidar = LaunchConfiguration('enable_lidar')
+    lidar_port = LaunchConfiguration('lidar_port')
 
     default_hw_params = os.path.join(pkg_hw, 'config', 'hardware_params.yaml')
     twist_mux_params = os.path.join(pkg_desc, 'config', 'twist_mux.yaml')
@@ -29,7 +31,7 @@ def generate_launch_description():
         }.items(),
     )
 
-    # 2. Twist Mux (Gerencia prioridades entre Joystick, Seguidor de Linha e Nav2)
+    # 2. Twist Mux (Gerencia prioridades: Emergência 255 > Joystick 100 > Linha 30 > Nav2 10)
     twist_mux = Node(
         package='twist_mux',
         executable='twist_mux',
@@ -38,7 +40,7 @@ def generate_launch_description():
         remappings=[('/cmd_vel_out', '/diff_cont/cmd_vel_unstamped')],
     )
 
-    # 3. Ponte Serial com o Microcontrolador (Motores, Encoders e Sensores Seriais)
+    # 3. Ponte Serial com o ESP32 (REV Spark MAX PWM, Encoders KY-040 e 2x HC-SR04)
     serial_bridge = Node(
         package='agv_hardware',
         executable='serial_bridge',
@@ -47,7 +49,7 @@ def generate_launch_description():
         parameters=[hw_params_file, {'use_sim_time': False}],
     )
 
-    # 4. Sensores e Botões Físicos ligados direto na Raspberry Pi (GPIO)
+    # 4. GPIO RPi (Relés K1 Ventoinhas / K2 Fita LED) e IMU MPU6050 I2C
     rpi_sensors = Node(
         package='agv_hardware',
         executable='rpi_sensors',
@@ -56,7 +58,7 @@ def generate_launch_description():
         parameters=[hw_params_file, {'use_sim_time': False}],
     )
 
-    # 5. Câmera USB Real (v4l2_camera publicando em /camera/image_raw)
+    # 5. Câmera CSI / USB Real (v4l2_camera publicando 320x240 @ 15fps em /camera/image_raw)
     camera_node = Node(
         package='v4l2_camera',
         executable='v4l2_camera_node',
@@ -65,6 +67,22 @@ def generate_launch_description():
         output='screen',
         parameters=[hw_params_file, {'use_sim_time': False}],
         condition=IfCondition(enable_camera),
+    )
+
+    # 6. Sensor LiDAR 360° RPLIDAR A1 (condicional a enable_lidar)
+    lidar_node = Node(
+        package='rplidar_ros',
+        executable='rplidar_composition',
+        name='rplidar_composition',
+        output='screen',
+        parameters=[
+            hw_params_file,
+            {
+                'use_sim_time': False,
+                'serial_port': lidar_port,
+            },
+        ],
+        condition=IfCondition(enable_lidar),
     )
 
     return LaunchDescription([
@@ -76,11 +94,22 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'enable_camera',
             default_value='true',
-            description='Inicia o driver da camera USB real (v4l2_camera)',
+            description='Inicia o driver da camera CSI/USB real (v4l2_camera)',
+        ),
+        DeclareLaunchArgument(
+            'enable_lidar',
+            default_value='false',
+            description='Desativado por padrao: modelo fisico usa 2x HC-SR04 frontais sem LiDAR',
+        ),
+        DeclareLaunchArgument(
+            'lidar_port',
+            default_value='/dev/agv_lidar',
+            description='Porta serial do RPLIDAR A1 (ex: /dev/agv_lidar ou /dev/ttyUSB1)',
         ),
         rsp,
         twist_mux,
         serial_bridge,
         rpi_sensors,
         camera_node,
+        lidar_node,
     ])

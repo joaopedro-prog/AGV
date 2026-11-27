@@ -3,10 +3,11 @@ Launch Orquestrador Mestre do AGV (Simulação vs Robô Real).
 
 Como usar:
   1) MODO SIMULAÇÃO (Gazebo + Visão + Seguidor de Linha):
-     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=pista_completa_plana.world
+     ros2 launch agv_hardware agv_complete.launch.py sim_mode:=true world:=armazem_logistico.world
 
-  2) MODO ROBÔ REAL NA RASPBERRY PI (Serial MCU + Câmera USB + Visão + Seguidor de Linha):
+  2) MODO ROBÔ REAL NA RASPBERRY PI 3B (ESP32 + Câmera + Visão + Dashboard):
      ros2 launch agv_hardware agv_complete.launch.py sim_mode:=false
+     (Opcional com LiDAR conectado): enable_lidar:=true lidar_port:=/dev/agv_lidar
 """
 
 import os
@@ -15,17 +16,22 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 
 
 def generate_launch_description():
-    pkg_desc = get_package_share_directory('articubot_one')
+    pkg_desc = get_package_share_directory('agv_description')
     pkg_hw = get_package_share_directory('agv_hardware')
     pkg_brain = get_package_share_directory('agv_brain')
+    pkg_dash = get_package_share_directory('agv_dashboard')
 
     sim_mode = LaunchConfiguration('sim_mode')
     auto_start = LaunchConfiguration('auto_start')
     enable_camera = LaunchConfiguration('enable_camera')
+    enable_lidar = LaunchConfiguration('enable_lidar')
+    lidar_port = LaunchConfiguration('lidar_port')
+    enable_dashboard = LaunchConfiguration('enable_dashboard')
+    web_port = LaunchConfiguration('web_port')
     world = LaunchConfiguration('world')
 
     # A) Camada de Simulação (executada somente quando sim_mode == true)
@@ -42,7 +48,11 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             os.path.join(pkg_hw, 'launch', 'hardware_bringup.launch.py')
         ]),
-        launch_arguments={'enable_camera': enable_camera}.items(),
+        launch_arguments={
+            'enable_camera': enable_camera,
+            'enable_lidar': enable_lidar,
+            'lidar_port': lidar_port,
+        }.items(),
         condition=UnlessCondition(sim_mode),
     )
 
@@ -57,6 +67,20 @@ def generate_launch_description():
         }.items(),
     )
 
+    # D) Dashboard Web HMI (inicia automaticamente no modo robô real quando enable_dashboard:=true)
+    dashboard_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(pkg_dash, 'launch', 'dashboard.launch.py')
+        ]),
+        launch_arguments={'web_port': web_port}.items(),
+        condition=IfCondition(
+            PythonExpression([
+                "'", sim_mode, "'.lower() == 'false' and '",
+                enable_dashboard, "'.lower() == 'true'"
+            ])
+        ),
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument(
             'sim_mode',
@@ -66,7 +90,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'world',
             default_value='pista_completa_plana.world',
-            description='Nome do mundo do Gazebo (pista_completa_plana.world ou pista_teste_8_tiles.world)',
+            description='Nome do mundo do Gazebo (armazem_logistico.world, pista_completa_plana.world, etc)',
         ),
         DeclareLaunchArgument(
             'auto_start',
@@ -76,9 +100,30 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'enable_camera',
             default_value='true',
-            description='No modo real (sim_mode:=false), ativa a camera USB v4l2_camera',
+            description='No modo real (sim_mode:=false), ativa a camera CSI/USB v4l2_camera',
+        ),
+        DeclareLaunchArgument(
+            'enable_lidar',
+            default_value='false',
+            description='Desativado por padrao: modelo fisico usa 2x HC-SR04 frontais sem LiDAR',
+        ),
+        DeclareLaunchArgument(
+            'lidar_port',
+            default_value='/dev/agv_lidar',
+            description='Porta serial do RPLIDAR A1 no robo real',
+        ),
+        DeclareLaunchArgument(
+            'enable_dashboard',
+            default_value='true',
+            description='Se true no modo robo real (sim_mode:=false), sobe automaticamente o Dashboard Web',
+        ),
+        DeclareLaunchArgument(
+            'web_port',
+            default_value='8080',
+            description='Porta HTTP do Dashboard Web do AGV',
         ),
         sim_launch,
         real_hw_launch,
         brain_launch,
+        dashboard_launch,
     ])

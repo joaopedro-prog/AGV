@@ -12,8 +12,9 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 
-# VS Code / IDE settings
-.vscode/
+# VS Code / IDE settings (preserva tasks compartilhadas estilo WPILib)
+.vscode/*
+!.vscode/tasks.json
 .idea/
 
 # OS specific files
@@ -36,3 +37,7 @@ $RECYCLE.BIN/
 *.elf
 firmware/**/build/
 firmware/**/.pio/
+
+# Offline deployment bundles for Raspberry Pi (Docker .deb & ARM64 image tarballs)
+scripts/rpi/offline_cache/
+src/agv_dashboard/agv_dashboard/static/deploy_info.json

@@ -50,6 +50,16 @@ line_follower:
     kd: 0.25                             # Ganho derivativo para amortecer oscilações
 
     # --------------------------------------------------------------------------
+    # CURVA DE ACELERAÇÃO E PERFIS DE MOVIMENTO (S-CURVE / TRAPEZOIDAL / DIRETO)
+    # --------------------------------------------------------------------------
+    motion_profile: "PADRAO"             # SUAVE_CARGA | PADRAO | TURBO | PRECISAO | PERSONALIZADO
+    accel_curve_type: "s_curve"          # s_curve (Jerk limitado) | trapezoidal | direto
+    max_linear_accel: 0.50               # Aceleração linear máxima (m/s^2)
+    max_linear_decel: 0.80               # Frenagem / desaceleração linear máxima (m/s^2)
+    max_linear_jerk: 2.00                # Taxa máxima de variação da aceleração - Jerk (m/s^3)
+    max_angular_accel: 5.00              # Aceleração angular máxima (rad/s^2)
+
+    # --------------------------------------------------------------------------
     # BUSCA ATIVA DA LINHA EM CURVAS FECHADAS (QUANDO A LINHA SAI DA CÂMERA)
     # --------------------------------------------------------------------------
     search_on_lost_line: true            # Ativa busca inteligente se perder a linha na curva

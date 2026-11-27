@@ -1,0 +1,320 @@
+<mxfile host="app.diagrams.net" modified="2026-11-08T19:30:00.000Z" agent="Antigravity AGV Engineering" version="22.1.0" type="device">
+  <diagram id="agv_power_circuit" name="Circuito de Potencia AGV">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITULO E CABECALHO -->
+        <mxCell id="title_box" value="&lt;b style=&quot;font-size: 20px;&quot;&gt;DIAGRAMA ELETRICO DO CIRCUITO DE POTENCIA - AGV AUTONOMO&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px; color: #475467;&quot;&gt;Tensao Nominal: 12V DC | Bateria MK ES17-12 (18 Ah) | Arquitetura Segura Fail-Safe ISO 13849 / NR-12&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#D0D5DD;align=center;verticalAlign=middle;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1500" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- SECAO: FONTE PRIMARIA DE ENERGIA -->
+        <mxCell id="group_battery" value="FONTE PRIMARIA DE ENERGIA (12V DC)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F9FAFB;strokeColor=#EAECF0;fontStyle=1;startSize=26;fontSize=12;fontColor=#1D2939;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="290" height="400" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bat01" value="&lt;b style=&quot;font-size:14px;&quot;&gt;BAT-01&lt;/b&gt;&lt;br&gt;MK ES17-12&lt;br&gt;Chumbo-Acido AGM&lt;br&gt;&lt;b&gt;12 V / 18 Ah&lt;/b&gt;&lt;br&gt;&lt;i style=&quot;font-size:11px;&quot;&gt;Terminais F3 - M5&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE4E2;strokeColor=#D92D20;strokeWidth=2;fontColor=#B42318;" vertex="1" parent="group_battery">
+          <mxGeometry x="30" y="45" width="230" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="qg01" value="&lt;b style=&quot;font-size:14px;&quot;&gt;QG-01&lt;/b&gt;&lt;br&gt;Chave Geral DC&lt;br&gt;&lt;span style=&quot;font-size:11px; color:#B54708;&quot;&gt;Seccionamento Master&lt;br&gt;Corte Mecanico 100A+&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF0C7;strokeColor=#DC6803;strokeWidth=2;fontColor=#B54708;" vertex="1" parent="group_battery">
+          <mxGeometry x="30" y="180" width="230" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_bat_qg" value="BAT+ (4 AWG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;labelBackgroundColor=#FFFFFF;fontColor=#D92D20;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_battery" source="bat01" target="qg01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="group_battery_notes" value="Condutores 4 AWG:&lt;br&gt;Risco minimo de queda de tensao sob corrente de pico dos motores CIM." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#667085;" vertex="1" parent="group_battery">
+          <mxGeometry x="20" y="280" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- BARRAMENTOS PDB-01 (+12V e 0V) -->
+        <mxCell id="pdb_bus_pos" value="&lt;b style=&quot;font-size:13px;&quot;&gt;PDB-01 : BARRAMENTO +12 V DC (DISTRIBUICAO PRINCIPAL)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D92D20;strokeColor=#B42318;fontColor=#FFFFFF;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="360" y="100" width="1180" height="35" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_qg_busp" value="4 AWG (+12V)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;labelBackgroundColor=#FFFFFF;fontColor=#D92D20;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="qg01" target="pdb_bus_pos">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="320" />
+              <mxPoint x="320" y="118" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="pdb_bus_neg" value="&lt;b style=&quot;font-size:13px;&quot;&gt;PDB-01 : BARRAMENTO 0 V / GND (RETORNO DE POTENCIA UNIFICADO)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1D2939;strokeColor=#101828;fontColor=#FFFFFF;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="360" y="800" width="1180" height="35" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_bat_busn" value="BAT- / 4 AWG (0V GND)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1D2939;strokeWidth=4;labelBackgroundColor=#FFFFFF;fontColor=#1D2939;fontStyle=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="bat01" target="pdb_bus_neg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="190" />
+              <mxPoint x="20" y="818" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SECAO: CIRCUITO DE SEGURANCA FISICA (E-STOP & INTERTRAVAMENTO) -->
+        <mxCell id="group_safety" value="CIRCUITO DE SEGURANCA FISICA (E-STOP)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFF6ED;strokeColor=#F95738;fontStyle=1;startSize=24;fontSize=11;fontColor=#7A271A;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="290" height="315" as="geometry" />
+        </mxCell>
+
+        <mxCell id="emg01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;EMG-01&lt;/b&gt;&lt;br&gt;Botao de Emergencia Cogumelo&lt;br&gt;&lt;b&gt;Contato Duplo NC (NF)&lt;/b&gt;&lt;br&gt;&lt;i style=&quot;font-size:10px; color:#B42318;&quot;&gt;Abertura Mecanica Forcada&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE4E2;strokeColor=#D92D20;fontColor=#B42318;strokeWidth=2;" vertex="1" parent="group_safety">
+          <mxGeometry x="25" y="35" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sr01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;SR-01&lt;/b&gt;&lt;br&gt;Rele / Modulo de Seguranca&lt;br&gt;&lt;span style=&quot;font-size:11px; color:#475467;&quot;&gt;Intertravamento de Bobina K1&lt;br&gt;Monitoramento de Falhas&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3F2;strokeColor=#F04438;fontColor=#912018;strokeWidth=2;" vertex="1" parent="group_safety">
+          <mxGeometry x="25" y="150" width="240" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_emg_sr" value="Canal NC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=2;fontColor=#B42318;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_safety" source="emg01" target="sr01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="safety_badge" value="CATEGORIA DE SEGURANCA NR-12&lt;br&gt;Corte de hardware redundante" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#B42318;fontStyle=1;" vertex="1" parent="group_safety">
+          <mxGeometry x="20" y="240" width="250" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- RAMAL 1: LOGICA, PROCESSAMENTO E SENSORES (5.1V) -->
+        <mxCell id="group_logic" value="RAMAL 1: LOGICA / COMPUTAÇÃO / SENSORES" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F0F9FF;strokeColor=#B9E6FE;fontStyle=1;startSize=26;fontSize=11;fontColor=#026AA2;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="270" height="610" as="geometry" />
+        </mxCell>
+
+        <mxCell id="f01" value="&lt;b&gt;F01&lt;/b&gt;&lt;br&gt;Fusivel 5 A&lt;br&gt;&lt;i style=&quot;font-size:10px;&quot;&gt;Protecao Preliminar DC-01&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF0C7;strokeColor=#DC6803;fontColor=#B54708;strokeWidth=1.5;" vertex="1" parent="group_logic">
+          <mxGeometry x="45" y="40" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dc01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;DC-01&lt;/b&gt;&lt;br&gt;Conversor Step-Down DC/DC&lt;br&gt;&lt;b&gt;Entrada: 12V | Saida: 5,1V / 5A&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#026AA2;&quot;&gt;Isolado de transientes de motor&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;fontColor=#026AA2;strokeWidth=2;" vertex="1" parent="group_logic">
+          <mxGeometry x="35" y="125" width="200" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="v5_bus" value="&lt;b&gt;BUS-5V&lt;/b&gt;&lt;br&gt;Barramento 5,1 V Lógica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0284C7;strokeColor=#0369A1;fontColor=#FFFFFF;fontStyle=1;align=center;" vertex="1" parent="group_logic">
+          <mxGeometry x="25" y="235" width="220" height="35" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pi01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;RPI-01&lt;/b&gt;&lt;br&gt;Raspberry Pi 3B (ROS 2 Humble)&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#475467;&quot;&gt;Consumo ~2.5A máx (Câmera + HAL)&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#667085;fontColor=#1D2939;strokeWidth=1.5;" vertex="1" parent="group_logic">
+          <mxGeometry x="35" y="300" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="esp01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;ESP-01&lt;/b&gt;&lt;br&gt;ESP32 DevKit v1&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#475467;&quot;&gt;Firmware PID / Encoders / Watchdog&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#667085;fontColor=#1D2939;strokeWidth=1.5;" vertex="1" parent="group_logic">
+          <mxGeometry x="35" y="390" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sensores" value="&lt;b style=&quot;font-size:13px;&quot;&gt;SEN (Sensores 5V)&lt;/b&gt;&lt;br&gt;HC-SR04, LiDAR A1, Encoders&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#475467;&quot;&gt;Alimentação Lógica Protegida&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#667085;fontColor=#1D2939;strokeWidth=1.5;" vertex="1" parent="group_logic">
+          <mxGeometry x="35" y="480" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Conexoes Internas Ramo 1 -->
+        <mxCell id="wire_busp_f01" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=3;exitX=0.15;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="pdb_bus_pos" target="f01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_f01_dc01" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=3;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_logic" source="f01" target="dc01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_dc01_v5" value="+5,1 V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284C7;strokeWidth=3;fontColor=#0284C7;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_logic" source="dc01" target="v5_bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_v5_pi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284C7;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_logic" source="v5_bus" target="pi01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_v5_esp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284C7;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_logic" source="pi01" target="esp01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_v5_sen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0284C7;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_logic" source="esp01" target="sensores">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Retorno 0V DC-01 para BUSN -->
+        <mxCell id="wire_dc01_busn" value="Retorno 0V GND" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1D2939;strokeWidth=2;fontColor=#1D2939;exitX=0.85;exitY=1;entryX=0.15;entryY=0;" edge="1" parent="1" source="dc01" target="pdb_bus_neg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="380" />
+              <mxPoint x="580" y="770" />
+              <mxPoint x="537" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- RAMAL 2: SINALIZACAO VISUAL LED RGB -->
+        <mxCell id="group_rgb" value="RAMAL 2: SINALIZACAO LED RGB" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FDF2FA;strokeColor=#FCCEEE;fontStyle=1;startSize=26;fontSize=11;fontColor=#C11574;" vertex="1" parent="1">
+          <mxGeometry x="655" y="160" width="230" height="610" as="geometry" />
+        </mxCell>
+
+        <mxCell id="f04" value="&lt;b&gt;F04&lt;/b&gt;&lt;br&gt;Fusivel 1 A&lt;br&gt;&lt;i style=&quot;font-size:10px;&quot;&gt;Proteção LEDs 12V&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF0C7;strokeColor=#DC6803;fontColor=#B54708;strokeWidth=1.5;" vertex="1" parent="group_rgb">
+          <mxGeometry x="35" y="40" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rgb_drv" value="&lt;b style=&quot;font-size:13px;&quot;&gt;LED-DRV&lt;/b&gt;&lt;br&gt;Driver 3 Canais MOSFET&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#C11574;&quot;&gt;Comutação R, G, B via PWM ESP32&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE7F6;strokeColor=#EE46BC;fontColor=#9E165F;strokeWidth=2;" vertex="1" parent="group_rgb">
+          <mxGeometry x="25" y="140" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="led01" value="&lt;b style=&quot;font-size:13px;&quot;&gt;LED-01&lt;/b&gt;&lt;br&gt;Fita / Barra RGB 5050&lt;br&gt;&lt;b&gt;12 V DC Anodo Comum&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#475467;&quot;&gt;Sinalização de Estados do Robô&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#C11574;fontColor=#1D2939;strokeWidth=1.5;" vertex="1" parent="group_rgb">
+          <mxGeometry x="25" y="270" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rgb_states_box" value="3 ESTADOS VISUAIS:&lt;br&gt;&lt;b style=&quot;color:#027A48;&quot;&gt;VERDE:&lt;/b&gt; Autonomia / Movimento&lt;br&gt;&lt;b style=&quot;color:#B54708;&quot;&gt;AMARELO:&lt;/b&gt; Standby / Manual&lt;br&gt;&lt;b style=&quot;color:#B42318;&quot;&gt;VERMELHO:&lt;/b&gt; E-Stop / Falha" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#EAECF0;align=left;fontSize=10;fontColor=#344054;" vertex="1" parent="group_rgb">
+          <mxGeometry x="15" y="380" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_busp_f04" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=3;exitX=0.32;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="pdb_bus_pos" target="f04">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_f04_rgb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=3;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_rgb" source="f04" target="rgb_drv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_rgb_led" value="R, G, B Chaveados" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#EE46BC;strokeWidth=2;fontColor=#9E165F;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_rgb" source="rgb_drv" target="led01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_rgb_busn" value="Retorno 0V" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1D2939;strokeWidth=2;fontColor=#1D2939;exitX=0.8;exitY=1;entryX=0.35;entryY=0;" edge="1" parent="1" source="rgb_drv" target="pdb_bus_neg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="824" y="420" />
+              <mxPoint x="824" y="770" />
+              <mxPoint x="773" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- RAMAL 3: TRACAO & POTENCIA DOS MOTORES CIM + SPARK MAX -->
+        <mxCell id="group_motors" value="RAMAL 3: CIRCUITO DE TRACAO / MOTORES CIM (CORTE VMOT VIA K1)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ECFDF3;strokeColor=#A6F4C5;fontStyle=1;startSize=26;fontSize=11;fontColor=#027A48;" vertex="1" parent="1">
+          <mxGeometry x="910" y="160" width="630" height="610" as="geometry" />
+        </mxCell>
+
+        <!-- Canal Esquerdo -->
+        <mxCell id="f02" value="&lt;b&gt;F02&lt;/b&gt;&lt;br&gt;Fusível Motor Esquerdo&lt;br&gt;&lt;b style=&quot;color:#B42318;&quot;&gt;30 A a 40 A (A dimensionar)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF0C7;strokeColor=#DC6803;fontColor=#B54708;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="40" y="40" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k1a" value="&lt;b style=&quot;font-size:13px;&quot;&gt;K1 (Contato K1A)&lt;/b&gt;&lt;br&gt;Contato de Potência Motor Esq.&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#B42318;&quot;&gt;Corte Galvanico Imediato por SR-01&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE4E2;strokeColor=#D92D20;fontColor=#B42318;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="40" y="130" width="220" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mc01" value="&lt;b style=&quot;font-size:14px;&quot;&gt;MC-01&lt;/b&gt;&lt;br&gt;REV Spark MAX (Esquerdo)&lt;br&gt;Driver DC / PWM / CAN&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#344054;&quot;&gt;Alimentação: 12V VMOT / 0V&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D1FADF;strokeColor=#12B76A;fontColor=#027A48;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="40" y="240" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m01" value="&lt;b style=&quot;font-size:14px;&quot;&gt;MOT-01&lt;/b&gt;&lt;br&gt;Motor DC AndyMark CIM Esquerdo&lt;br&gt;12 V DC • 5310 RPM • 133A Stall&lt;br&gt;&lt;b style=&quot;color:#1D2939;&quot;&gt;Tração Roda Esquerda&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F4F7;strokeColor=#475467;fontColor=#1D2939;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="40" y="380" width="220" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Canal Direito -->
+        <mxCell id="f03" value="&lt;b&gt;F03&lt;/b&gt;&lt;br&gt;Fusível Motor Direito&lt;br&gt;&lt;b style=&quot;color:#B42318;&quot;&gt;30 A a 40 A (A dimensionar)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF0C7;strokeColor=#DC6803;fontColor=#B54708;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="370" y="40" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k1b" value="&lt;b style=&quot;font-size:13px;&quot;&gt;K1 (Contato K1B)&lt;/b&gt;&lt;br&gt;Contato de Potência Motor Dir.&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#B42318;&quot;&gt;Corte Galvanico Imediato por SR-01&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE4E2;strokeColor=#D92D20;fontColor=#B42318;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="370" y="130" width="220" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mc02" value="&lt;b style=&quot;font-size:14px;&quot;&gt;MC-02&lt;/b&gt;&lt;br&gt;REV Spark MAX (Direito)&lt;br&gt;Driver DC / PWM / CAN&lt;br&gt;&lt;span style=&quot;font-size:10px; color:#344054;&quot;&gt;Alimentação: 12V VMOT / 0V&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D1FADF;strokeColor=#12B76A;fontColor=#027A48;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="370" y="240" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m02" value="&lt;b style=&quot;font-size:14px;&quot;&gt;MOT-02&lt;/b&gt;&lt;br&gt;Motor DC AndyMark CIM Direito&lt;br&gt;12 V DC • 5310 RPM • 133A Stall&lt;br&gt;&lt;b style=&quot;color:#1D2939;&quot;&gt;Tração Roda Direita&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F4F7;strokeColor=#475467;fontColor=#1D2939;strokeWidth=2;" vertex="1" parent="group_motors">
+          <mxGeometry x="370" y="380" width="220" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Conexoes Motor Esquerdo -->
+        <mxCell id="wire_busp_f02" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;exitX=0.55;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="pdb_bus_pos" target="f02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_f02_k1a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="f02" target="k1a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_k1a_mc01" value="+12V VMOT (10-12 AWG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;fontColor=#B42318;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="k1a" target="mc01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_mc01_m01" value="Saída Motor CIM M+ / M-" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#12B76A;strokeWidth=3;fontColor=#027A48;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="mc01" target="m01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Conexoes Motor Direito -->
+        <mxCell id="wire_busp_f03" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;exitX=0.85;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="pdb_bus_pos" target="f03">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_f03_k1b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="f03" target="k1b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_k1b_mc02" value="+12V VMOT (10-12 AWG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#D92D20;strokeWidth=4;fontColor=#B42318;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="k1b" target="mc02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wire_mc02_m02" value="Saída Motor CIM M+ / M-" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#12B76A;strokeWidth=3;fontColor=#027A48;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="group_motors" source="mc02" target="m02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Retorno 0V GND dos Spark MAX -->
+        <mxCell id="wire_mc01_busn" value="0V GND (10-12 AWG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1D2939;strokeWidth=4;fontColor=#1D2939;exitX=0.2;exitY=1;entryX=0.65;entryY=0;" edge="1" parent="1" source="mc01" target="pdb_bus_neg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="994" y="770" />
+              <mxPoint x="1127" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="wire_mc02_busn" value="0V GND (10-12 AWG)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1D2939;strokeWidth=4;fontColor=#1D2939;exitX=0.8;exitY=1;entryX=0.88;entryY=0;" edge="1" parent="1" source="mc02" target="pdb_bus_neg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1456" y="770" />
+              <mxPoint x="1398" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SINAIS DE CONTROLE E INTERTRAVAMENTO (TRACEJADOS) -->
+        <mxCell id="wire_sr_k1a" value="Comanda abertura K1A" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D92D20;strokeWidth=2;dashed=1;fontColor=#D92D20;fontStyle=1;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="sr01" target="k1a">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="690" />
+              <mxPoint x="340" y="322" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="wire_sr_k1b" value="Comanda abertura K1B" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D92D20;strokeWidth=2;dashed=1;fontColor=#D92D20;fontStyle=1;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" parent="1" source="sr01" target="k1b">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="720" />
+              <mxPoint x="350" y="340" />
+              <mxPoint x="1270" y="340" />
+              <mxPoint x="1270" y="322" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="wire_emg_esp" value="Contato Auxiliar E-Stop -&gt; ESP32 (GPIO 34)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#444CE7;strokeWidth=2;dashed=1;fontColor=#3538CD;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="emg01" target="esp01">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="345" y="595" />
+              <mxPoint x="345" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- NOTAS DE ENGENHARIA NO RODAPE -->
+        <mxCell id="footer_notes" value="&lt;b style=&quot;font-size:12px; color:#1D2939;&quot;&gt;NOTAS DE DIMENSIONAMENTO E ENGENHARIA ELETRICA (NORMA NR-12 / IEC 60204-1):&lt;/b&gt;&lt;br&gt;&lt;b style=&quot;color:#B42318;&quot;&gt;1. Cabos de Força (4 AWG):&lt;/b&gt; Interligação BAT-01 -&gt; QG-01 -&gt; Barramentos PDB-01 (+12V e 0V) suportam picos transitórios de até 130A dos motores CIM em rampa de aceleração.&lt;br&gt;&lt;b style=&quot;color:#B54708;&quot;&gt;2. Proteção Motores F02 / F03:&lt;/b&gt; Dimensionar entre 30A e 40A por motor (fusíveis tipo MAXI ou disjuntores automotivos térmicos Snap Action para proteção contra travamento).&lt;br&gt;&lt;b style=&quot;color:#027A48;&quot;&gt;3. Desconexão Segura Fail-Safe:&lt;/b&gt; Abertura do botão EMG-01 desenergiza a bobina do contator K1, abrindo K1A e K1B e eliminando a energia mecânica dos motores.&lt;br&gt;&lt;b style=&quot;color:#026AA2;&quot;&gt;4. Estabilidade Lógica:&lt;/b&gt; Conversor DC-01 dedicado de 5,1V / 5A mantém alimentação estável da Raspberry Pi 3B e ESP32 imune a quedas de tensão na bateria." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8F9FA;strokeColor=#D0D5DD;align=left;verticalAlign=middle;fontSize=10;fontColor=#344054;spacingLeft=15;" vertex="1" parent="1">
+          <mxGeometry x="40" y="855" width="1500" height="95" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

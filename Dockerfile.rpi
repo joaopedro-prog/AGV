@@ -1,0 +1,71 @@
+# ==============================================================================
+# Dockerfile.rpi — Imagem Enxuta de Produção para Raspberry Pi 3B (ARM64)
+# ==============================================================================
+# Base headless (ros-base): SEM Gazebo, SEM RViz2, SEM Qt/X11/WSLg (~800 MB).
+# Contém exclusivamente o runtime do robô físico:
+#   - Hardware HAL (serial_bridge CRC16, rpi_sensors GPIO/MPU6050, v4l2_camera, rplidar_ros)
+#   - Inteligência (agv_brain OpenCV ROI + PID + supervisor LiDAR)
+#   - HMI & Teleop (agv_dashboard :8080 + teleop_joy_receiver UDP :9876 + twist_mux)
+# ==============================================================================
+
+FROM ros:humble-ros-base-jammy
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# 1. Dependências mínimas do sistema e pacotes ROS 2 de campo (sem GUI/Simulação)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-colcon-common-extensions \
+    python3-pip \
+    python3-opencv \
+    python3-numpy \
+    python3-serial \
+    python3-smbus \
+    v4l-utils \
+    i2c-tools \
+    udev \
+    ros-humble-robot-state-publisher \
+    ros-humble-xacro \
+    ros-humble-twist-mux \
+    ros-humble-v4l2-camera \
+    ros-humble-cv-bridge \
+    ros-humble-rplidar-ros \
+    && (apt-get install -y --no-install-recommends python3-rpi.gpio || pip3 install --no-cache-dir RPi.GPIO) \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Copiar código-fonte e scripts de operação real (removendo artefatos de simulação)
+WORKDIR /workspace
+COPY src /workspace/src
+COPY scripts/teleop_joy_receiver.py /workspace/scripts/teleop_joy_receiver.py
+COPY scripts/rpi/entrypoint_rpi.sh /workspace/scripts/rpi/entrypoint_rpi.sh
+COPY scripts/rpi/agv_beacon.py /workspace/scripts/rpi/agv_beacon.py
+
+# Remove mundos Gazebo, malhas CAD pesadas e launches de simulação (mantém apenas URDF/config)
+RUN rm -rf /workspace/src/agv_description/worlds/* \
+           /workspace/src/agv_description/meshes/* \
+           /workspace/src/agv_description/launch/launch_sim.launch.py \
+           /workspace/src/agv_description/launch/view_robot.launch.py \
+           /workspace/src/agv_description/config/gazebo_params.yaml \
+           /workspace/src/agv_description/config/sim_robot.rviz \
+           /workspace/src/agv_description/config/view_bot.rviz \
+    && mkdir -p /workspace/src/agv_description/worlds /workspace/src/agv_description/meshes
+
+# Normalizar finais de linha caso o build venha de host Windows e dar permissão de execução
+RUN sed -i 's/\r$//' /workspace/scripts/teleop_joy_receiver.py /workspace/scripts/rpi/entrypoint_rpi.sh /workspace/scripts/rpi/agv_beacon.py \
+    && chmod +x /workspace/scripts/teleop_joy_receiver.py /workspace/scripts/rpi/entrypoint_rpi.sh /workspace/scripts/rpi/agv_beacon.py
+
+ENV PYTHONOPTIMIZE=1
+
+# 3. Compilar workspace ROS 2 com --parallel-workers 2 (seguro para 1 GB RAM da RPi 3B)
+#    e --symlink-install para que volumes YAML montados entrem em vigor sem rebuild.
+RUN bash -c "source /opt/ros/humble/setup.bash && \
+    colcon build --symlink-install --parallel-workers 2 --cmake-args -DCMAKE_BUILD_TYPE=Release"
+
+# Sourcing automático em sessões interativas de diagnóstico (docker exec)
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc \
+    && echo "[ -f /workspace/install/setup.bash ] && source /workspace/install/setup.bash" >> /root/.bashrc
+
+# Portas de campo: Dashboard Web HMI (8080) e Joystick UDP sem fio (9876)
+EXPOSE 8080 9876/udp
+
+ENTRYPOINT ["/workspace/scripts/rpi/entrypoint_rpi.sh"]

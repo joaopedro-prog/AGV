@@ -14,8 +14,9 @@
  *       - ENC1 (Esq): CLK = GPIO 34, DT = GPIO 35
  *       - ENC2 (Dir): CLK = GPIO 39 (VN), DT = GPIO 36 (VP)
  *  3. Malha fechada Feedforward + PID por roda com rampa suave e anti-windup.
- *  4. Leitura não-bloqueante via interrupção de 2x HC-SR04 (TRIG compartilhado
- *     em GPIO 27; ECHO1 frontal em GPIO 26; ECHO2 traseiro em GPIO 25).
+ *  4. Leitura não-bloqueante via interrupção de 2x HC-SR04 frontais (TRIG
+ *     compartilhado em GPIO 27; ECHO1 frontal esquerdo em GPIO 26; ECHO2
+ *     frontal direito em GPIO 25).
  *  5. Botão de Emergência físico E_STOP_D33 no GPIO 33 (INPUT_PULLUP).
  *  6. Comunicação UART espelhada em Serial (USB) e Serial2 (GPIO 16/17 -> RPi)
  *     com verificação/geração CRC16-CCITT e Watchdog rigoroso de 200 ms.
@@ -23,6 +24,7 @@
  */
 
 #include <Arduino.h>
+#include <ctype.h>
 #include <math.h>
 
 // ======================= PINAGEM OFICIAL KICAD REV 2.0 ======================
@@ -88,19 +90,28 @@ const uint8_t STATE_DRIVER_FAULT         = 3;
 const uint8_t STATE_ESTOP_PENDING_RESET  = 4;
 
 // ============================ VARIÁVEIS GLOBAIS =============================
+#if defined(ESP32)
+static portMUX_TYPE enc_mux  = portMUX_INITIALIZER_UNLOCKED;
+static portMUX_TYPE echo_mux = portMUX_INITIALIZER_UNLOCKED;
+#endif
+
 volatile long enc_ticks_left  = 0;
 volatile long enc_ticks_right = 0;
 volatile int prev_clk_l = HIGH;
 volatile int prev_clk_r = HIGH;
 
-// Medição não-bloqueante dos 2 sensores ultrassônicos frontais
+// Medição não-bloqueante dos 2 sensores ultrassônicos frontais (base temporal micros())
 volatile unsigned long echo_left_start_us  = 0;
 volatile unsigned long echo_left_dur_us    = 0;
-volatile unsigned long echo_left_rx_ms     = 0;
+volatile unsigned long echo_left_rx_us     = 0;
+volatile bool          echo_left_armed     = false;
+volatile bool          echo_left_valid     = false;
 
 volatile unsigned long echo_right_start_us = 0;
 volatile unsigned long echo_right_dur_us   = 0;
-volatile unsigned long echo_right_rx_ms    = 0;
+volatile unsigned long echo_right_rx_us    = 0;
+volatile bool          echo_right_armed    = false;
+volatile bool          echo_right_valid    = false;
 
 long prev_ticks_left  = 0;
 long prev_ticks_right = 0;
@@ -152,64 +163,115 @@ uint16_t calculate_crc16(const char* data, size_t length) {
 void IRAM_ATTR isr_enc_left() {
   int clk = digitalRead(PIN_ENC_L_CLK);
   int dt  = digitalRead(PIN_ENC_L_DT);
+#if defined(ESP32)
+  portENTER_CRITICAL_ISR(&enc_mux);
+#endif
   if (clk != prev_clk_l) {
     prev_clk_l = clk;
-    if (clk == dt) {
-      enc_ticks_left++;
-    } else {
-      enc_ticks_left--;
-    }
+    long ticks = enc_ticks_left;
+    enc_ticks_left = (clk == dt) ? (ticks + 1L) : (ticks - 1L);
   }
+#if defined(ESP32)
+  portEXIT_CRITICAL_ISR(&enc_mux);
+#endif
 }
 
 void IRAM_ATTR isr_enc_right() {
   int clk = digitalRead(PIN_ENC_R_CLK);
   int dt  = digitalRead(PIN_ENC_R_DT);
+#if defined(ESP32)
+  portENTER_CRITICAL_ISR(&enc_mux);
+#endif
   if (clk != prev_clk_r) {
     prev_clk_r = clk;
-    if (clk == dt) {
-      enc_ticks_right++;
-    } else {
-      enc_ticks_right--;
-    }
+    long ticks = enc_ticks_right;
+    enc_ticks_right = (clk == dt) ? (ticks + 1L) : (ticks - 1L);
   }
+#if defined(ESP32)
+  portEXIT_CRITICAL_ISR(&enc_mux);
+#endif
+}
+
+void read_encoder_ticks(long &left, long &right) {
+#if defined(ESP32)
+  portENTER_CRITICAL(&enc_mux);
+#else
+  noInterrupts();
+#endif
+  left  = enc_ticks_left;
+  right = enc_ticks_right;
+#if defined(ESP32)
+  portEXIT_CRITICAL(&enc_mux);
+#else
+  interrupts();
+#endif
 }
 
 // ==================== INTERRUPÇÕES NÃO-BLOQUEANTES HC-SR04 ==================
 void IRAM_ATTR isr_echo_left() {
   unsigned long now_us = micros();
-  if (digitalRead(PIN_ECHO_LEFT) == HIGH) {
+  int level = digitalRead(PIN_ECHO_LEFT);
+#if defined(ESP32)
+  portENTER_CRITICAL_ISR(&echo_mux);
+#endif
+  if (level == HIGH) {
     echo_left_start_us = now_us;
-  } else {
+    echo_left_armed    = true;
+  } else if (echo_left_armed) {
+    echo_left_armed = false;
     unsigned long dur = now_us - echo_left_start_us;
-    if (dur >= 120 && dur <= 25000) {
+    if (dur >= 120UL && dur <= 25000UL) {
       echo_left_dur_us = dur;
-      echo_left_rx_ms = millis();
+      echo_left_rx_us  = now_us;
+      echo_left_valid  = true;
     }
   }
+#if defined(ESP32)
+  portEXIT_CRITICAL_ISR(&echo_mux);
+#endif
 }
 
 void IRAM_ATTR isr_echo_right() {
   unsigned long now_us = micros();
-  if (digitalRead(PIN_ECHO_RIGHT) == HIGH) {
+  int level = digitalRead(PIN_ECHO_RIGHT);
+#if defined(ESP32)
+  portENTER_CRITICAL_ISR(&echo_mux);
+#endif
+  if (level == HIGH) {
     echo_right_start_us = now_us;
-  } else {
+    echo_right_armed    = true;
+  } else if (echo_right_armed) {
+    echo_right_armed = false;
     unsigned long dur = now_us - echo_right_start_us;
-    if (dur >= 120 && dur <= 25000) {
+    if (dur >= 120UL && dur <= 25000UL) {
       echo_right_dur_us = dur;
-      echo_right_rx_ms = millis();
+      echo_right_rx_us  = now_us;
+      echo_right_valid  = true;
     }
   }
+#if defined(ESP32)
+  portEXIT_CRITICAL_ISR(&echo_mux);
+#endif
 }
 
 // ==================== ACIONAMENTO REV SPARK MAX (PWM 50 Hz) =================
-void write_spark_max_us(int ledc_channel, float pulse_us) {
+void write_spark_max_us(int pwm_pin, int ledc_channel, float pulse_us) {
   if (pulse_us < 1000.0f) pulse_us = 1000.0f;
   if (pulse_us > 2000.0f) pulse_us = 2000.0f;
   // Período a 50 Hz = 20000 us; resolução 16 bits = 0..65535 (1500 us -> 4915 ticks)
   uint32_t duty = (uint32_t)lroundf((pulse_us / 20000.0f) * 65535.0f);
 #if defined(ESP32)
-  ledcWrite(ledc_channel, duty);
+  #if defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 3)
+    (void)ledc_channel;
+    ledcWrite((uint8_t)pwm_pin, duty);
+  #else
+    (void)pwm_pin;
+    ledcWrite(ledc_channel, duty);
+  #endif
+#else
+  (void)pwm_pin;
+  (void)ledc_channel;
+  (void)duty;
 #endif
 }
 
@@ -224,8 +286,8 @@ void reset_pid_state() {
 }
 
 void cut_motor_power() {
-  write_spark_max_us(LEDC_CH_LEFT,  1500.0f);
-  write_spark_max_us(LEDC_CH_RIGHT, 1500.0f);
+  write_spark_max_us(PIN_SPARK_L_PWM, LEDC_CH_LEFT,  1500.0f);
+  write_spark_max_us(PIN_SPARK_R_PWM, LEDC_CH_RIGHT, 1500.0f);
   target_left_rad_s  = 0.0f;
   target_right_rad_s = 0.0f;
   reset_pid_state();
@@ -279,15 +341,18 @@ void apply_motor_speeds(float target_l, float target_r, float dt) {
   float us_l = 1500.0f + (eff_l * 500.0f);
   float us_r = 1500.0f + (eff_r * 500.0f);
 
-  write_spark_max_us(LEDC_CH_LEFT,  us_l);
-  write_spark_max_us(LEDC_CH_RIGHT, us_r);
+  write_spark_max_us(PIN_SPARK_L_PWM, LEDC_CH_LEFT,  us_l);
+  write_spark_max_us(PIN_SPARK_R_PWM, LEDC_CH_RIGHT, us_r);
 }
 
 // ======================== TRANSMISSÃO DE MENSAGENS ==========================
 void send_packet(const String &payload) {
   uint16_t crc = calculate_crc16(payload.c_str(), payload.length());
-  char frame[140];
-  snprintf(frame, sizeof(frame), "$%s*%04X\r\n", payload.c_str(), crc);
+  char frame[144];
+  int n = snprintf(frame, sizeof(frame), "$%s*%04X\r\n", payload.c_str(), crc);
+  if (n <= 0 || n >= (int)sizeof(frame)) {
+    return;
+  }
 
   // Espelha telemetria e ACKs tanto na USB Serial quanto na UART2 (GPIO 16/17 -> RPi)
   Serial.print(frame);
@@ -321,16 +386,25 @@ void handle_packet(const String &payload) {
 
   if (type == "CMD") {
     // Formato: CMD,<seq>,<left_rad_s>,<right_rad_s>
-    int third_comma = payload.indexOf(',', second_comma + 1);
-    if (third_comma > second_comma) {
-      float req_l = payload.substring(second_comma + 1, third_comma).toFloat();
-      float req_r = payload.substring(third_comma + 1).toFloat();
+    if (second_comma < (int)payload.length()) {
+      int third_comma = payload.indexOf(',', second_comma + 1);
+      if (third_comma > second_comma) {
+        float req_l = payload.substring(second_comma + 1, third_comma).toFloat();
+        float req_r = payload.substring(third_comma + 1).toFloat();
 
-      if (current_safety_state == STATE_OK) {
-        target_left_rad_s  = req_l;
-        target_right_rad_s = req_r;
+        if (isfinite(req_l) && isfinite(req_r)) {
+          if (req_l >  MAX_WHEEL_RAD_S) req_l =  MAX_WHEEL_RAD_S;
+          if (req_l < -MAX_WHEEL_RAD_S) req_l = -MAX_WHEEL_RAD_S;
+          if (req_r >  MAX_WHEEL_RAD_S) req_r =  MAX_WHEEL_RAD_S;
+          if (req_r < -MAX_WHEEL_RAD_S) req_r = -MAX_WHEEL_RAD_S;
+
+          if (current_safety_state == STATE_OK) {
+            target_left_rad_s  = req_l;
+            target_right_rad_s = req_r;
+          }
+          last_valid_cmd_ms = millis();
+        }
       }
-      last_valid_cmd_ms = millis();
     }
   } else if (type == "ESTOP") {
     // Formato: ESTOP,<seq>,<reason>
@@ -377,11 +451,22 @@ void process_serial_byte(char c, String &rx_buf) {
     crc_str.trim();
 
     if (crc_str.length() == 4) {
-      uint16_t expected_crc = (uint16_t)strtoul(crc_str.c_str(), NULL, 16);
-      uint16_t calculated_crc = calculate_crc16(payload.c_str(), payload.length());
-
-      if (expected_crc == calculated_crc) {
-        handle_packet(payload);
+      bool all_hex = true;
+      for (int i = 0; i < 4; i++) {
+        if (!isxdigit((unsigned char)crc_str[i])) {
+          all_hex = false;
+          break;
+        }
+      }
+      if (all_hex) {
+        char *endptr = NULL;
+        uint16_t expected_crc = (uint16_t)strtoul(crc_str.c_str(), &endptr, 16);
+        if (endptr != NULL && *endptr == '\0') {
+          uint16_t calculated_crc = calculate_crc16(payload.c_str(), payload.length());
+          if (expected_crc == calculated_crc) {
+            handle_packet(payload);
+          }
+        }
       }
     }
     rx_buf = "";
@@ -402,21 +487,32 @@ void trigger_ultrasonic_nonblocking() {
   digitalWrite(PIN_TRIG_SHARED, LOW);
 }
 
-void get_ultrasonics_cm(unsigned long now_ms, int &cm_left, int &cm_right) {
+void get_ultrasonics_cm(int &cm_left, int &cm_right) {
+#if defined(ESP32)
+  portENTER_CRITICAL(&echo_mux);
+#else
   noInterrupts();
-  unsigned long dur_l = echo_left_dur_us;
-  unsigned long rx_l  = echo_left_rx_ms;
-  unsigned long dur_r = echo_right_dur_us;
-  unsigned long rx_r  = echo_right_rx_ms;
+#endif
+  unsigned long dur_l  = echo_left_dur_us;
+  unsigned long rx_l   = echo_left_rx_us;
+  bool          val_l  = echo_left_valid;
+  unsigned long dur_r  = echo_right_dur_us;
+  unsigned long rx_r   = echo_right_rx_us;
+  bool          val_r  = echo_right_valid;
+  unsigned long now_us = micros();
+#if defined(ESP32)
+  portEXIT_CRITICAL(&echo_mux);
+#else
   interrupts();
+#endif
 
   cm_left  = 999;
   cm_right = 999;
 
-  if (rx_l > 0 && (now_ms - rx_l) < 300) {
+  if (val_l && (now_us - rx_l) < 300000UL) {
     cm_left = (int)((dur_l * 0.0343f) * 0.5f);
   }
-  if (rx_r > 0 && (now_ms - rx_r) < 300) {
+  if (val_r && (now_us - rx_r) < 300000UL) {
     cm_right = (int)((dur_r * 0.0343f) * 0.5f);
   }
 }
@@ -437,11 +533,19 @@ void setup() {
   Serial.begin(115200);
   Serial2.begin(115200, SERIAL_8N1, PIN_UART2_RX, PIN_UART2_TX);
 
+  rx_line_usb.reserve(128);
+  rx_line_uart2.reserve(128);
+
 #if defined(ESP32)
-  ledcSetup(LEDC_CH_LEFT,  SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS);
-  ledcSetup(LEDC_CH_RIGHT, SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS);
-  ledcAttachPin(PIN_SPARK_L_PWM, LEDC_CH_LEFT);
-  ledcAttachPin(PIN_SPARK_R_PWM, LEDC_CH_RIGHT);
+  #if defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 3)
+    ledcAttachChannel(PIN_SPARK_L_PWM, SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS, LEDC_CH_LEFT);
+    ledcAttachChannel(PIN_SPARK_R_PWM, SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS, LEDC_CH_RIGHT);
+  #else
+    ledcSetup(LEDC_CH_LEFT,  SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS);
+    ledcSetup(LEDC_CH_RIGHT, SPARK_PWM_FREQ_HZ, SPARK_PWM_RES_BITS);
+    ledcAttachPin(PIN_SPARK_L_PWM, LEDC_CH_LEFT);
+    ledcAttachPin(PIN_SPARK_R_PWM, LEDC_CH_RIGHT);
+  #endif
 #endif
 
   // Inputs dos Encoders KY-040 (pull-ups físicos no módulo KY-040)
@@ -468,6 +572,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_ECHO_RIGHT), isr_echo_right, CHANGE);
 
   cut_motor_power();
+  if (is_hw_estop_triggered()) {
+    current_safety_state = STATE_HARDWARE_ESTOP;
+  }
   unsigned long boot_ms = millis();
   last_valid_cmd_ms = boot_ms;
   last_control_ms   = boot_ms;
@@ -516,10 +623,9 @@ void loop() {
     last_control_ms = now;
     if (dt <= 0.0f || dt > 0.2f) dt = 0.02f;
 
-    noInterrupts();
-    long cur_l = enc_ticks_left;
-    long cur_r = enc_ticks_right;
-    interrupts();
+    long cur_l = 0;
+    long cur_r = 0;
+    read_encoder_ticks(cur_l, cur_r);
 
     long dl = cur_l - prev_ticks_left;
     long dr = cur_r - prev_ticks_right;
@@ -541,13 +647,12 @@ void loop() {
     last_telemetry_ms = now;
     tx_seq++;
 
-    noInterrupts();
-    long t_left  = enc_ticks_left;
-    long t_right = enc_ticks_right;
-    interrupts();
+    long t_left  = 0;
+    long t_right = 0;
+    read_encoder_ticks(t_left, t_right);
 
     int us_left_cm = 999, us_right_cm = 999;
-    get_ultrasonics_cm(now, us_left_cm, us_right_cm);
+    get_ultrasonics_cm(us_left_cm, us_right_cm);
     int dist_cm = (us_left_cm < us_right_cm) ? us_left_cm : us_right_cm;
     int vbat_mv = read_battery_millivolts();
 
